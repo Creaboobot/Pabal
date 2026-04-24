@@ -18,7 +18,7 @@ The product and engineering source of truth is:
 
 - [`/docs/product/network-companion-final-build-brief.md`](docs/product/network-companion-final-build-brief.md)
 
-Codex and all contributors must also follow:
+Codex and all contributors must also follow and read carefully before any edits:
 
 - [`AGENTS.md`](AGENTS.md)
 - [`/docs/development/codex-operating-model.md`](docs/development/codex-operating-model.md)
