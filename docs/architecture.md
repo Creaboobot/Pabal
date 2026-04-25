@@ -52,6 +52,22 @@ counts and design patterns. They do not implement CRUD, capture workflows,
 proposal approval, voice recording, semantic search, matching, notifications,
 or external provider calls.
 
+Step 6A turns `/people` into the first real product workflow. People and company
+screens live under the existing protected app shell:
+
+- `/people`
+- `/people/new`
+- `/people/[personId]`
+- `/people/[personId]/edit`
+- `/people/companies`
+- `/people/companies/new`
+- `/people/companies/[companyId]`
+- `/people/companies/[companyId]/edit`
+
+Server actions validate form input with Zod, call `getCurrentUserContext()`,
+and delegate mutations to tenant-aware services. The client never supplies a
+trusted tenant id. Affiliation management UI remains deferred to Step 6B.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,

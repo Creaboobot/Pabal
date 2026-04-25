@@ -3,8 +3,15 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  getTenantCompanyProfile: vi.fn(),
+  getTenantPersonProfile: vi.fn(),
   getAppShellSummary: vi.fn(),
   getCurrentUserContext: vi.fn(),
+  listTenantCompaniesWithProfiles: vi.fn(),
+  listTenantPeopleWithProfiles: vi.fn(),
+  notFound: vi.fn(() => {
+    throw new Error("notFound");
+  }),
   redirect: vi.fn((destination: string) => {
     throw new Error(`redirect:${destination}`);
   }),
@@ -12,6 +19,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("next/navigation", () => ({
+  notFound: mocks.notFound,
   redirect: mocks.redirect,
   usePathname: () => "/today",
 }));
@@ -26,6 +34,33 @@ vi.mock("@/server/services/session", () => ({
 
 vi.mock("@/server/services/app-shell-summary", () => ({
   getAppShellSummary: mocks.getAppShellSummary,
+}));
+
+vi.mock("@/server/services/people", () => ({
+  getTenantPersonProfile: mocks.getTenantPersonProfile,
+  listTenantPeopleWithProfiles: mocks.listTenantPeopleWithProfiles,
+}));
+
+vi.mock("@/server/services/companies", () => ({
+  getTenantCompanyProfile: mocks.getTenantCompanyProfile,
+  listTenantCompaniesWithProfiles: mocks.listTenantCompaniesWithProfiles,
+}));
+
+vi.mock("@/modules/people/actions", () => ({
+  archiveCompanyAction: vi.fn(),
+  archivePersonAction: vi.fn(),
+}));
+
+vi.mock("@/modules/people/components/archive-record-button", () => ({
+  ArchiveRecordButton: () => <div>Archive control</div>,
+}));
+
+vi.mock("@/modules/people/components/person-form", () => ({
+  PersonForm: () => <form aria-label="Person form" />,
+}));
+
+vi.mock("@/modules/people/components/company-form", () => ({
+  CompanyForm: () => <form aria-label="Company form" />,
 }));
 
 const tenantContext = {
@@ -58,6 +93,36 @@ const appSummary = {
   },
 };
 
+const personProfile = {
+  _count: {
+    meetingParticipants: 1,
+    notes: 2,
+  },
+  companyAffiliations: [],
+  displayName: "Anna Keller",
+  email: "anna@example.com",
+  firstName: "Anna",
+  id: "person_test_1",
+  jobTitle: "Partner",
+  lastName: "Keller",
+  phone: "+4512345678",
+  relationshipStatus: "ACTIVE",
+  relationshipTemperature: "WARM",
+};
+
+const companyProfile = {
+  _count: {
+    notes: 1,
+    primaryMeetings: 1,
+  },
+  companyAffiliations: [],
+  description: "Industrial network context",
+  id: "company_test_1",
+  industry: "Industrials",
+  name: "Nordic Industrials",
+  website: "https://example.com",
+};
+
 type AsyncPage = () => Promise<ReactElement>;
 
 const routes: Array<[string, () => Promise<{ default: AsyncPage }>]> = [
@@ -79,6 +144,20 @@ describe("protected app routes", () => {
     vi.clearAllMocks();
     mocks.getCurrentUserContext.mockResolvedValue(tenantContext);
     mocks.getAppShellSummary.mockResolvedValue(appSummary);
+    mocks.getTenantPersonProfile.mockResolvedValue(personProfile);
+    mocks.getTenantCompanyProfile.mockResolvedValue(companyProfile);
+    mocks.listTenantPeopleWithProfiles.mockResolvedValue([
+      {
+        ...personProfile,
+        companyAffiliations: [],
+      },
+    ]);
+    mocks.listTenantCompaniesWithProfiles.mockResolvedValue([
+      {
+        ...companyProfile,
+        companyAffiliations: [],
+      },
+    ]);
   });
 
   it.each(routes)("renders the %s route", async (heading, importPage) => {
@@ -97,5 +176,73 @@ describe("protected app routes", () => {
       Layout({ children: <div>Protected content</div> }),
     ).rejects.toThrow("redirect:/sign-in");
     expect(mocks.redirect).toHaveBeenCalledWith("/sign-in");
+  });
+
+  it.each([
+    ["Create person", () => import("@/app/(app)/people/new/page")],
+    [
+      "Companies",
+      () => import("@/app/(app)/people/companies/page"),
+    ],
+    [
+      "Create company",
+      () => import("@/app/(app)/people/companies/new/page"),
+    ],
+  ])("renders the %s people workflow route", async (heading, importPage) => {
+    await renderRoute(importPage);
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: heading }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the person detail route", async () => {
+    const Page = (await import("@/app/(app)/people/[personId]/page")).default;
+
+    render(await Page({ params: Promise.resolve({ personId: "person_test_1" }) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Anna Keller" }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the person edit route", async () => {
+    const Page = (await import("@/app/(app)/people/[personId]/edit/page"))
+      .default;
+
+    render(await Page({ params: Promise.resolve({ personId: "person_test_1" }) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Anna Keller" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Person form")).toBeInTheDocument();
+  });
+
+  it("renders the company detail route", async () => {
+    const Page = (await import("@/app/(app)/people/companies/[companyId]/page"))
+      .default;
+
+    render(
+      await Page({ params: Promise.resolve({ companyId: "company_test_1" }) }),
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Nordic Industrials" }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the company edit route", async () => {
+    const Page = (
+      await import("@/app/(app)/people/companies/[companyId]/edit/page")
+    ).default;
+
+    render(
+      await Page({ params: Promise.resolve({ companyId: "company_test_1" }) }),
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Nordic Industrials" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Company form")).toBeInTheDocument();
   });
 });

@@ -86,3 +86,21 @@ The Step 5 screens are mobile-first shell placeholders. They show read-only
 tenant-scoped summaries and design patterns only; they do not create records,
 record audio, transcribe, apply AI proposals, run semantic search, or match
 relationships.
+
+## People And Companies
+
+Step 6A adds the first record-management workflow:
+
+- `/people`
+- `/people/new`
+- `/people/[personId]`
+- `/people/[personId]/edit`
+- `/people/companies`
+- `/people/companies/new`
+- `/people/companies/[companyId]`
+- `/people/companies/[companyId]/edit`
+
+Use local development sign-in, then create people and companies from the mobile
+shell. Archive actions hide records from active lists without permanently
+deleting them. Affiliation management and LinkedIn URL storage are intentionally
+not included in Step 6A.

@@ -45,6 +45,13 @@ item records must not mutate target records, even when stored status values are
 raw audio is not required, and the default audio retention status is
 `NOT_STORED`.
 
+Step 6A people and company mutations use server actions that call
+`getCurrentUserContext()` and tenant-aware services. Client form submissions do
+not include trusted tenant ids. Cross-tenant detail reads return no record, and
+cross-tenant writes fail in the service layer. Person/company create, update,
+and archive operations write audit logs with minimal metadata only; full contact
+details, descriptions, and before/after payloads are not logged.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when
