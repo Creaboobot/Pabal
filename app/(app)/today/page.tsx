@@ -14,10 +14,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/states/empty-state";
 import {
+  CommitmentCard,
+  type CommitmentCardCommitment,
+} from "@/modules/commitments/components/commitment-card";
+import {
   TaskCard,
   type TaskCardTask,
 } from "@/modules/tasks/components/task-card";
 import { getAppShellSummary } from "@/server/services/app-shell-summary";
+import { getTenantCommitmentBoard } from "@/server/services/commitments";
 import { getCurrentUserContext } from "@/server/services/session";
 import { getTenantTaskBoard } from "@/server/services/tasks";
 
@@ -52,6 +57,35 @@ function TodayTaskSection({
   );
 }
 
+type TodayCommitmentSectionProps = {
+  commitments: CommitmentCardCommitment[];
+  description: string;
+  title: string;
+};
+
+function TodayCommitmentSection({
+  commitments,
+  description,
+  title,
+}: TodayCommitmentSectionProps) {
+  if (commitments.length === 0) {
+    return null;
+  }
+
+  return (
+    <CockpitCard title={title} value={commitments.length}>
+      <p className="mb-3 text-sm leading-6 text-muted-foreground">
+        {description}
+      </p>
+      <div className="grid gap-3">
+        {commitments.slice(0, 3).map((commitment) => (
+          <CommitmentCard commitment={commitment} key={commitment.id} />
+        ))}
+      </div>
+    </CockpitCard>
+  );
+}
+
 export default async function TodayPage() {
   const context = await getCurrentUserContext();
 
@@ -59,9 +93,10 @@ export default async function TodayPage() {
     redirect("/sign-in?callbackUrl=/today");
   }
 
-  const [summary, taskBoard] = await Promise.all([
+  const [summary, taskBoard, commitmentBoard] = await Promise.all([
     getAppShellSummary(context),
     getTenantTaskBoard(context),
+    getTenantCommitmentBoard(context),
   ]);
   const hasDailySignals =
     summary.action.openTasks > 0 ||
@@ -74,17 +109,31 @@ export default async function TodayPage() {
     taskBoard.dueToday.length > 0 ||
     taskBoard.upcoming.length > 0 ||
     taskBoard.recentlyCompleted.length > 0;
+  const hasCommitmentSections =
+    commitmentBoard.overdue.length > 0 ||
+    commitmentBoard.dueToday.length > 0 ||
+    commitmentBoard.upcoming.length > 0 ||
+    commitmentBoard.waiting.length > 0 ||
+    commitmentBoard.recentlyFulfilled.length > 0;
 
   return (
     <div className="space-y-6">
       <PageHeader
         actions={
-          <Button asChild>
-            <Link href="/tasks/new">
-              <Plus aria-hidden="true" className="mr-2 size-4" />
-              New task
-            </Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild>
+              <Link href="/tasks/new">
+                <Plus aria-hidden="true" className="mr-2 size-4" />
+                New task
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/commitments/new">
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                New commitment
+              </Link>
+            </Button>
+          </div>
         }
         description="A quiet command center for follow-ups, commitments, preparation cues, and relationship opportunities."
         eyebrow="Daily cockpit"
@@ -170,6 +219,55 @@ export default async function TodayPage() {
             description="Manual tasks due today, overdue, and upcoming will appear here."
             icon={ListChecks}
             title="No task attention needed"
+          />
+        </CockpitCard>
+      )}
+
+      {hasCommitmentSections ? (
+        <section
+          aria-label="Today commitment sections"
+          className="grid gap-3"
+        >
+          <TodayCommitmentSection
+            commitments={commitmentBoard.overdue}
+            description="Open commitments with due dates or windows before now."
+            title="Overdue commitments"
+          />
+          <TodayCommitmentSection
+            commitments={commitmentBoard.dueToday}
+            description="Manual commitments due before the day ends."
+            title="Due today commitments"
+          />
+          <TodayCommitmentSection
+            commitments={commitmentBoard.upcoming}
+            description="Future promises and obligations with due dates."
+            title="Upcoming commitments"
+          />
+          <TodayCommitmentSection
+            commitments={commitmentBoard.waiting}
+            description="Commitments waiting on another person or organisation."
+            title="Waiting commitments"
+          />
+          <TodayCommitmentSection
+            commitments={commitmentBoard.recentlyFulfilled}
+            description="Recently fulfilled commitments for quick review."
+            title="Recently fulfilled"
+          />
+        </section>
+      ) : (
+        <CockpitCard title="Commitment ledger">
+          <EmptyState
+            action={
+              <Button asChild>
+                <Link href="/commitments/new">
+                  <Handshake aria-hidden="true" className="mr-2 size-4" />
+                  Create commitment
+                </Link>
+              </Button>
+            }
+            description="Manual commitments due today, overdue, and upcoming will appear here."
+            icon={Handshake}
+            title="No commitment attention needed"
           />
         </CockpitCard>
       )}

@@ -74,11 +74,12 @@ adds basic affiliation management and read-only related meeting/note summaries.
 Step 7A adds manual meeting records, meeting participants, source metadata, and
 audit-logged archive/remove actions. Step 7B adds manual note workflows and
 pasted Teams/Copilot meeting-note capture as user-provided text only. Step 8A
-adds manual follow-up task workflows and Today task sections. It does not
-implement LinkedIn URL storage, AI provider calls, proposal application,
-transcription, audio recording/upload, billing, Microsoft Graph, LinkedIn
-enrichment, production search, matching, notifications, reminders, background
-jobs, commitment-ledger workflows, or production deployment.
+adds manual follow-up task workflows and Today task sections. Step 8B adds the
+manual commitment ledger and Today commitment sections. It does not implement
+LinkedIn URL storage, AI provider calls, proposal application, transcription,
+audio recording/upload, billing, Microsoft Graph, LinkedIn enrichment,
+production search, matching, notifications, reminders, background jobs,
+automatic task creation, or production deployment.
 
 ### Requirements
 
@@ -109,8 +110,9 @@ Edit `.env.local` before starting the app:
 The app runs at `http://localhost:3000`. Development sign-in is available at
 `/sign-in` only when `ENABLE_DEV_AUTH=true` and `NODE_ENV` is not production.
 Signed-in users land on `/today`; unauthenticated access to `/today`,
-`/capture`, `/meetings`, `/notes`, `/tasks`, `/people`, `/opportunities`,
-`/search`, `/account`, and `/settings` redirects to `/sign-in`.
+`/capture`, `/commitments`, `/meetings`, `/notes`, `/tasks`, `/people`,
+`/opportunities`, `/search`, `/account`, and `/settings` redirects to
+`/sign-in`.
 
 ### App shell routes
 
@@ -186,6 +188,22 @@ meetings, and notes are convenience hints only; server actions validate all
 linked records inside the active workspace. Step 8A does not add reminders,
 notifications, background jobs, automatic extraction, AI recommendations, or
 the commitment-ledger UI.
+
+Manual commitments are available under `/commitments`:
+
+- `/commitments` for the commitment ledger grouped by overdue, due today,
+  upcoming, waiting, open without due date, and recently fulfilled.
+- `/commitments/new` for manual commitment creation.
+- `/commitments/[commitmentId]` for commitment detail and fulfil/cancel/archive
+  actions.
+- `/commitments/[commitmentId]/edit` for commitment edits.
+
+Commitments can link to existing people, companies, meetings, and notes. Linked
+tasks are shown read-only when an existing task references a commitment.
+Contextual links from people, companies, meetings, and notes preselect fields
+only; server actions validate all linked records inside the active workspace.
+Step 8B does not create tasks automatically, send reminders, run background
+jobs, parse notes, extract commitments, or call AI providers.
 
 ### Useful commands
 

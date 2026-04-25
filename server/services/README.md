@@ -46,3 +46,11 @@ create/update/complete/reopen/archive lifecycle changes, write safe audit logs,
 and derive Today task sections from `dueAt` at read time. They do not send
 reminders, run background jobs, create tasks automatically, call AI providers,
 or implement the commitment-ledger workflow.
+
+Commitment services validate tenant-owned owner/counterparty people and
+companies plus meeting/note links before mutating records. They own manual
+commitment create/update/fulfil/cancel/archive lifecycle changes, write safe
+audit logs, and derive Today commitment sections from `dueAt` or due-window
+boundaries at read time. They do not create tasks automatically, send
+reminders, run background jobs, parse notes, extract commitments, or call AI
+providers.
