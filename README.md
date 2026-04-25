@@ -63,8 +63,11 @@ If uploading this pack manually through GitHub, upload the full folder contents 
 This repository contains the foundation scaffold plus the Step 3 SaaS
 foundation: Auth.js-compatible authentication wiring, tenants/workspaces,
 memberships, roles, protected route shells, and audit logging baseline. It does
-not implement product records, AI workflows, billing, Microsoft Graph, LinkedIn
-enrichment, voice capture, or production deployment.
+It also includes the Step 4A relationship backbone database models and
+server-side skeletons for people, companies, affiliations, meetings, notes, and
+source references. It does not implement full CRUD screens, action/intelligence
+models, AI workflows, billing, Microsoft Graph, LinkedIn enrichment, voice
+capture, or production deployment.
 
 ### Requirements
 
@@ -114,6 +117,9 @@ pnpm prisma:migrate
 pnpm prisma:deploy
 pnpm prisma:seed
 ```
+
+Optional deterministic demo relationship data can be seeded by setting
+`SEED_DEMO_DATA=true` before `pnpm prisma:seed`.
 
 ### Docker Compose
 

@@ -11,9 +11,19 @@ Foundation rules:
 - Keep Next.js middleware limited to coarse authentication checks.
 - Enforce tenant and role checks in server-side services, route handlers, or
   server actions.
-- Future tenant-owned data models must go through tenant-aware repositories.
+- Tenant-owned data models must go through tenant-aware repositories and
+  services.
+- Use composite tenant-aware foreign keys where practical so cross-tenant links
+  fail at the database layer as well as the service layer.
 - Sensitive operations must be audit-logged.
 - Health and readiness endpoints must return status only, never secret values.
+
+## Relationship data
+
+Step 4A relationship backbone records all include `tenantId`. Person email is
+optional and not globally unique. Company name is not unique. `SourceReference`
+is polymorphic, so the source-reference service validates both source and target
+tenant ownership before inserting.
 
 ## Development auth
 

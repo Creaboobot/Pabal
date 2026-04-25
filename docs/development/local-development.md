@@ -50,3 +50,17 @@ Apply the current schema and seed the foundation roles:
 pnpm prisma:deploy
 pnpm prisma:seed
 ```
+
+To also seed the small deterministic Step 4A relationship demo dataset, set:
+
+```bash
+SEED_DEMO_DATA=true
+pnpm prisma:seed
+```
+
+PowerShell:
+
+```powershell
+$env:SEED_DEMO_DATA = "true"
+pnpm prisma:seed
+```
