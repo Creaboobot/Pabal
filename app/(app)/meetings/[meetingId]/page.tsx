@@ -21,6 +21,7 @@ import { MeetingActionButton } from "@/modules/meetings/components/meeting-actio
 import { ParticipantCard } from "@/modules/meetings/components/participant-card";
 import { SourceBadge } from "@/modules/meetings/components/source-badge";
 import { formatMeetingDateTime } from "@/modules/meetings/labels";
+import { NoteCard } from "@/modules/notes/components/note-card";
 import { getTenantMeetingProfile } from "@/server/services/meetings";
 import { getCurrentUserContext } from "@/server/services/session";
 
@@ -117,15 +118,18 @@ export default async function MeetingDetailPage({
           </div>
         </CockpitCard>
 
-        <CockpitCard title="Source and notes">
-          <div className="grid gap-3">
-            <p className="text-sm leading-6 text-muted-foreground">
-              The meeting keeps a clear source label and read-only note count.
-            </p>
+        <CockpitCard title="Source and notes" value={meeting._count.notes}>
+          <div className="grid gap-3 text-sm leading-6 text-muted-foreground">
             <div className="flex flex-wrap gap-2">
               <SourceBadge sourceType={meeting.sourceType} />
               <Badge variant="outline">{meeting._count.notes} note links</Badge>
             </div>
+            <Button asChild size="sm">
+              <Link href={`/meetings/${meeting.id}/notes/new`}>
+                <Plus aria-hidden="true" className="mr-2 size-4" />
+                Add note
+              </Link>
+            </Button>
           </div>
         </CockpitCard>
       </section>
@@ -137,6 +141,30 @@ export default async function MeetingDetailPage({
           </p>
         </CockpitCard>
       ) : null}
+
+      <CockpitCard title="Linked notes" value={meeting.notes.length}>
+        {meeting.notes.length > 0 ? (
+          <div className="grid gap-3">
+            {meeting.notes.map((note) => (
+              <NoteCard key={note.id} note={note} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            action={
+              <Button asChild>
+                <Link href={`/meetings/${meeting.id}/notes/new`}>
+                  <Plus aria-hidden="true" className="mr-2 size-4" />
+                  Add note
+                </Link>
+              </Button>
+            }
+            description="Add manual notes to preserve the source context for this meeting."
+            icon={FileText}
+            title="No linked notes"
+          />
+        )}
+      </CockpitCard>
 
       <CockpitCard title="Participants" value={meeting.participants.length}>
         {meeting.participants.length > 0 ? (

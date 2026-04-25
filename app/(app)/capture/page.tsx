@@ -4,6 +4,7 @@ import {
   ClipboardPenLine,
   Mic,
   NotebookPen,
+  ClipboardPaste,
   UserPlus,
   type LucideIcon,
 } from "lucide-react";
@@ -27,21 +28,30 @@ type CaptureSurface = {
 
 const captureSurfaces: CaptureSurface[] = [
   {
-    title: "Meeting note",
+    title: "Meeting",
     description: "Create a meeting record for manual relationship context.",
     href: "/meetings/new",
     actionLabel: "Create meeting",
     icon: NotebookPen,
   },
   {
+    title: "Pasted meeting note",
+    description: "Store user-provided Teams/Copilot notes as source context.",
+    href: "/capture/meeting",
+    actionLabel: "Paste notes",
+    icon: ClipboardPaste,
+  },
+  {
+    title: "General note",
+    description: "Write a manual note and link it to known context.",
+    href: "/notes/new",
+    actionLabel: "Create note",
+    icon: ClipboardPenLine,
+  },
+  {
     title: "Voice note",
     description: "Transcript-ready space without recorder or upload controls.",
     icon: Mic,
-  },
-  {
-    title: "Follow-up thought",
-    description: "Fast capture surface for task and commitment context.",
-    icon: ClipboardPenLine,
   },
   {
     title: "Relationship lead",

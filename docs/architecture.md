@@ -28,9 +28,10 @@ database session duplication. Standard Auth.js Prisma models are still present
 for user/account persistence and future OAuth compatibility.
 
 Next.js middleware performs only coarse authentication checks for protected
-route groups such as `/today`, `/capture`, `/meetings`, `/people`,
-`/opportunities`, `/search`, `/account`, and `/settings`. Tenant membership and role checks are
-enforced in server-side services and repositories, not middleware.
+route groups such as `/today`, `/capture`, `/meetings`, `/notes`, `/people`,
+`/opportunities`, `/search`, `/account`, and `/settings`. Tenant membership
+and role checks are enforced in server-side services and repositories, not
+middleware.
 
 ## Mobile app shell
 
@@ -100,9 +101,23 @@ Participant creation validates the meeting, person, and company against the
 active tenant. Participant removal hard-deletes only the
 `MeetingParticipant` association after writing an audit log.
 
-The `/capture` page links to `/meetings/new`. It does not introduce
-`/capture/meeting`, note routes, Teams import, Microsoft Graph, AI extraction,
-summarisation, or automated proposal generation.
+Step 7B adds manual note workflows and pasted meeting-note capture:
+
+- `/notes/new`
+- `/notes/[noteId]`
+- `/notes/[noteId]/edit`
+- `/meetings/[meetingId]/notes/new`
+- `/capture/meeting`
+
+Note and capture server actions validate input with Zod, call
+`getCurrentUserContext()`, and delegate to tenant-aware services. Pasted capture
+creates one meeting, one linked note, optional manually selected known-person
+participants, and a `NOTE -> MEETING` source reference in a transaction.
+
+This step stores user-provided pasted Teams/Copilot text only. It does not add
+Teams import, Microsoft Graph, AI extraction, summarisation, task extraction,
+commitment extraction, proposal generation, voice capture, transcription,
+semantic search, or matching.
 
 ## Relationship backbone boundary
 

@@ -13,10 +13,12 @@ const meetingSelect = {
 } satisfies Prisma.MeetingSelect;
 
 const noteSelect = {
+  body: true,
   createdAt: true,
   id: true,
   noteType: true,
   sensitivity: true,
+  sourceType: true,
   summary: true,
 } satisfies Prisma.NoteSelect;
 

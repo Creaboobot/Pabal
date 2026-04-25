@@ -69,6 +69,16 @@ flows, participant add/remove, duplicate known-person participant rejection,
 cross-tenant meeting and participant failures, source defaults, and audit log
 safety without storing meeting summaries or participant contact snapshots.
 
+The Step 7B tests cover note validation, route smoke rendering for
+`/notes/new`, `/notes/[noteId]`, `/notes/[noteId]/edit`,
+`/meetings/[meetingId]/notes/new`, and `/capture/meeting`, note
+create/update/archive service flows, direct note links to meetings, people, and
+companies, cross-tenant note read/write/link failures, pasted capture creating
+exactly one meeting and one linked note, `TEAMS_COPILOT_PASTE` source metadata,
+`NOTE -> MEETING` source references, proof that pasted capture does not create
+AI proposals, tasks, commitments, needs, or capabilities, and audit safety
+without pasted text or note bodies.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

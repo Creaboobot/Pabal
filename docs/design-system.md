@@ -68,4 +68,17 @@ Step 7A extends the patterns for meetings:
 
 Meeting screens should preserve bottom-nav spacing, keep archive/remove
 confirmations inline, and avoid implying that AI extraction, transcription,
-Teams import, or note workflows exist.
+Teams import, or automated note import exists.
+
+Step 7B extends the same mobile-first patterns for notes and pasted capture:
+
+- full-page note and pasted-capture forms;
+- large textareas for manual notes and pasted Teams/Copilot text;
+- compact note cards with source, type, and sensitivity badges;
+- inline archive confirmation for notes;
+- linked-note sections on meeting detail;
+- short note previews on person/company related context.
+
+Note and pasted-capture screens should make source and sensitivity visible while
+avoiding wide tables, AI-processing affordances, voice controls, import
+controls, or autonomous extraction language.

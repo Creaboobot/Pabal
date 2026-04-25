@@ -1,8 +1,10 @@
 import { CalendarDays, FileText } from "lucide-react";
+import Link from "next/link";
+import type { NoteType, RecordSourceType, Sensitivity } from "@prisma/client";
 
 import { CockpitCard } from "@/components/cards/cockpit-card";
 import { EmptyState } from "@/components/states/empty-state";
-import { Badge } from "@/components/ui/badge";
+import { NoteCard } from "@/modules/notes/components/note-card";
 
 type MeetingSummary = {
   id: string;
@@ -13,10 +15,12 @@ type MeetingSummary = {
 };
 
 type NoteSummary = {
+  body: string;
   createdAt: Date;
   id: string;
-  noteType: string;
-  sensitivity: string;
+  noteType: NoteType;
+  sensitivity: Sensitivity;
+  sourceType: RecordSourceType;
   summary: string | null;
 };
 
@@ -31,18 +35,6 @@ function formatDate(date: Date | null) {
         dateStyle: "medium",
       }).format(date)
     : "No date";
-}
-
-function label(value: string) {
-  return value
-    .toLowerCase()
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
-
-function sensitivityVariant(sensitivity: string): "outline" | "sensitive" {
-  return sensitivity === "NORMAL" ? "outline" : "sensitive";
 }
 
 export function RelatedContextSummary({
@@ -65,9 +57,12 @@ export function RelatedContextSummary({
                     className="mt-0.5 size-5 text-primary"
                   />
                   <div className="min-w-0">
-                    <h2 className="font-semibold text-foreground">
+                    <Link
+                      className="rounded-sm font-semibold text-foreground outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+                      href={`/meetings/${meeting.id}`}
+                    >
                       {meeting.title}
-                    </h2>
+                    </Link>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {formatDate(meeting.occurredAt)}
                       {meeting.location ? ` at ${meeting.location}` : ""}
@@ -84,7 +79,7 @@ export function RelatedContextSummary({
           </div>
         ) : (
           <EmptyState
-            description="Meeting capture arrives later; this section will surface tenant-scoped meeting history when it exists."
+            description="Related meetings will appear here when this record has tenant-scoped meeting history."
             icon={CalendarDays}
             title="No related meetings"
           />
@@ -95,38 +90,12 @@ export function RelatedContextSummary({
         {notes.length > 0 ? (
           <div className="grid gap-3">
             {notes.map((note) => (
-              <article
-                className="rounded-md border border-border bg-background p-3"
-                key={note.id}
-              >
-                <div className="flex items-start gap-3">
-                  <FileText
-                    aria-hidden="true"
-                    className="mt-0.5 size-5 text-primary"
-                  />
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="font-semibold text-foreground">
-                        {label(note.noteType)}
-                      </h2>
-                      <Badge variant={sensitivityVariant(note.sensitivity)}>
-                        {label(note.sensitivity)}
-                      </Badge>
-                    </div>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {formatDate(note.createdAt)}
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                      {note.summary ?? "No summary yet."}
-                    </p>
-                  </div>
-                </div>
-              </article>
+              <NoteCard key={note.id} note={note} />
             ))}
           </div>
         ) : (
           <EmptyState
-            description="Notes remain read-only here until the meeting and capture workflows are built."
+            description="Linked notes will appear here when this record has manually captured context."
             icon={FileText}
             title="No related notes"
           />

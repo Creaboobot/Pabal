@@ -11,9 +11,9 @@ Foundation rules:
 - Keep Next.js middleware limited to coarse authentication checks.
 - Enforce tenant and role checks in server-side services, route handlers, or
   server actions.
-- Protected app shell routes are `/today`, `/capture`, `/meetings`, `/people`,
-  `/opportunities`, `/search`, `/account`, and `/settings`; middleware protects
-  those route groups without database tenant/RBAC logic.
+- Protected app shell routes are `/today`, `/capture`, `/meetings`, `/notes`,
+  `/people`, `/opportunities`, `/search`, `/account`, and `/settings`;
+  middleware protects those route groups without database tenant/RBAC logic.
 - Tenant-owned data models must go through tenant-aware repositories and
   services.
 - Use composite tenant-aware foreign keys where practical so cross-tenant links
@@ -74,6 +74,19 @@ association row.
 Meeting audit metadata must not include full summaries, pasted note text, raw
 form payloads, participant email/name snapshots, cookies, tokens, environment
 values, or secrets.
+
+Step 7B note and pasted-capture mutations use the same service boundary. Note
+reads and writes filter by explicit tenant context, and linked person, company,
+and meeting ids are validated in server services. Pasted capture validates
+manually selected participants and primary company against the active tenant,
+creates the meeting/note/source-reference records in one transaction, and does
+not invoke AI, Microsoft, Teams, transcription, search, or matching services.
+
+Note and capture audit metadata may include ids, source type, note type,
+sensitivity, changed field names, participant count, `hasSummary`, and
+`bodyLength`. It must not include note bodies, pasted Teams/Copilot text, full
+meeting summaries, full note summaries, raw form payloads, contact snapshots,
+cookies, tokens, headers, environment values, or secrets.
 
 ## Development auth
 

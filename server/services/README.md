@@ -33,3 +33,9 @@ archiving an affiliation clears its primary flag and writes a minimal audit log.
 Meeting services validate tenant-owned meeting, person, and company links before
 mutating records. Participant removal writes `meeting_participant.removed` and
 then hard-deletes only the `MeetingParticipant` association.
+
+Note services validate tenant-owned person, company, and meeting links before
+mutating records. Pasted-capture services create the meeting, linked note,
+optional manually selected participants, source reference, and safe audit logs
+in one transaction. They do not parse pasted text, call AI providers, create
+proposals, or extract tasks/commitments/needs/capabilities.

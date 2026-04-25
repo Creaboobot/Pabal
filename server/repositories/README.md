@@ -10,6 +10,8 @@ introduction suggestions, Step 4B-2 repositories for AI proposal and voice note
 readiness, and Step 6B tenant-scoped affiliation and related-context read
 methods. Step 7A adds meeting summary/profile queries, meeting updates, and
 participant lookup/delete helpers used by tenant-aware meeting services.
+Step 7B adds note profile/update helpers, meeting-linked note summaries, and
+source-reference source lookups used by note detail and pasted-capture flows.
 
 Repositories for billing, integrations, search, actual voice capture,
 transcription, notifications, background jobs, embeddings, and provider-backed
