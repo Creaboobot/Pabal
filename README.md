@@ -66,10 +66,12 @@ memberships, roles, protected route shells, and audit logging baseline. It also
 includes the Step 4A relationship backbone models and the Step 4B-1
 action/intelligence-readiness models for tasks, commitments, needs,
 capabilities, and introduction suggestions. It also includes Step 4B-2
-schema/readiness models for AI proposals and voice notes. It does not implement
-full CRUD screens, AI provider calls, proposal application, transcription,
-audio recording/upload, billing, Microsoft Graph, LinkedIn enrichment, or
-production deployment.
+schema/readiness models for AI proposals and voice notes. Step 5 adds the
+mobile-first authenticated app shell and read-only route placeholders for
+Today, Capture, People, Opportunities, and Search. It does not implement full
+CRUD screens, AI provider calls, proposal application, transcription, audio
+recording/upload, billing, Microsoft Graph, LinkedIn enrichment, production
+search, matching, notifications, or production deployment.
 
 ### Requirements
 
@@ -99,6 +101,23 @@ Edit `.env.local` before starting the app:
 
 The app runs at `http://localhost:3000`. Development sign-in is available at
 `/sign-in` only when `ENABLE_DEV_AUTH=true` and `NODE_ENV` is not production.
+Signed-in users land on `/today`; unauthenticated access to `/today`,
+`/capture`, `/people`, `/opportunities`, `/search`, `/account`, and
+`/settings` redirects to `/sign-in`.
+
+### App shell routes
+
+The primary mobile navigation is:
+
+- `/today`
+- `/capture`
+- `/people`
+- `/opportunities`
+- `/search`
+
+These screens are shell/design-system placeholders with read-only summaries
+from existing tenant-scoped records. They do not create, update, approve,
+record, transcribe, search semantically, or match records.
 
 ### Useful commands
 
@@ -161,3 +180,4 @@ docker compose run --rm seed
 - [Local development](docs/development/local-development.md)
 - [Quality gates](docs/development/quality-gates.md)
 - [Auth and tenancy](docs/development/auth-and-tenancy.md)
+- [Design system](docs/design-system.md)

@@ -11,6 +11,9 @@ Foundation rules:
 - Keep Next.js middleware limited to coarse authentication checks.
 - Enforce tenant and role checks in server-side services, route handlers, or
   server actions.
+- Protected app shell routes are `/today`, `/capture`, `/people`,
+  `/opportunities`, `/search`, `/account`, and `/settings`; middleware protects
+  those route groups without database tenant/RBAC logic.
 - Tenant-owned data models must go through tenant-aware repositories and
   services.
 - Use composite tenant-aware foreign keys where practical so cross-tenant links

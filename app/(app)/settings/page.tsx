@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 
+import { PageHeader } from "@/components/app/page-header";
+import { CockpitCard } from "@/components/cards/cockpit-card";
 import { Button } from "@/components/ui/button";
 import { getCurrentUserContext } from "@/server/services/session";
 
@@ -15,27 +17,27 @@ export default async function SettingsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-5 py-6">
-      <section className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-        <Button asChild className="w-fit" variant="ghost">
-          <Link href="/account">
-            <ArrowLeft aria-hidden="true" className="mr-2 size-4" />
-            Account
-          </Link>
-        </Button>
+    <div className="space-y-6">
+      <PageHeader
+        actions={
+          <Button asChild variant="ghost">
+            <Link href="/account">
+              <ArrowLeft aria-hidden="true" className="mr-2 size-4" />
+              Account
+            </Link>
+          </Button>
+        }
+        description="Foundation settings surface for workspace and security context."
+        eyebrow="Settings"
+        title="Workspace settings"
+      />
 
-        <header>
-          <p className="text-sm font-medium uppercase text-accent">Settings</p>
-          <h1 className="mt-1 text-3xl font-semibold text-foreground">
-            Foundation settings
-          </h1>
-        </header>
-
-        <div className="rounded-lg border border-border bg-white p-4 shadow-sm">
-          <span className="flex size-10 items-center justify-center rounded-md bg-primary text-primary-foreground">
+      <CockpitCard title="Security boundary">
+        <div className="flex gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <ShieldCheck aria-hidden="true" className="size-5" />
           </span>
-          <dl className="mt-4 grid gap-3 text-sm">
+          <dl className="grid gap-3 text-sm">
             <div>
               <dt className="text-muted-foreground">Workspace</dt>
               <dd className="mt-1 font-medium text-foreground">
@@ -50,7 +52,7 @@ export default async function SettingsPage() {
             </div>
           </dl>
         </div>
-      </section>
-    </main>
+      </CockpitCard>
+    </div>
   );
 }

@@ -10,6 +10,9 @@ export default defineConfig({
   },
   webServer: {
     command: "corepack pnpm dev",
+    env: {
+      AUTH_SECRET: "playwright-local-smoke-test-secret",
+    },
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

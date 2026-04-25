@@ -1,0 +1,87 @@
+import { redirect } from "next/navigation";
+import { ClipboardPenLine, Mic, NotebookPen, UserPlus } from "lucide-react";
+
+import { PageHeader } from "@/components/app/page-header";
+import { CockpitCard } from "@/components/cards/cockpit-card";
+import { Badge } from "@/components/ui/badge";
+import { getAppShellSummary } from "@/server/services/app-shell-summary";
+import { getCurrentUserContext } from "@/server/services/session";
+
+export const dynamic = "force-dynamic";
+
+const captureSurfaces = [
+  {
+    title: "Meeting note",
+    description: "Paste or write notes before they become structured memory.",
+    icon: NotebookPen,
+  },
+  {
+    title: "Voice note",
+    description: "Transcript-ready space without recorder or upload controls.",
+    icon: Mic,
+  },
+  {
+    title: "Follow-up thought",
+    description: "Fast capture surface for task and commitment context.",
+    icon: ClipboardPenLine,
+  },
+  {
+    title: "Relationship lead",
+    description: "Person and company context held as a read-only placeholder.",
+    icon: UserPlus,
+  },
+];
+
+export default async function CapturePage() {
+  const context = await getCurrentUserContext();
+
+  if (!context) {
+    redirect("/sign-in?callbackUrl=/capture");
+  }
+
+  const summary = await getAppShellSummary(context);
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        description="A capture hub for the moments between meetings, kept read-only in this shell."
+        eyebrow="Quick memory"
+        title="Capture"
+      />
+
+      <section
+        aria-label="Capture surfaces"
+        className="grid gap-3 sm:grid-cols-2"
+      >
+        {captureSurfaces.map((surface) => {
+          const Icon = surface.icon;
+
+          return (
+            <CockpitCard key={surface.title} title={surface.title}>
+              <div className="flex gap-3">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-primary">
+                  <Icon aria-hidden="true" className="size-5" />
+                </span>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {surface.description}
+                </p>
+              </div>
+            </CockpitCard>
+          );
+        })}
+      </section>
+
+      <CockpitCard title="Current capture memory">
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="secondary">{summary.capture.notes} notes</Badge>
+          <Badge variant="secondary">
+            {summary.capture.voiceNotes} voice notes
+          </Badge>
+          <Badge variant="outline">
+            {summary.capture.pendingProposals} proposals pending
+          </Badge>
+        </div>
+      </CockpitCard>
+    </div>
+  );
+}

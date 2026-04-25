@@ -28,8 +28,29 @@ database session duplication. Standard Auth.js Prisma models are still present
 for user/account persistence and future OAuth compatibility.
 
 Next.js middleware performs only coarse authentication checks for protected
-route groups such as `/account` and `/settings`. Tenant membership and role
-checks are enforced in server-side services and repositories, not middleware.
+route groups such as `/today`, `/capture`, `/people`, `/opportunities`,
+`/search`, `/account`, and `/settings`. Tenant membership and role checks are
+enforced in server-side services and repositories, not middleware.
+
+## Mobile app shell
+
+Step 5 adds the protected `(app)` route group for the authenticated app shell.
+Signed-in users are sent from `/` to `/today`; unauthenticated users are sent to
+`/sign-in`. The shell uses a mobile bottom navigation as the primary UX and a
+desktop sidebar fallback on larger screens.
+
+Primary navigation:
+
+- Today
+- Capture
+- People
+- Opportunities
+- Search
+
+The current screens are read-only placeholders that surface tenant-scoped
+counts and design patterns. They do not implement CRUD, capture workflows,
+proposal approval, voice recording, semantic search, matching, notifications,
+or external provider calls.
 
 ## Relationship backbone boundary
 
@@ -49,7 +70,7 @@ voice note readiness. Direct source/context links use composite tenant-aware
 relations where practical. Polymorphic proposal targets and voice mention
 resolutions are validated in services before persistence.
 
-This stage intentionally contains no product UI workflows, AI proposals, voice
-recording, transcription, proposal application engine, matching algorithm,
-notifications, background jobs, billing, Microsoft Graph sync, LinkedIn
-enrichment, search, embeddings, or provider calls.
+This stage intentionally contains no product UI workflows, AI proposal
+generation, voice recording, transcription, proposal application engine,
+matching algorithm, notifications, background jobs, billing, Microsoft Graph
+sync, LinkedIn enrichment, semantic search, embeddings, or provider calls.
