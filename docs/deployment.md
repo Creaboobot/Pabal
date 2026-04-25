@@ -4,7 +4,10 @@ This scaffold supports local and container-oriented development.
 
 ## Local
 
-Use `pnpm dev` for local development after copying `.env.example` to `.env`.
+Use `pnpm dev` for local development after copying `.env.example` to
+`.env.local`, setting `AUTH_SECRET`, enabling `ENABLE_DEV_AUTH=true` only when
+local development sign-in is needed, starting PostgreSQL, and applying
+migrations.
 
 ## Docker
 
@@ -22,3 +25,7 @@ docker compose run --rm seed
 The production image runs the Next.js production server and must not bake
 secrets into the image. The image includes a container health check against
 `/api/health`.
+
+Runtime environments must provide `DATABASE_URL` and `AUTH_SECRET` for
+readiness. Missing values make `/api/ready` return `503` without exposing the
+values.

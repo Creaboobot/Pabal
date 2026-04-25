@@ -18,7 +18,18 @@ pnpm test:e2e
 pnpm audit:prod
 ```
 
-CI runs lint, typecheck, Vitest, Prisma validation, production build, and Docker
-build. CI also validates the Docker Compose file and boots the PostgreSQL service
-until its health check passes. Playwright is configured but not run in CI until
-browser installation and app startup requirements are expanded deliberately.
+Integration tests that touch tenancy use PostgreSQL through `DATABASE_URL`.
+Locally, start PostgreSQL and apply migrations first:
+
+```bash
+docker compose up -d postgres
+pnpm prisma:deploy
+pnpm prisma:seed
+pnpm test:integration
+```
+
+CI runs Prisma generation, validation, migrations, seed, lint, typecheck,
+Vitest, production build, Docker build, Docker Compose config, and Docker
+Compose PostgreSQL health verification. Playwright is configured but not run in
+CI until browser installation and app startup requirements are expanded
+deliberately.

@@ -23,6 +23,7 @@ services:
         condition: service_healthy
     environment:
       APP_URL: http://localhost:3000
+      AUTH_SECRET: ${AUTH_SECRET:-local-compose-auth-secret-change-me}
       DATABASE_URL: postgresql://pobal:pobal@postgres:5432/pobal?schema=public
       NEXT_TELEMETRY_DISABLED: "1"
       NODE_ENV: production

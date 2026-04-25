@@ -60,9 +60,11 @@ If uploading this pack manually through GitHub, upload the full folder contents 
 
 ## Local development
 
-This repository now contains the initial foundation scaffold only. It does not
-implement authentication, tenancy, product records, AI workflows, billing,
-Microsoft Graph, LinkedIn enrichment, or production deployment.
+This repository contains the foundation scaffold plus the Step 3 SaaS
+foundation: Auth.js-compatible authentication wiring, tenants/workspaces,
+memberships, roles, protected route shells, and audit logging baseline. It does
+not implement product records, AI workflows, billing, Microsoft Graph, LinkedIn
+enrichment, voice capture, or production deployment.
 
 ### Requirements
 
@@ -75,11 +77,23 @@ Microsoft Graph, LinkedIn enrichment, or production deployment.
 ```bash
 pnpm install
 Copy-Item .env.example .env.local
+docker compose up -d postgres
+pnpm prisma:generate
+pnpm prisma:deploy
+pnpm prisma:seed
 pnpm prisma:validate
 pnpm dev
 ```
 
-The app runs at `http://localhost:3000`.
+Edit `.env.local` before starting the app:
+
+- set `AUTH_SECRET` to a local random value;
+- for example, run `pnpm exec auth secret` after dependencies are installed;
+- set `ENABLE_DEV_AUTH=true` only for local development sign-in;
+- keep Microsoft Entra variables blank until OAuth is intentionally configured.
+
+The app runs at `http://localhost:3000`. Development sign-in is available at
+`/sign-in` only when `ENABLE_DEV_AUTH=true` and `NODE_ENV` is not production.
 
 ### Useful commands
 
@@ -94,6 +108,7 @@ pnpm test:unit
 pnpm test:integration
 pnpm test:e2e
 pnpm audit:prod
+pnpm prisma:generate
 pnpm prisma:validate
 pnpm prisma:migrate
 pnpm prisma:deploy
@@ -128,9 +143,10 @@ docker compose run --rm seed
 
 - `GET /api/health` returns a basic service health payload.
 - `GET /api/ready` validates runtime readiness and returns `503` when required
-  runtime values such as `DATABASE_URL` are missing.
+  runtime values such as `DATABASE_URL` or `AUTH_SECRET` are missing.
 
 ### Developer docs
 
 - [Local development](docs/development/local-development.md)
 - [Quality gates](docs/development/quality-gates.md)
+- [Auth and tenancy](docs/development/auth-and-tenancy.md)

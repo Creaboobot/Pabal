@@ -13,6 +13,7 @@ RUN if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; else pnpm ins
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN pnpm prisma:generate
 RUN pnpm build
 RUN pnpm prune --prod
 

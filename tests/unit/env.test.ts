@@ -13,6 +13,7 @@ describe("runtime environment validation", () => {
 
   it("marks readiness unavailable when DATABASE_URL is missing", () => {
     const readiness = getReadinessStatus({
+      AUTH_SECRET: "test-auth-secret",
       NODE_ENV: "production",
     });
 
@@ -41,6 +42,7 @@ describe("runtime environment validation", () => {
 
   it("marks readiness available with a database URL", () => {
     const readiness = getReadinessStatus({
+      AUTH_SECRET: "test-auth-secret",
       DATABASE_URL:
         "postgresql://pobal:pobal@localhost:5432/pobal?schema=public",
       NODE_ENV: "production",
