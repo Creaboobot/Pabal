@@ -3,6 +3,7 @@
 Application services will live here and will orchestrate modules, repositories,
 and provider interfaces.
 
-This stage includes foundational auth, tenant, role, session, audit, and Step 4A
-relationship backbone services. Product workflows are intentionally not
-implemented in this PR.
+This stage includes foundational auth, tenant, role, session, audit, Step 4A
+relationship backbone services, and Step 4B-1 action/intelligence-readiness
+services. Product workflows, matching algorithms, AI execution, and voice
+processing are intentionally not implemented yet.

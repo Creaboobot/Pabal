@@ -25,6 +25,11 @@ optional and not globally unique. Company name is not unique. `SourceReference`
 is polymorphic, so the source-reference service validates both source and target
 tenant ownership before inserting.
 
+Step 4B-1 action and intelligence-readiness records also include `tenantId`.
+Direct links among tasks, commitments, needs, capabilities, introduction
+suggestions, and Step 4A records use composite tenant-aware foreign keys where
+practical. `SourceReference` validation now includes Step 4B-1 entity types.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

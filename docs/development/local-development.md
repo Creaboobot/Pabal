@@ -51,7 +51,8 @@ pnpm prisma:deploy
 pnpm prisma:seed
 ```
 
-To also seed the small deterministic Step 4A relationship demo dataset, set:
+To also seed the small deterministic Step 4A relationship demo dataset and the
+Step 4B-1 action/intelligence-readiness demo records, set:
 
 ```bash
 SEED_DEMO_DATA=true
