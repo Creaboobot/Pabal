@@ -1,9 +1,17 @@
 import { expect, test } from "@playwright/test";
 
-test("loads the foundation shell on mobile", async ({ page }) => {
+test("redirects unauthenticated visitors to sign-in", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Pobal" })).toBeVisible();
-  await expect(page.getByText("Foundation", { exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(
+    page.getByRole("heading", { name: "Sign in to Pobal" }),
+  ).toBeVisible();
+});
+
+test("protects the mobile app shell routes", async ({ page }) => {
+  await page.goto("/today");
+  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/callbackUrl=%2Ftoday/);
 });
 
 test("health endpoint responds", async ({ request }) => {

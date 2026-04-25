@@ -20,5 +20,13 @@ export default auth((request) => {
 });
 
 export const config = {
-  matcher: ["/account/:path*", "/settings/:path*"],
+  matcher: [
+    "/today/:path*",
+    "/capture/:path*",
+    "/people/:path*",
+    "/opportunities/:path*",
+    "/search/:path*",
+    "/account/:path*",
+    "/settings/:path*",
+  ],
 };

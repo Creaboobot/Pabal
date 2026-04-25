@@ -44,6 +44,16 @@ validation; cross-tenant direct relation rejection; source-reference validation
 for 4B-2 records; proof that proposal item creation does not mutate target
 records; and idempotent demo seed data.
 
+The Step 5 unit tests cover the primary app navigation contract, protected app
+route smoke rendering for `/today`, `/capture`, `/people`, `/opportunities`,
+and `/search`, plus the protected shell redirect when no session context is
+available. These tests mock the session and read-only app summary service so
+they do not require a database.
+
+The Playwright smoke tests currently verify unauthenticated redirect behaviour
+and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
+stable test-auth setup is introduced for browser tests.
+
 Vitest runs test files serially because the integration suite uses a shared
 test database and resets tables between cases.
 
