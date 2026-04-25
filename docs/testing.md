@@ -61,6 +61,14 @@ flows, transaction-safe primary affiliation handling, clearing primary state on
 end/archive, tenant-safe related meeting/note summaries, cross-tenant
 affiliation rejection, and audit log creation with minimal metadata.
 
+The Step 7A tests cover meeting validation, route smoke rendering for
+`/meetings`, `/meetings/new`, `/meetings/[meetingId]`,
+`/meetings/[meetingId]/edit`, and
+`/meetings/[meetingId]/participants/new`, meeting create/update/archive service
+flows, participant add/remove, duplicate known-person participant rejection,
+cross-tenant meeting and participant failures, source defaults, and audit log
+safety without storing meeting summaries or participant contact snapshots.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

@@ -11,7 +11,7 @@ Foundation rules:
 - Keep Next.js middleware limited to coarse authentication checks.
 - Enforce tenant and role checks in server-side services, route handlers, or
   server actions.
-- Protected app shell routes are `/today`, `/capture`, `/people`,
+- Protected app shell routes are `/today`, `/capture`, `/meetings`, `/people`,
   `/opportunities`, `/search`, `/account`, and `/settings`; middleware protects
   those route groups without database tenant/RBAC logic.
 - Tenant-owned data models must go through tenant-aware repositories and
@@ -63,6 +63,17 @@ Affiliation audit metadata is intentionally minimal and must not include full
 contact details, note text, descriptions, raw form payloads, or sensitive
 relationship values. Related meeting and note summaries are read-only and
 tenant-scoped.
+
+Step 7A meeting mutations use the same server-action boundary. Meeting reads
+and writes filter by explicit tenant context. Participant creation validates
+the meeting, known person, and company against the active tenant, and duplicate
+known-person participants are rejected. Participant removal validates tenant
+ownership, writes `meeting_participant.removed`, then deletes only the
+association row.
+
+Meeting audit metadata must not include full summaries, pasted note text, raw
+form payloads, participant email/name snapshots, cookies, tokens, environment
+values, or secrets.
 
 ## Development auth
 

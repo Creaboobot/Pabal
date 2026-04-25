@@ -36,3 +36,57 @@ export function listMeetingParticipants(
     },
   });
 }
+
+export function findMeetingParticipantById(
+  input: {
+    tenantId: string;
+    meetingParticipantId: string;
+  },
+  db: MeetingParticipantsClient = prisma,
+) {
+  return db.meetingParticipant.findFirst({
+    where: {
+      id: input.meetingParticipantId,
+      tenantId: input.tenantId,
+    },
+    include: {
+      company: true,
+      meeting: true,
+      person: true,
+    },
+  });
+}
+
+export function findKnownPersonMeetingParticipant(
+  input: {
+    tenantId: string;
+    meetingId: string;
+    personId: string;
+  },
+  db: MeetingParticipantsClient = prisma,
+) {
+  return db.meetingParticipant.findFirst({
+    where: {
+      meetingId: input.meetingId,
+      personId: input.personId,
+      tenantId: input.tenantId,
+    },
+  });
+}
+
+export function deleteMeetingParticipant(
+  input: {
+    tenantId: string;
+    meetingParticipantId: string;
+  },
+  db: MeetingParticipantsClient = prisma,
+) {
+  return db.meetingParticipant.delete({
+    where: {
+      id_tenantId: {
+        id: input.meetingParticipantId,
+        tenantId: input.tenantId,
+      },
+    },
+  });
+}

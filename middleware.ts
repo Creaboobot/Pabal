@@ -23,6 +23,7 @@ export const config = {
   matcher: [
     "/today/:path*",
     "/capture/:path*",
+    "/meetings/:path*",
     "/people/:path*",
     "/opportunities/:path*",
     "/search/:path*",

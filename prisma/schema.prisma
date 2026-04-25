@@ -43,6 +43,11 @@ enum MeetingParticipantRole {
   OPTIONAL
 }
 
+enum RecordSourceType {
+  MANUAL
+  TEAMS_COPILOT_PASTE
+}
+
 enum NoteType {
   GENERAL
   PERSON
@@ -504,6 +509,7 @@ model Meeting {
   endedAt          DateTime?            @map("ended_at")
   location         String?
   summary          String?
+  sourceType       RecordSourceType     @default(MANUAL) @map("source_type")
   primaryCompanyId String?              @map("primary_company_id")
   createdByUserId  String?              @map("created_by_user_id")
   updatedByUserId  String?              @map("updated_by_user_id")
@@ -525,6 +531,7 @@ model Meeting {
   @@unique([id, tenantId])
   @@index([tenantId, occurredAt])
   @@index([tenantId, primaryCompanyId])
+  @@index([tenantId, sourceType])
   @@index([tenantId, archivedAt])
   @@map("meetings")
 }
@@ -558,35 +565,37 @@ model MeetingParticipant {
 }
 
 model Note {
-  id              String       @id @default(cuid())
-  tenantId        String       @map("tenant_id")
+  id              String           @id @default(cuid())
+  tenantId        String           @map("tenant_id")
   body            String
   summary         String?
-  noteType        NoteType     @default(GENERAL) @map("note_type")
-  sensitivity     Sensitivity  @default(NORMAL)
-  personId        String?      @map("person_id")
-  companyId       String?      @map("company_id")
-  meetingId       String?      @map("meeting_id")
-  createdByUserId String?      @map("created_by_user_id")
-  updatedByUserId String?      @map("updated_by_user_id")
-  archivedAt      DateTime?    @map("archived_at")
-  tenant          Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  person          Person?      @relation("PersonNotes", fields: [personId, tenantId], references: [id, tenantId], onDelete: Restrict)
-  company         Company?     @relation("CompanyNotes", fields: [companyId, tenantId], references: [id, tenantId], onDelete: Restrict)
-  meeting         Meeting?     @relation("MeetingNotes", fields: [meetingId, tenantId], references: [id, tenantId], onDelete: Restrict)
-  tasks           Task[]       @relation("NoteTasks")
-  commitments     Commitment[] @relation("NoteCommitments")
-  needs           Need[]       @relation("NoteNeeds")
-  capabilities    Capability[] @relation("NoteCapabilities")
-  aiProposals     AIProposal[] @relation("NoteAIProposals")
-  voiceNotes      VoiceNote[]  @relation("NoteVoiceNotes")
-  createdByUser   User?        @relation("NoteCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
-  updatedByUser   User?        @relation("NoteUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
-  createdAt       DateTime     @default(now()) @map("created_at")
-  updatedAt       DateTime     @updatedAt @map("updated_at")
+  noteType        NoteType         @default(GENERAL) @map("note_type")
+  sourceType      RecordSourceType @default(MANUAL) @map("source_type")
+  sensitivity     Sensitivity      @default(NORMAL)
+  personId        String?          @map("person_id")
+  companyId       String?          @map("company_id")
+  meetingId       String?          @map("meeting_id")
+  createdByUserId String?          @map("created_by_user_id")
+  updatedByUserId String?          @map("updated_by_user_id")
+  archivedAt      DateTime?        @map("archived_at")
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  person          Person?          @relation("PersonNotes", fields: [personId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  company         Company?         @relation("CompanyNotes", fields: [companyId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  meeting         Meeting?         @relation("MeetingNotes", fields: [meetingId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  tasks           Task[]           @relation("NoteTasks")
+  commitments     Commitment[]     @relation("NoteCommitments")
+  needs           Need[]           @relation("NoteNeeds")
+  capabilities    Capability[]     @relation("NoteCapabilities")
+  aiProposals     AIProposal[]     @relation("NoteAIProposals")
+  voiceNotes      VoiceNote[]      @relation("NoteVoiceNotes")
+  createdByUser   User?            @relation("NoteCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedByUser   User?            @relation("NoteUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
 
   @@unique([id, tenantId])
   @@index([tenantId, noteType])
+  @@index([tenantId, sourceType])
   @@index([tenantId, personId])
   @@index([tenantId, companyId])
   @@index([tenantId, meetingId])

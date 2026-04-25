@@ -28,8 +28,8 @@ database session duplication. Standard Auth.js Prisma models are still present
 for user/account persistence and future OAuth compatibility.
 
 Next.js middleware performs only coarse authentication checks for protected
-route groups such as `/today`, `/capture`, `/people`, `/opportunities`,
-`/search`, `/account`, and `/settings`. Tenant membership and role checks are
+route groups such as `/today`, `/capture`, `/meetings`, `/people`,
+`/opportunities`, `/search`, `/account`, and `/settings`. Tenant membership and role checks are
 enforced in server-side services and repositories, not middleware.
 
 ## Mobile app shell
@@ -85,6 +85,24 @@ Person and company detail pages also show read-only related meeting and note
 summaries. These summaries use tenant-scoped repository methods and do not
 create meetings, create notes, run AI summarisation, search semantically, or
 match relationships.
+
+Step 7A adds the manual meetings foundation under the protected app shell:
+
+- `/meetings`
+- `/meetings/new`
+- `/meetings/[meetingId]`
+- `/meetings/[meetingId]/edit`
+- `/meetings/[meetingId]/participants/new`
+
+Meeting server actions validate form input with Zod, call
+`getCurrentUserContext()`, and delegate to tenant-aware meeting services.
+Participant creation validates the meeting, person, and company against the
+active tenant. Participant removal hard-deletes only the
+`MeetingParticipant` association after writing an audit log.
+
+The `/capture` page links to `/meetings/new`. It does not introduce
+`/capture/meeting`, note routes, Teams import, Microsoft Graph, AI extraction,
+summarisation, or automated proposal generation.
 
 ## Relationship backbone boundary
 

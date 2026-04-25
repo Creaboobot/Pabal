@@ -35,6 +35,40 @@ export function findMeetingById(
   });
 }
 
+export function findMeetingProfileById(
+  input: {
+    tenantId: string;
+    meetingId: string;
+  },
+  db: MeetingsClient = prisma,
+) {
+  return db.meeting.findFirst({
+    where: {
+      id: input.meetingId,
+      tenantId: input.tenantId,
+      archivedAt: null,
+    },
+    include: {
+      primaryCompany: true,
+      participants: {
+        include: {
+          company: true,
+          person: true,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
+      _count: {
+        select: {
+          notes: true,
+          participants: true,
+        },
+      },
+    },
+  });
+}
+
 export function listMeetingsForTenant(
   tenantId: string,
   db: MeetingsClient = prisma,
@@ -47,5 +81,46 @@ export function listMeetingsForTenant(
     orderBy: {
       occurredAt: "desc",
     },
+  });
+}
+
+export function listMeetingsForTenantWithSummaries(
+  tenantId: string,
+  db: MeetingsClient = prisma,
+) {
+  return db.meeting.findMany({
+    where: {
+      tenantId,
+      archivedAt: null,
+    },
+    include: {
+      primaryCompany: true,
+      _count: {
+        select: {
+          notes: true,
+          participants: true,
+        },
+      },
+    },
+    orderBy: [{ occurredAt: "desc" }, { createdAt: "desc" }],
+  });
+}
+
+export function updateMeeting(
+  input: {
+    tenantId: string;
+    meetingId: string;
+    data: Prisma.MeetingUncheckedUpdateInput;
+  },
+  db: MeetingsClient = prisma,
+) {
+  return db.meeting.update({
+    where: {
+      id_tenantId: {
+        id: input.meetingId,
+        tenantId: input.tenantId,
+      },
+    },
+    data: input.data,
   });
 }
