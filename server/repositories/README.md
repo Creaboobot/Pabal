@@ -12,6 +12,8 @@ methods. Step 7A adds meeting summary/profile queries, meeting updates, and
 participant lookup/delete helpers used by tenant-aware meeting services.
 Step 7B adds note profile/update helpers, meeting-linked note summaries, and
 source-reference source lookups used by note detail and pasted-capture flows.
+Step 8A extends task repositories with context-aware task profiles, list
+queries, and update helpers for manual follow-up lifecycle workflows.
 
 Repositories for billing, integrations, search, actual voice capture,
 transcription, notifications, background jobs, embeddings, and provider-backed

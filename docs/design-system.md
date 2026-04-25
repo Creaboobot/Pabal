@@ -82,3 +82,18 @@ Step 7B extends the same mobile-first patterns for notes and pasted capture:
 Note and pasted-capture screens should make source and sensitivity visible while
 avoiding wide tables, AI-processing affordances, voice controls, import
 controls, or autonomous extraction language.
+
+Step 8A extends the same patterns for manual follow-up tasks:
+
+- compact task cards instead of tables;
+- full-page mobile forms for create/edit;
+- due, overdue, priority, and task-type badges;
+- linked-context badges for people, companies, meetings, notes, commitments,
+  and introduction suggestions;
+- inline confirmation controls for complete/reopen/archive lifecycle actions;
+- Today sections for overdue, due-today, upcoming, and recently completed
+  tasks.
+
+Task screens should preserve bottom-nav spacing, keep lifecycle actions clear,
+and avoid notification, background-job, AI recommendation, or automatic
+extraction affordances.

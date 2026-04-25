@@ -30,5 +30,6 @@ export const config = {
     "/search/:path*",
     "/account/:path*",
     "/settings/:path*",
+    "/tasks/:path*",
   ],
 };

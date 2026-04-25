@@ -79,8 +79,8 @@ pnpm dev
 ```
 
 Then open `http://localhost:3000`. Signed-in users are redirected to `/today`.
-Unauthenticated requests to `/today`, `/capture`, `/meetings`, `/people`,
-`/opportunities`, `/search`, `/account`, and `/settings` redirect to
+Unauthenticated requests to `/today`, `/capture`, `/meetings`, `/notes`,
+`/tasks`, `/people`, `/opportunities`, `/search`, `/account`, and `/settings` redirect to
 `/sign-in`.
 
 The Step 5 screens are mobile-first shell placeholders. They show read-only
@@ -147,3 +147,23 @@ from the note to the meeting.
 Step 7B still does not add Teams import, Microsoft Graph, AI extraction,
 summarisation, task extraction, commitment extraction, voice recording,
 transcription, or proposal generation.
+
+## Follow-Up Tasks
+
+Step 8A adds manual follow-up tasks:
+
+- `/tasks`
+- `/tasks/new`
+- `/tasks/[taskId]`
+- `/tasks/[taskId]/edit`
+
+People, company, meeting, and note detail pages include contextual links into
+`/tasks/new`. Those query parameters only preselect form fields; task server
+actions still validate every linked record inside the active tenant. Task
+lifecycle actions can complete, reopen, and archive records without deleting
+linked relationship context.
+
+The Today screen shows task sections for overdue, due-today, upcoming, and
+recently completed manual tasks. Step 8A does not send reminders, run
+background jobs, parse notes, create tasks automatically, call AI providers, or
+add the commitment-ledger workflow.

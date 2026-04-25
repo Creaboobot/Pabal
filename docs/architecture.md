@@ -28,10 +28,10 @@ database session duplication. Standard Auth.js Prisma models are still present
 for user/account persistence and future OAuth compatibility.
 
 Next.js middleware performs only coarse authentication checks for protected
-route groups such as `/today`, `/capture`, `/meetings`, `/notes`, `/people`,
-`/opportunities`, `/search`, `/account`, and `/settings`. Tenant membership
-and role checks are enforced in server-side services and repositories, not
-middleware.
+route groups such as `/today`, `/capture`, `/meetings`, `/notes`, `/tasks`,
+`/people`, `/opportunities`, `/search`, `/account`, and `/settings`. Tenant
+membership and role checks are enforced in server-side services and
+repositories, not middleware.
 
 ## Mobile app shell
 
@@ -118,6 +118,25 @@ This step stores user-provided pasted Teams/Copilot text only. It does not add
 Teams import, Microsoft Graph, AI extraction, summarisation, task extraction,
 commitment extraction, proposal generation, voice capture, transcription,
 semantic search, or matching.
+
+Step 8A adds the manual follow-up task workflow:
+
+- `/tasks`
+- `/tasks/new`
+- `/tasks/[taskId]`
+- `/tasks/[taskId]/edit`
+
+Task server actions validate input with Zod, call `getCurrentUserContext()`,
+and delegate to tenant-aware task services. Tasks can link to existing people,
+companies, meetings, notes, commitments, and introduction suggestions, but every
+link is validated server-side inside the active tenant. Query parameters from
+person, company, meeting, and note detail pages are convenience hints only.
+
+The Today screen now includes manual task sections for overdue, due-today,
+upcoming, and recently completed tasks. Overdue and due-today states are
+derived at read time from `dueAt`; Step 8A does not add reminder delivery,
+notifications, background jobs, automatic extraction, AI recommendations, or
+commitment-ledger screens.
 
 ## Relationship backbone boundary
 

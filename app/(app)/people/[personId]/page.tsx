@@ -77,6 +77,12 @@ export default async function PersonDetailPage({
                 Edit
               </Link>
             </Button>
+            <Button asChild>
+              <Link href={`/tasks/new?personId=${person.id}`}>
+                <Plus aria-hidden="true" className="mr-2 size-4" />
+                Create follow-up
+              </Link>
+            </Button>
           </div>
         }
         description={person.jobTitle ?? "Relationship record"}

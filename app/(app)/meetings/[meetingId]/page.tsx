@@ -68,6 +68,12 @@ export default async function MeetingDetailPage({
                 Edit
               </Link>
             </Button>
+            <Button asChild>
+              <Link href={`/tasks/new?meetingId=${meeting.id}`}>
+                <Plus aria-hidden="true" className="mr-2 size-4" />
+                Create task
+              </Link>
+            </Button>
           </div>
         }
         description={formatMeetingDateTime(meeting.occurredAt)}
