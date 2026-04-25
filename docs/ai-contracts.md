@@ -27,3 +27,11 @@ Future AI work must follow the build brief and ADR-003:
 The proposal application engine, provider adapters, prompt contracts, schema
 versioning, extraction jobs, and generated proposal creation belong to later
 explicit steps.
+
+## Step 10A-1 Boundary
+
+Manual needs and capabilities are not AI-generated in Step 10A-1. Creating or
+editing a need/capability never invokes an AI provider, computes matches,
+generates recommendations, creates introduction suggestions, or mutates records
+from model output. Future AI-assisted brokerage must create reviewable,
+source-linked proposals before any user-approved application step exists.

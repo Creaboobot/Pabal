@@ -11,7 +11,8 @@ existing `Task` model for manual follow-up workflows without changing the
 schema. Step 8B uses the existing `Commitment` model for the manual commitment
 ledger without changing the schema. Step 9 uses the existing `AIProposal` and
 `AIProposalItem` models for status-only human review without changing the
-schema.
+schema. Step 10A-1 uses the existing `Need` and `Capability` models for manual
+relationship-intelligence workflows without changing the schema.
 
 ## Foundation tables
 
@@ -236,6 +237,34 @@ Proposal status is rolled up from item statuses:
 does not mean the patch was applied. Step 9 does not mutate target records,
 create records, apply proposed patches, call AI providers, generate proposals,
 or run background jobs.
+
+## Step 10A-1 needs and capabilities
+
+Step 10A-1 promotes the existing `Need` and `Capability` models from
+readiness into manual workflows. It does not add a migration.
+
+Needs remain tenant-scoped and can link directly to:
+
+- `Person`
+- `Company`
+- `Meeting`
+- `Note`
+
+Capabilities remain tenant-scoped and can link directly to:
+
+- `Person`
+- `Company`
+- `Note`
+
+The current schema does not include a direct `Capability -> Meeting` foreign
+key, so meeting-context capability creation is limited to existing note,
+person, or company context unless a later schema change is approved.
+
+Need and capability services validate linked records before writing and hide
+archived records from active lists/detail reads. Archiving sets `archivedAt`
+and never hard-deletes the record. Step 10A-1 does not add introduction
+suggestion workflows, automated matching, scoring, AI generation, semantic
+search, embeddings, or background jobs.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.

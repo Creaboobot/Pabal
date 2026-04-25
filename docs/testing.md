@@ -103,6 +103,17 @@ deterministic proposal status rollup, proof that approval does not mutate
 target records, tenant-scoped Today proposal review summaries, and audit safety
 without proposed patch JSON or source text.
 
+The Step 10A-1 tests cover need/capability validation, route smoke rendering
+for `/opportunities`, `/opportunities/needs`, `/opportunities/needs/new`,
+`/opportunities/needs/[needId]`, `/opportunities/needs/[needId]/edit`,
+`/opportunities/capabilities`, `/opportunities/capabilities/new`,
+`/opportunities/capabilities/[capabilityId]`, and
+`/opportunities/capabilities/[capabilityId]/edit`, manual
+create/update/archive service flows, tenant-safe links to people, companies,
+meetings, and notes, cross-tenant read/write/link failures, tenant-scoped
+Opportunities hub summaries, and audit safety without full descriptions or
+sensitive payloads.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

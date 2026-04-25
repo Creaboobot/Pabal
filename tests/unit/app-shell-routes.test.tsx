@@ -16,7 +16,11 @@ const mocks = vi.hoisted(() => ({
   getTenantAIProposalReviewSummary: vi.fn(),
   getTenantMeeting: vi.fn(),
   getTenantMeetingProfile: vi.fn(),
+  getTenantCapabilityProfile: vi.fn(),
+  getTenantNeedProfile: vi.fn(),
   getTenantNoteProfile: vi.fn(),
+  getTenantOpportunityFormOptions: vi.fn(),
+  getTenantOpportunityHub: vi.fn(),
   getTenantTaskBoard: vi.fn(),
   getTenantTaskFormOptions: vi.fn(),
   getTenantTaskProfile: vi.fn(),
@@ -27,6 +31,8 @@ const mocks = vi.hoisted(() => ({
   listTenantCompaniesWithProfiles: vi.fn(),
   listTenantCompanies: vi.fn(),
   listTenantMeetings: vi.fn(),
+  listTenantCapabilitiesWithContext: vi.fn(),
+  listTenantNeedsWithContext: vi.fn(),
   listTenantAIProposals: vi.fn(),
   listTenantPeopleWithProfiles: vi.fn(),
   listTenantPeople: vi.fn(),
@@ -37,6 +43,7 @@ const mocks = vi.hoisted(() => ({
     throw new Error(`redirect:${destination}`);
   }),
   signOut: vi.fn(),
+  listTenantSourceReferencesForTarget: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -84,6 +91,28 @@ vi.mock("@/server/services/meetings", () => ({
 
 vi.mock("@/server/services/notes", () => ({
   getTenantNoteProfile: mocks.getTenantNoteProfile,
+}));
+
+vi.mock("@/server/services/needs", () => ({
+  getTenantNeedProfile: mocks.getTenantNeedProfile,
+  listTenantNeedsWithContext: mocks.listTenantNeedsWithContext,
+}));
+
+vi.mock("@/server/services/capabilities", () => ({
+  getTenantCapabilityProfile: mocks.getTenantCapabilityProfile,
+  listTenantCapabilitiesWithContext: mocks.listTenantCapabilitiesWithContext,
+}));
+
+vi.mock("@/server/services/opportunities", () => ({
+  getTenantOpportunityHub: mocks.getTenantOpportunityHub,
+}));
+
+vi.mock("@/server/services/opportunity-form-options", () => ({
+  getTenantOpportunityFormOptions: mocks.getTenantOpportunityFormOptions,
+}));
+
+vi.mock("@/server/services/source-references", () => ({
+  listTenantSourceReferencesForTarget: mocks.listTenantSourceReferencesForTarget,
 }));
 
 vi.mock("@/server/services/tasks", () => ({
@@ -192,6 +221,18 @@ vi.mock("@/modules/commitments/components/commitment-action-button", () => ({
 
 vi.mock("@/modules/proposals/components/proposal-action-button", () => ({
   ProposalActionButton: () => <div>Proposal review control</div>,
+}));
+
+vi.mock("@/modules/opportunities/components/need-form", () => ({
+  NeedForm: () => <form aria-label="Need form" />,
+}));
+
+vi.mock("@/modules/opportunities/components/capability-form", () => ({
+  CapabilityForm: () => <form aria-label="Capability form" />,
+}));
+
+vi.mock("@/modules/opportunities/components/opportunity-action-button", () => ({
+  OpportunityActionButton: () => <div>Opportunity lifecycle control</div>,
 }));
 
 const tenantContext = {
@@ -319,6 +360,45 @@ const noteProfile = {
   summary: "Short note summary.",
   targetReferences: [],
   updatedAt: new Date("2026-04-24T10:05:00.000Z"),
+};
+
+const needProfile = {
+  company: companyProfile,
+  companyId: companyProfile.id,
+  confidence: 0.72,
+  createdAt: new Date("2026-04-24T11:00:00.000Z"),
+  description: "Needs practical examples.",
+  id: "need_test_1",
+  meeting: meetingProfile,
+  meetingId: meetingProfile.id,
+  needType: "REQUIREMENT",
+  note: noteProfile,
+  noteId: noteProfile.id,
+  person: personProfile,
+  personId: personProfile.id,
+  priority: "HIGH",
+  sensitivity: "NORMAL",
+  status: "OPEN",
+  title: "Practical MBSE training examples",
+  updatedAt: new Date("2026-04-24T11:00:00.000Z"),
+};
+
+const capabilityProfile = {
+  capabilityType: "EXPERIENCE",
+  company: companyProfile,
+  companyId: companyProfile.id,
+  confidence: 0.83,
+  createdAt: new Date("2026-04-24T11:30:00.000Z"),
+  description: "Has delivered SE-CERT preparation.",
+  id: "capability_test_1",
+  note: noteProfile,
+  noteId: noteProfile.id,
+  person: personProfile,
+  personId: personProfile.id,
+  sensitivity: "NORMAL",
+  status: "ACTIVE",
+  title: "SE-CERT preparation experience",
+  updatedAt: new Date("2026-04-24T11:30:00.000Z"),
 };
 
 const taskProfile = {
@@ -519,6 +599,24 @@ describe("protected app routes", () => {
     mocks.getTenantMeeting.mockResolvedValue(meetingProfile);
     mocks.getTenantMeetingProfile.mockResolvedValue(meetingProfile);
     mocks.getTenantNoteProfile.mockResolvedValue(noteProfile);
+    mocks.getTenantNeedProfile.mockResolvedValue(needProfile);
+    mocks.getTenantCapabilityProfile.mockResolvedValue(capabilityProfile);
+    mocks.getTenantOpportunityHub.mockResolvedValue({
+      counts: {
+        activeCapabilities: 1,
+        activeIntroductions: 1,
+        openNeeds: 1,
+      },
+      latestCapabilities: [capabilityProfile],
+      latestNeeds: [needProfile],
+    });
+    mocks.getTenantOpportunityFormOptions.mockResolvedValue({
+      companies: [companyProfile],
+      meetings: [meetingProfile],
+      notes: [noteProfile],
+      people: [personProfile],
+    });
+    mocks.listTenantSourceReferencesForTarget.mockResolvedValue([]);
     mocks.getTenantTaskBoard.mockResolvedValue(taskBoard);
     mocks.getTenantTaskFormOptions.mockResolvedValue(taskFormOptions);
     mocks.getTenantTaskProfile.mockResolvedValue(taskProfile);
@@ -544,6 +642,10 @@ describe("protected app routes", () => {
     mocks.listTenantPeople.mockResolvedValue([personProfile]);
     mocks.listTenantCompanies.mockResolvedValue([companyProfile]);
     mocks.listTenantMeetings.mockResolvedValue([meetingProfile]);
+    mocks.listTenantNeedsWithContext.mockResolvedValue([needProfile]);
+    mocks.listTenantCapabilitiesWithContext.mockResolvedValue([
+      capabilityProfile,
+    ]);
     mocks.listTenantAIProposals.mockResolvedValue([proposalProfile]);
     mocks.listTenantPeopleWithProfiles.mockResolvedValue([
       {
@@ -603,6 +705,11 @@ describe("protected app routes", () => {
     ["Tasks", () => import("@/app/(app)/tasks/page")],
     ["Commitments", () => import("@/app/(app)/commitments/page")],
     ["Proposals", () => import("@/app/(app)/proposals/page")],
+    ["Needs", () => import("@/app/(app)/opportunities/needs/page")],
+    [
+      "Capabilities",
+      () => import("@/app/(app)/opportunities/capabilities/page"),
+    ],
   ])("renders the %s protected route", async (heading, importPage) => {
     await renderRoute(importPage);
 
@@ -631,6 +738,31 @@ describe("protected app routes", () => {
       screen.getByRole("heading", { level: 1, name: "Create commitment" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Commitment form")).toBeInTheDocument();
+  });
+
+  it("renders the need create route", async () => {
+    const Page = (await import("@/app/(app)/opportunities/needs/new/page"))
+      .default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Create need" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Need form")).toBeInTheDocument();
+  });
+
+  it("renders the capability create route", async () => {
+    const Page = (
+      await import("@/app/(app)/opportunities/capabilities/new/page")
+    ).default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Create capability" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Capability form")).toBeInTheDocument();
   });
 
   it("renders the meeting detail route", async () => {
@@ -804,6 +936,70 @@ describe("protected app routes", () => {
         name: "Proposed follow-up update",
       }),
     ).toBeInTheDocument();
+  });
+
+  it("renders the need detail and edit routes", async () => {
+    const DetailPage = (
+      await import("@/app/(app)/opportunities/needs/[needId]/page")
+    ).default;
+    const EditPage = (
+      await import("@/app/(app)/opportunities/needs/[needId]/edit/page")
+    ).default;
+
+    render(
+      await DetailPage({
+        params: Promise.resolve({ needId: "need_test_1" }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Practical MBSE training examples",
+      }),
+    ).toBeInTheDocument();
+
+    render(
+      await EditPage({
+        params: Promise.resolve({ needId: "need_test_1" }),
+      }),
+    );
+
+    expect(screen.getByLabelText("Need form")).toBeInTheDocument();
+  });
+
+  it("renders the capability detail and edit routes", async () => {
+    const DetailPage = (
+      await import(
+        "@/app/(app)/opportunities/capabilities/[capabilityId]/page"
+      )
+    ).default;
+    const EditPage = (
+      await import(
+        "@/app/(app)/opportunities/capabilities/[capabilityId]/edit/page"
+      )
+    ).default;
+
+    render(
+      await DetailPage({
+        params: Promise.resolve({ capabilityId: "capability_test_1" }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "SE-CERT preparation experience",
+      }),
+    ).toBeInTheDocument();
+
+    render(
+      await EditPage({
+        params: Promise.resolve({ capabilityId: "capability_test_1" }),
+      }),
+    );
+
+    expect(screen.getByLabelText("Capability form")).toBeInTheDocument();
   });
 
   it("renders the person detail route", async () => {

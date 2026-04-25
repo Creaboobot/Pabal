@@ -128,6 +128,17 @@ status transition. It must not include proposed patch JSON, note bodies, pasted
 meeting-note text, transcript text, raw AI output, raw form payloads, cookies,
 tokens, headers, environment values, or secrets.
 
+Step 10A-1 need and capability mutations use the same boundary. Reads and
+writes filter by explicit tenant context, and linked person, company, meeting,
+and note ids are validated by services before persistence. Contextual create
+URLs are convenience hints only and do not carry trusted tenant context.
+
+Need and capability audit metadata may include record id, status, type,
+priority, sensitivity, linked entity ids, confidence presence, and changed
+field names. It must not include full descriptions, note bodies, pasted
+meeting-note text, raw form payloads, sensitive values, cookies, tokens,
+environment values, or secrets.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

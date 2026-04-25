@@ -173,6 +173,29 @@ Approval is status-only in this step. The proposal framework does not apply
 patches, create records, mutate targets, call AI providers, generate proposals,
 send messages, or run background jobs.
 
+Step 10A-1 promotes the manual need and capability workflows under the
+Opportunities area:
+
+- `/opportunities`
+- `/opportunities/needs`
+- `/opportunities/needs/new`
+- `/opportunities/needs/[needId]`
+- `/opportunities/needs/[needId]/edit`
+- `/opportunities/capabilities`
+- `/opportunities/capabilities/new`
+- `/opportunities/capabilities/[capabilityId]`
+- `/opportunities/capabilities/[capabilityId]/edit`
+
+Need and capability server actions validate input with Zod, call
+`getCurrentUserContext()`, and delegate to tenant-aware services. Query
+parameters from people, company, meeting, and note pages are treated as
+convenience hints only. Services validate linked records inside the active
+tenant before writing and use safe audit metadata.
+
+The Opportunities hub shows manual counts and latest need/capability records.
+It does not run introduction workflows, matching, scoring, AI generation,
+semantic search, embeddings, notifications, or background jobs.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,

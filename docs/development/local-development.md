@@ -200,3 +200,25 @@ Users can approve, reject, mark items as needing clarification, approve/reject
 all pending items, or dismiss a proposal. These actions update proposal review
 status and write audit logs only. They do not apply patches, mutate target
 records, create tasks or commitments, call AI providers, or run background jobs.
+
+## Opportunities
+
+Step 10A-1 adds manual needs and capabilities:
+
+- `/opportunities`
+- `/opportunities/needs`
+- `/opportunities/needs/new`
+- `/opportunities/needs/[needId]`
+- `/opportunities/needs/[needId]/edit`
+- `/opportunities/capabilities`
+- `/opportunities/capabilities/new`
+- `/opportunities/capabilities/[capabilityId]`
+- `/opportunities/capabilities/[capabilityId]/edit`
+
+People, company, meeting, and note detail pages include contextual links into
+need/capability creation. Query parameters only preselect fields; server
+actions still validate every linked record inside the active tenant.
+
+This step does not add introduction routes, automated matching, scoring, AI
+generation, semantic search, embeddings, notifications, jobs, or permanent
+deletion.
