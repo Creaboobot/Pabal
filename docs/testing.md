@@ -33,6 +33,9 @@ tenant-scoped reads and lists, cross-tenant relationship rejection, database
 foreign-key enforcement for tenant-aware relations, source-reference validation,
 and idempotent demo seed data.
 
+Vitest runs test files serially because the integration suite uses a shared
+test database and resets tables between cases.
+
 CI runs Prisma generation, validation, migrations, seed, lint, typecheck,
 Vitest, production build, Docker build, Docker Compose config, and Docker
 Compose PostgreSQL health verification. Playwright is configured but not run in
