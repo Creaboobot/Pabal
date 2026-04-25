@@ -22,6 +22,8 @@ export const runtimeEnvSchema = z.object({
   AUTH_MICROSOFT_ENTRA_ID_ID: optionalString,
   AUTH_MICROSOFT_ENTRA_ID_SECRET: optionalString,
   AUTH_MICROSOFT_ENTRA_ID_TENANT_ID: optionalString,
+  AUTH_MICROSOFT_ENTRA_ID_ISSUER: optionalUrl,
+  ENABLE_DEV_AUTH: optionalFlag,
 
   DATABASE_URL: optionalString,
 
@@ -53,8 +55,12 @@ export const runtimeEnvSchema = z.object({
   FEATURE_BILLING: optionalFlag,
 });
 
-const readinessEnvSchema = z.object({
+const databaseReadinessEnvSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required at runtime"),
+});
+
+const authReadinessEnvSchema = z.object({
+  AUTH_SECRET: z.string().min(1, "AUTH_SECRET is required at runtime"),
 });
 
 export type RuntimeEnv = z.infer<typeof runtimeEnvSchema>;
@@ -79,10 +85,11 @@ export function getRuntimeEnv(source: NodeJS.ProcessEnv = process.env): RuntimeE
 
 export function getReadinessStatus(source: NodeJS.ProcessEnv = process.env) {
   const runtime = readRuntimeEnv(source);
-  const required = readinessEnvSchema.safeParse(source);
+  const database = databaseReadinessEnvSchema.safeParse(source);
+  const auth = authReadinessEnvSchema.safeParse(source);
 
   return {
-    ready: runtime.success && required.success,
+    ready: runtime.success && database.success && auth.success,
     checks: [
       {
         name: "runtime-env-shape",
@@ -90,7 +97,11 @@ export function getReadinessStatus(source: NodeJS.ProcessEnv = process.env) {
       },
       {
         name: "database-url",
-        ok: required.success,
+        ok: database.success,
+      },
+      {
+        name: "auth-secret",
+        ok: auth.success,
       },
     ],
   };

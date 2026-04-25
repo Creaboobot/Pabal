@@ -11,6 +11,9 @@ production build. The individual commands are:
 
 ```bash
 pnpm install --frozen-lockfile
+pnpm prisma:generate
+pnpm prisma:deploy
+pnpm prisma:seed
 pnpm lint
 pnpm typecheck
 pnpm test

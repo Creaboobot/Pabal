@@ -1,8 +1,10 @@
-import { PrismaClient, type RoleKey } from "@prisma/client";
+import { type Prisma, type PrismaClient, type RoleKey } from "@prisma/client";
 
-const prisma = new PrismaClient();
+import { prisma } from "@/server/db/prisma";
 
-const roles: Array<{
+type RoleClient = PrismaClient | Prisma.TransactionClient;
+
+export const FOUNDATION_ROLE_DEFINITIONS: ReadonlyArray<{
   key: RoleKey;
   name: string;
   description: string;
@@ -29,10 +31,21 @@ const roles: Array<{
   },
 ];
 
-async function main() {
-  await Promise.all(
-    roles.map((role) =>
-      prisma.role.upsert({
+export const FOUNDATION_ROLE_KEYS = FOUNDATION_ROLE_DEFINITIONS.map(
+  (role) => role.key,
+);
+
+export function isFoundationRoleKey(value: unknown): value is RoleKey {
+  return (
+    typeof value === "string" &&
+    FOUNDATION_ROLE_KEYS.includes(value as RoleKey)
+  );
+}
+
+export async function ensureFoundationRoles(db: RoleClient = prisma) {
+  return Promise.all(
+    FOUNDATION_ROLE_DEFINITIONS.map((role) =>
+      db.role.upsert({
         where: { key: role.key },
         create: role,
         update: {
@@ -42,15 +55,4 @@ async function main() {
       }),
     ),
   );
-
-  console.log("Seeded foundation roles.");
 }
-
-void main()
-  .catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });

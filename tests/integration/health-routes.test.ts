@@ -25,7 +25,9 @@ describe("foundation route handlers", () => {
   });
 
   it("reports readiness from runtime environment", async () => {
+    const previousAuthSecret = process.env.AUTH_SECRET;
     const previousDatabaseUrl = process.env.DATABASE_URL;
+    process.env.AUTH_SECRET = "test-auth-secret";
     process.env.DATABASE_URL =
       "postgresql://pobal:pobal@localhost:5432/pobal?schema=public";
 
@@ -36,12 +38,15 @@ describe("foundation route handlers", () => {
       expect(response.status).toBe(200);
       expect(body.status).toBe("ready");
     } finally {
+      restoreEnvValue("AUTH_SECRET", previousAuthSecret);
       restoreEnvValue("DATABASE_URL", previousDatabaseUrl);
     }
   });
 
   it("fails readiness safely without exposing environment values", async () => {
+    const previousAuthSecret = process.env.AUTH_SECRET;
     const previousDatabaseUrl = process.env.DATABASE_URL;
+    process.env.AUTH_SECRET = "super-secret-test-value";
     delete process.env.DATABASE_URL;
 
     try {
@@ -53,8 +58,10 @@ describe("foundation route handlers", () => {
       expect(body.status).toBe("not_ready");
       expect(serialized).not.toContain("postgresql://");
       expect(serialized).not.toContain("AUTH_SECRET");
+      expect(serialized).not.toContain("super-secret-test-value");
       expect(serialized).not.toContain("OPENAI_API_KEY");
     } finally {
+      restoreEnvValue("AUTH_SECRET", previousAuthSecret);
       restoreEnvValue("DATABASE_URL", previousDatabaseUrl);
     }
   });
