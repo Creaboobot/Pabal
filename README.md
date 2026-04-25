@@ -75,11 +75,12 @@ Step 7A adds manual meeting records, meeting participants, source metadata, and
 audit-logged archive/remove actions. Step 7B adds manual note workflows and
 pasted Teams/Copilot meeting-note capture as user-provided text only. Step 8A
 adds manual follow-up task workflows and Today task sections. Step 8B adds the
-manual commitment ledger and Today commitment sections. It does not implement
-LinkedIn URL storage, AI provider calls, proposal application, transcription,
-audio recording/upload, billing, Microsoft Graph, LinkedIn enrichment,
-production search, matching, notifications, reminders, background jobs,
-automatic task creation, or production deployment.
+manual commitment ledger and Today commitment sections. Step 9 adds the
+status-only AI proposal confirmation framework. It does not implement LinkedIn
+URL storage, AI provider calls, proposal application, transcription, audio
+recording/upload, billing, Microsoft Graph, LinkedIn enrichment, production
+search, matching, notifications, reminders, background jobs, automatic task
+creation, or production deployment.
 
 ### Requirements
 
@@ -111,8 +112,8 @@ The app runs at `http://localhost:3000`. Development sign-in is available at
 `/sign-in` only when `ENABLE_DEV_AUTH=true` and `NODE_ENV` is not production.
 Signed-in users land on `/today`; unauthenticated access to `/today`,
 `/capture`, `/commitments`, `/meetings`, `/notes`, `/tasks`, `/people`,
-`/opportunities`, `/search`, `/account`, and `/settings` redirects to
-`/sign-in`.
+`/proposals`, `/opportunities`, `/search`, `/account`, and `/settings`
+redirects to `/sign-in`.
 
 ### App shell routes
 
@@ -204,6 +205,17 @@ Contextual links from people, companies, meetings, and notes preselect fields
 only; server actions validate all linked records inside the active workspace.
 Step 8B does not create tasks automatically, send reminders, run background
 jobs, parse notes, extract commitments, or call AI providers.
+
+AI proposal review is available under `/proposals`:
+
+- `/proposals` for the proposal review inbox.
+- `/proposals/[proposalId]` for proposal detail, source/target context,
+  proposal item review, safe proposed patch previews, and dismiss actions.
+
+Proposal review is status-only in Step 9. Approving a proposal item means the
+user accepted it as conceptually valid. It does not apply patches, create
+records, call AI providers, mutate target records, send messages, or start
+background jobs.
 
 ### Useful commands
 

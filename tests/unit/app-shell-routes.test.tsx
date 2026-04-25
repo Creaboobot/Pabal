@@ -12,6 +12,8 @@ const mocks = vi.hoisted(() => ({
   getTenantCommitmentBoard: vi.fn(),
   getTenantCommitmentFormOptions: vi.fn(),
   getTenantCommitmentProfile: vi.fn(),
+  getTenantAIProposalProfile: vi.fn(),
+  getTenantAIProposalReviewSummary: vi.fn(),
   getTenantMeeting: vi.fn(),
   getTenantMeetingProfile: vi.fn(),
   getTenantNoteProfile: vi.fn(),
@@ -25,6 +27,7 @@ const mocks = vi.hoisted(() => ({
   listTenantCompaniesWithProfiles: vi.fn(),
   listTenantCompanies: vi.fn(),
   listTenantMeetings: vi.fn(),
+  listTenantAIProposals: vi.fn(),
   listTenantPeopleWithProfiles: vi.fn(),
   listTenantPeople: vi.fn(),
   notFound: vi.fn(() => {
@@ -92,6 +95,12 @@ vi.mock("@/server/services/commitments", () => ({
   getTenantCommitment: mocks.getTenantCommitment,
   getTenantCommitmentBoard: mocks.getTenantCommitmentBoard,
   getTenantCommitmentProfile: mocks.getTenantCommitmentProfile,
+}));
+
+vi.mock("@/server/services/ai-proposals", () => ({
+  getTenantAIProposalProfile: mocks.getTenantAIProposalProfile,
+  getTenantAIProposalReviewSummary: mocks.getTenantAIProposalReviewSummary,
+  listTenantAIProposals: mocks.listTenantAIProposals,
 }));
 
 vi.mock("@/server/services/task-form-options", () => ({
@@ -179,6 +188,10 @@ vi.mock("@/modules/commitments/components/commitment-form", () => ({
 
 vi.mock("@/modules/commitments/components/commitment-action-button", () => ({
   CommitmentActionButton: () => <div>Commitment lifecycle control</div>,
+}));
+
+vi.mock("@/modules/proposals/components/proposal-action-button", () => ({
+  ProposalActionButton: () => <div>Proposal review control</div>,
 }));
 
 const tenantContext = {
@@ -376,6 +389,60 @@ const commitmentProfile = {
   updatedAt: new Date("2026-04-24T12:00:00.000Z"),
 };
 
+const proposalItem = {
+  actionType: "UPDATE",
+  confidence: 0.81,
+  explanation: "Proposed update explanation.",
+  id: "proposal_item_test_1",
+  proposedPatch: {
+    title: "Proposed title",
+  },
+  status: "PENDING_REVIEW",
+  targetEntityId: "task_test_1",
+  targetEntityType: "TASK",
+};
+
+const proposalProfile = {
+  _count: {
+    items: 1,
+  },
+  confidence: 0.82,
+  createdAt: new Date("2026-04-24T12:00:00.000Z"),
+  explanation: "Review only proposal explanation.",
+  id: "proposal_test_1",
+  itemTargetContexts: {
+    proposal_item_test_1: {
+      available: true,
+      entityId: "task_test_1",
+      entityType: "TASK",
+      href: "/tasks/task_test_1",
+      label: "Send follow-up",
+    },
+  },
+  items: [proposalItem],
+  proposalType: "NOTE_EXTRACTION",
+  sourceMeeting: meetingProfile,
+  sourceMeetingId: meetingProfile.id,
+  sourceNote: noteProfile,
+  sourceNoteId: noteProfile.id,
+  sourceReferences: [],
+  sourceVoiceNote: null,
+  sourceVoiceNoteId: null,
+  status: "PENDING_REVIEW",
+  summary: "Proposal summary.",
+  targetContext: {
+    available: true,
+    entityId: "task_test_1",
+    entityType: "TASK",
+    href: "/tasks/task_test_1",
+    label: "Send follow-up",
+  },
+  targetEntityId: "task_test_1",
+  targetEntityType: "TASK",
+  title: "Proposed follow-up update",
+  updatedAt: new Date("2026-04-24T12:00:00.000Z"),
+};
+
 const taskBoard = {
   dueToday: [taskProfile],
   openWithoutDue: [],
@@ -467,11 +534,17 @@ describe("protected app routes", () => {
       commitmentFormOptions,
     );
     mocks.getTenantCommitmentProfile.mockResolvedValue(commitmentProfile);
+    mocks.getTenantAIProposalProfile.mockResolvedValue(proposalProfile);
+    mocks.getTenantAIProposalReviewSummary.mockResolvedValue({
+      itemsNeedingClarification: 0,
+      pendingProposals: 1,
+    });
     mocks.getTenantPersonRelatedContext.mockResolvedValue(relatedContext);
     mocks.getTenantCompanyRelatedContext.mockResolvedValue(relatedContext);
     mocks.listTenantPeople.mockResolvedValue([personProfile]);
     mocks.listTenantCompanies.mockResolvedValue([companyProfile]);
     mocks.listTenantMeetings.mockResolvedValue([meetingProfile]);
+    mocks.listTenantAIProposals.mockResolvedValue([proposalProfile]);
     mocks.listTenantPeopleWithProfiles.mockResolvedValue([
       {
         ...personProfile,
@@ -529,7 +602,8 @@ describe("protected app routes", () => {
     ["Paste meeting notes", () => import("@/app/(app)/capture/meeting/page")],
     ["Tasks", () => import("@/app/(app)/tasks/page")],
     ["Commitments", () => import("@/app/(app)/commitments/page")],
-  ])("renders the %s meeting workflow route", async (heading, importPage) => {
+    ["Proposals", () => import("@/app/(app)/proposals/page")],
+  ])("renders the %s protected route", async (heading, importPage) => {
     await renderRoute(importPage);
 
     expect(
@@ -711,6 +785,25 @@ describe("protected app routes", () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Commitment form")).toBeInTheDocument();
+  });
+
+  it("renders the proposal detail route", async () => {
+    const Page = (
+      await import("@/app/(app)/proposals/[proposalId]/page")
+    ).default;
+
+    render(
+      await Page({
+        params: Promise.resolve({ proposalId: "proposal_test_1" }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Proposed follow-up update",
+      }),
+    ).toBeInTheDocument();
   });
 
   it("renders the person detail route", async () => {

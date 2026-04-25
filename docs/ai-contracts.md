@@ -1,7 +1,9 @@
 # AI Contracts
 
-AI execution is out of scope for the foundation and Step 4A relationship
-backbone.
+AI execution remains out of scope for the current implementation. Step 9 adds a
+status-only proposal confirmation framework for existing stored
+`AIProposal`/`AIProposalItem` records, but it does not call AI providers,
+generate proposals, or apply proposed patches.
 
 Future AI work must follow the build brief and ADR-003:
 
@@ -10,6 +12,18 @@ Future AI work must follow the build brief and ADR-003:
 - Provider-specific logic must live behind server-side provider adapters.
 - Strict schemas and tests are required before AI output can affect state.
 
-Step 4A adds only source-linking primitives that future AI proposals can use for
-traceability. It does not add `AIProposal`, AI provider calls, prompt logic,
-approval UI, or mutation application logic.
+## Step 9 Review Contract
+
+- Review operates only on existing `AIProposal` and `AIProposalItem` records.
+- Approving an item means the user accepted it as conceptually valid.
+- Approval does not apply the proposed patch.
+- Proposal review actions must never mutate Person, Company, Meeting, Note,
+  Task, Commitment, Need, Capability, IntroductionSuggestion, VoiceNote, or
+  VoiceMention records.
+- Proposed patch JSON can be displayed after masking/truncation, but is not
+  editable in this step and is never written to audit metadata.
+- Audit logs record status transitions and safe ids only.
+
+The proposal application engine, provider adapters, prompt contracts, schema
+versioning, extraction jobs, and generated proposal creation belong to later
+explicit steps.

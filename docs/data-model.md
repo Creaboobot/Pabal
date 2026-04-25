@@ -9,7 +9,9 @@ metadata to meetings and notes. Step 7B uses that metadata for manual notes and
 pasted meeting-note capture without changing the schema. Step 8A uses the
 existing `Task` model for manual follow-up workflows without changing the
 schema. Step 8B uses the existing `Commitment` model for the manual commitment
-ledger without changing the schema.
+ledger without changing the schema. Step 9 uses the existing `AIProposal` and
+`AIProposalItem` models for status-only human review without changing the
+schema.
 
 ## Foundation tables
 
@@ -75,7 +77,7 @@ and reminder workflows belong to later steps.
   mention text/type, optional transcript span, optional polymorphic resolved
   entity reference, confidence, and confirmation metadata.
 
-Step 4B-2 is schema/service readiness only. It does not call AI providers,
+Step 4B-2 was schema/service readiness only. It did not call AI providers,
 transcribe audio, record audio, upload audio, apply proposal patches, mutate
 target records, or add proposal review UI. Even `APPROVED` proposal statuses
 are stored state only until a later explicit application engine exists.
@@ -209,6 +211,31 @@ derived at read time from status plus `dueAt` or the due-window boundary. Step
 8B does not add reminder delivery, notifications, recurring commitments,
 background jobs, automatic task creation, automatic commitment extraction,
 AI proposals, or parsing of notes/meeting notes.
+
+## Step 9 AI proposal confirmation
+
+Step 9 promotes existing `AIProposal` and `AIProposalItem` readiness records
+into a status-only human review workflow. It does not add a migration.
+
+Proposal item lifecycle uses existing values:
+
+- `PENDING_REVIEW`
+- `APPROVED`
+- `REJECTED`
+- `NEEDS_CLARIFICATION`
+
+Proposal status is rolled up from item statuses:
+
+- all approved -> `APPROVED`
+- all rejected -> `REJECTED`
+- all pending -> `PENDING_REVIEW`
+- pending plus reviewed items, or all clarification-needed items -> `IN_REVIEW`
+- mixed reviewed outcomes -> `PARTIALLY_APPROVED`
+
+`APPROVED` means the user accepted a proposed item as conceptually valid. It
+does not mean the patch was applied. Step 9 does not mutate target records,
+create records, apply proposed patches, call AI providers, generate proposals,
+or run background jobs.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
