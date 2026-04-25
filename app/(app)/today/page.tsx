@@ -1,19 +1,56 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   CalendarClock,
   Handshake,
   ListChecks,
+  Plus,
   Sparkles,
 } from "lucide-react";
 
 import { CockpitCard } from "@/components/cards/cockpit-card";
 import { PageHeader } from "@/components/app/page-header";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/states/empty-state";
+import {
+  TaskCard,
+  type TaskCardTask,
+} from "@/modules/tasks/components/task-card";
 import { getAppShellSummary } from "@/server/services/app-shell-summary";
 import { getCurrentUserContext } from "@/server/services/session";
+import { getTenantTaskBoard } from "@/server/services/tasks";
 
 export const dynamic = "force-dynamic";
+
+type TodayTaskSectionProps = {
+  description: string;
+  tasks: TaskCardTask[];
+  title: string;
+};
+
+function TodayTaskSection({
+  description,
+  tasks,
+  title,
+}: TodayTaskSectionProps) {
+  if (tasks.length === 0) {
+    return null;
+  }
+
+  return (
+    <CockpitCard title={title} value={tasks.length}>
+      <p className="mb-3 text-sm leading-6 text-muted-foreground">
+        {description}
+      </p>
+      <div className="grid gap-3">
+        {tasks.slice(0, 3).map((task) => (
+          <TaskCard key={task.id} task={task} />
+        ))}
+      </div>
+    </CockpitCard>
+  );
+}
 
 export default async function TodayPage() {
   const context = await getCurrentUserContext();
@@ -22,17 +59,33 @@ export default async function TodayPage() {
     redirect("/sign-in?callbackUrl=/today");
   }
 
-  const summary = await getAppShellSummary(context);
+  const [summary, taskBoard] = await Promise.all([
+    getAppShellSummary(context),
+    getTenantTaskBoard(context),
+  ]);
   const hasDailySignals =
     summary.action.openTasks > 0 ||
     summary.action.openCommitments > 0 ||
     summary.action.upcomingMeetings > 0 ||
     summary.action.pendingProposals > 0 ||
     summary.opportunities.introductionSuggestions > 0;
+  const hasTaskSections =
+    taskBoard.overdue.length > 0 ||
+    taskBoard.dueToday.length > 0 ||
+    taskBoard.upcoming.length > 0 ||
+    taskBoard.recentlyCompleted.length > 0;
 
   return (
     <div className="space-y-6">
       <PageHeader
+        actions={
+          <Button asChild>
+            <Link href="/tasks/new">
+              <Plus aria-hidden="true" className="mr-2 size-4" />
+              New task
+            </Link>
+          </Button>
+        }
         description="A quiet command center for follow-ups, commitments, preparation cues, and relationship opportunities."
         eyebrow="Daily cockpit"
         title="Today"
@@ -79,6 +132,47 @@ export default async function TodayPage() {
           </p>
         </CockpitCard>
       </section>
+
+      {hasTaskSections ? (
+        <section aria-label="Today task sections" className="grid gap-3">
+          <TodayTaskSection
+            description="Open follow-ups with due dates before now."
+            tasks={taskBoard.overdue}
+            title="Overdue tasks"
+          />
+          <TodayTaskSection
+            description="Manual follow-ups due before the day ends."
+            tasks={taskBoard.dueToday}
+            title="Due today"
+          />
+          <TodayTaskSection
+            description="Future follow-ups with due dates."
+            tasks={taskBoard.upcoming}
+            title="Upcoming tasks"
+          />
+          <TodayTaskSection
+            description="Recently finished follow-ups for quick review."
+            tasks={taskBoard.recentlyCompleted}
+            title="Recently completed"
+          />
+        </section>
+      ) : (
+        <CockpitCard title="Follow-up tasks">
+          <EmptyState
+            action={
+              <Button asChild>
+                <Link href="/tasks/new">
+                  <Plus aria-hidden="true" className="mr-2 size-4" />
+                  Create follow-up
+                </Link>
+              </Button>
+            }
+            description="Manual tasks due today, overdue, and upcoming will appear here."
+            icon={ListChecks}
+            title="No task attention needed"
+          />
+        </CockpitCard>
+      )}
 
       {hasDailySignals ? (
         <section

@@ -79,6 +79,13 @@ exactly one meeting and one linked note, `TEAMS_COPILOT_PASTE` source metadata,
 AI proposals, tasks, commitments, needs, or capabilities, and audit safety
 without pasted text or note bodies.
 
+The Step 8A tests cover task validation, route smoke rendering for `/tasks`,
+`/tasks/new`, `/tasks/[taskId]`, and `/tasks/[taskId]/edit`, manual task
+create/update/complete/reopen/archive service flows, tenant-safe links to
+people, companies, meetings, notes, commitments, and introduction suggestions,
+cross-tenant read/write/link failures, tenant-scoped Today task board summaries,
+and audit safety without full descriptions or why-now rationale text.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

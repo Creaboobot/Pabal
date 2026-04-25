@@ -6,7 +6,9 @@ tenant-scoped relationship backbone tables. Step 4B-1 adds tenant-scoped
 action and intelligence-readiness tables. Step 4B-2 adds tenant-scoped
 AI-proposal-readiness and voice-note-readiness tables. Step 7A adds source
 metadata to meetings and notes. Step 7B uses that metadata for manual notes and
-pasted meeting-note capture without changing the schema.
+pasted meeting-note capture without changing the schema. Step 8A uses the
+existing `Task` model for manual follow-up workflows without changing the
+schema.
 
 ## Foundation tables
 
@@ -145,6 +147,34 @@ The pasted Teams/Copilot capture flow creates:
 The flow stores pasted user text in `Note.body` and optional manual summary in
 `Note.summary` / `Meeting.summary`. It does not create tasks, commitments,
 needs, capabilities, AI proposals, voice notes, or extracted structured data.
+
+## Step 8A follow-up tasks
+
+Step 8A promotes the existing `Task` model from schema readiness into a manual
+follow-up workflow. It does not add a migration.
+
+Tasks remain tenant-scoped and can link directly to:
+
+- `Person`
+- `Company`
+- `Meeting`
+- `Note`
+- `Commitment`
+- `IntroductionSuggestion`
+
+Those direct links already use tenant-aware composite relations in Prisma, and
+task services also validate linked records before writing. Task lifecycle uses
+existing fields only:
+
+- create defaults to `OPEN`;
+- complete sets `status = DONE` and `completedAt`;
+- reopen sets `status = OPEN` and clears `completedAt`;
+- archive sets `archivedAt` and never hard-deletes the task.
+
+Overdue, due-today, and upcoming sections are derived from `dueAt` at read
+time. Step 8A does not add reminder delivery, notifications, recurring tasks,
+background jobs, automatic extraction, AI proposals, or commitment-ledger
+screens.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.

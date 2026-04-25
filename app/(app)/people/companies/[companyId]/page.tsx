@@ -72,6 +72,12 @@ export default async function CompanyDetailPage({
                 Edit
               </Link>
             </Button>
+            <Button asChild>
+              <Link href={`/tasks/new?companyId=${company.id}`}>
+                <Plus aria-hidden="true" className="mr-2 size-4" />
+                Create follow-up
+              </Link>
+            </Button>
           </div>
         }
         description={company.industry ?? "Organisation record"}

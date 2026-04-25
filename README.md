@@ -73,11 +73,12 @@ product workflow: mobile-first people and company record management. Step 6B
 adds basic affiliation management and read-only related meeting/note summaries.
 Step 7A adds manual meeting records, meeting participants, source metadata, and
 audit-logged archive/remove actions. Step 7B adds manual note workflows and
-pasted Teams/Copilot meeting-note capture as user-provided text only. It does
-not implement LinkedIn URL storage, AI provider calls, proposal application,
+pasted Teams/Copilot meeting-note capture as user-provided text only. Step 8A
+adds manual follow-up task workflows and Today task sections. It does not
+implement LinkedIn URL storage, AI provider calls, proposal application,
 transcription, audio recording/upload, billing, Microsoft Graph, LinkedIn
-enrichment, production search, matching, notifications, or production
-deployment.
+enrichment, production search, matching, notifications, reminders, background
+jobs, commitment-ledger workflows, or production deployment.
 
 ### Requirements
 
@@ -108,8 +109,8 @@ Edit `.env.local` before starting the app:
 The app runs at `http://localhost:3000`. Development sign-in is available at
 `/sign-in` only when `ENABLE_DEV_AUTH=true` and `NODE_ENV` is not production.
 Signed-in users land on `/today`; unauthenticated access to `/today`,
-`/capture`, `/meetings`, `/people`, `/opportunities`, `/search`, `/account`, and
-`/settings` redirects to `/sign-in`.
+`/capture`, `/meetings`, `/notes`, `/tasks`, `/people`, `/opportunities`,
+`/search`, `/account`, and `/settings` redirects to `/sign-in`.
 
 ### App shell routes
 
@@ -170,6 +171,21 @@ Pasted meeting-note capture stores the pasted text in `Note.body`, marks the
 meeting and note with `TEAMS_COPILOT_PASTE`, and creates a safe `NOTE ->
 MEETING` source reference. It does not parse, summarise, extract tasks,
 commitments, needs, capabilities, or create AI proposals.
+
+Manual follow-up tasks are available under `/tasks`:
+
+- `/tasks` for task sections grouped by overdue, due today, upcoming, open
+  without due date, and recently completed.
+- `/tasks/new` for manual task creation.
+- `/tasks/[taskId]` for task detail and complete/reopen/archive actions.
+- `/tasks/[taskId]/edit` for task edits.
+
+Tasks can link to existing people, companies, meetings, notes, commitments, and
+introduction suggestions. Query-parameter context links from people, companies,
+meetings, and notes are convenience hints only; server actions validate all
+linked records inside the active workspace. Step 8A does not add reminders,
+notifications, background jobs, automatic extraction, AI recommendations, or
+the commitment-ledger UI.
 
 ### Useful commands
 

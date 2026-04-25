@@ -11,6 +11,9 @@ const mocks = vi.hoisted(() => ({
   getTenantMeeting: vi.fn(),
   getTenantMeetingProfile: vi.fn(),
   getTenantNoteProfile: vi.fn(),
+  getTenantTaskBoard: vi.fn(),
+  getTenantTaskFormOptions: vi.fn(),
+  getTenantTaskProfile: vi.fn(),
   getAppShellSummary: vi.fn(),
   getCurrentUserContext: vi.fn(),
   getTenantCompany: vi.fn(),
@@ -76,6 +79,15 @@ vi.mock("@/server/services/notes", () => ({
   getTenantNoteProfile: mocks.getTenantNoteProfile,
 }));
 
+vi.mock("@/server/services/tasks", () => ({
+  getTenantTaskBoard: mocks.getTenantTaskBoard,
+  getTenantTaskProfile: mocks.getTenantTaskProfile,
+}));
+
+vi.mock("@/server/services/task-form-options", () => ({
+  getTenantTaskFormOptions: mocks.getTenantTaskFormOptions,
+}));
+
 vi.mock("@/server/services/relationship-context", () => ({
   getTenantCompanyRelatedContext: mocks.getTenantCompanyRelatedContext,
   getTenantPersonRelatedContext: mocks.getTenantPersonRelatedContext,
@@ -137,6 +149,14 @@ vi.mock("@/modules/notes/components/pasted-meeting-capture-form", () => ({
 
 vi.mock("@/modules/notes/components/note-action-button", () => ({
   NoteActionButton: () => <div>Note lifecycle control</div>,
+}));
+
+vi.mock("@/modules/tasks/components/task-form", () => ({
+  TaskForm: () => <form aria-label="Task form" />,
+}));
+
+vi.mock("@/modules/tasks/components/task-action-button", () => ({
+  TaskActionButton: () => <div>Task lifecycle control</div>,
 }));
 
 const tenantContext = {
@@ -266,6 +286,51 @@ const noteProfile = {
   updatedAt: new Date("2026-04-24T10:05:00.000Z"),
 };
 
+const taskProfile = {
+  commitment: null,
+  commitmentId: null,
+  company: companyProfile,
+  companyId: companyProfile.id,
+  completedAt: null,
+  createdAt: new Date("2026-04-24T12:00:00.000Z"),
+  description: "Follow up with relationship context.",
+  dueAt: new Date("2026-04-25T10:00:00.000Z"),
+  id: "task_test_1",
+  introductionSuggestion: null,
+  introductionSuggestionId: null,
+  meeting: meetingProfile,
+  meetingId: meetingProfile.id,
+  note: noteProfile,
+  noteId: noteProfile.id,
+  person: personProfile,
+  personId: personProfile.id,
+  priority: "HIGH",
+  reminderAt: null,
+  snoozedUntil: null,
+  status: "OPEN",
+  taskType: "FOLLOW_UP",
+  title: "Send follow-up",
+  updatedAt: new Date("2026-04-24T12:00:00.000Z"),
+  whyNowRationale: "The meeting created a clear next step.",
+};
+
+const taskBoard = {
+  dueToday: [taskProfile],
+  openWithoutDue: [],
+  overdue: [],
+  recentlyCompleted: [],
+  upcoming: [],
+};
+
+const taskFormOptions = {
+  commitments: [],
+  companies: [companyProfile],
+  introductionSuggestions: [],
+  meetings: [meetingProfile],
+  notes: [noteProfile],
+  people: [personProfile],
+};
+
 const affiliationProfile = {
   affiliationTitle: "Advisor",
   company: companyProfile,
@@ -304,6 +369,9 @@ describe("protected app routes", () => {
     mocks.getTenantMeeting.mockResolvedValue(meetingProfile);
     mocks.getTenantMeetingProfile.mockResolvedValue(meetingProfile);
     mocks.getTenantNoteProfile.mockResolvedValue(noteProfile);
+    mocks.getTenantTaskBoard.mockResolvedValue(taskBoard);
+    mocks.getTenantTaskFormOptions.mockResolvedValue(taskFormOptions);
+    mocks.getTenantTaskProfile.mockResolvedValue(taskProfile);
     mocks.getTenantPerson.mockResolvedValue(personProfile);
     mocks.getTenantPersonProfile.mockResolvedValue(personProfile);
     mocks.getTenantCompanyProfile.mockResolvedValue(companyProfile);
@@ -370,12 +438,24 @@ describe("protected app routes", () => {
     ["Create meeting", () => import("@/app/(app)/meetings/new/page")],
     ["Create note", () => import("@/app/(app)/notes/new/page")],
     ["Paste meeting notes", () => import("@/app/(app)/capture/meeting/page")],
+    ["Tasks", () => import("@/app/(app)/tasks/page")],
   ])("renders the %s meeting workflow route", async (heading, importPage) => {
     await renderRoute(importPage);
 
     expect(
       screen.getByRole("heading", { level: 1, name: heading }),
     ).toBeInTheDocument();
+  });
+
+  it("renders the task create route", async () => {
+    const Page = (await import("@/app/(app)/tasks/new/page")).default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Create task" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Task form")).toBeInTheDocument();
   });
 
   it("renders the meeting detail route", async () => {
@@ -469,6 +549,28 @@ describe("protected app routes", () => {
       screen.getByRole("heading", { level: 1, name: "Meeting note" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Note form")).toBeInTheDocument();
+  });
+
+  it("renders the task detail route", async () => {
+    const Page = (await import("@/app/(app)/tasks/[taskId]/page")).default;
+
+    render(await Page({ params: Promise.resolve({ taskId: "task_test_1" }) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Send follow-up" }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the task edit route", async () => {
+    const Page = (await import("@/app/(app)/tasks/[taskId]/edit/page"))
+      .default;
+
+    render(await Page({ params: Promise.resolve({ taskId: "task_test_1" }) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Send follow-up" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Task form")).toBeInTheDocument();
   });
 
   it("renders the person detail route", async () => {

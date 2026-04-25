@@ -12,7 +12,7 @@ Foundation rules:
 - Enforce tenant and role checks in server-side services, route handlers, or
   server actions.
 - Protected app shell routes are `/today`, `/capture`, `/meetings`, `/notes`,
-  `/people`, `/opportunities`, `/search`, `/account`, and `/settings`;
+  `/tasks`, `/people`, `/opportunities`, `/search`, `/account`, and `/settings`;
   middleware protects those route groups without database tenant/RBAC logic.
 - Tenant-owned data models must go through tenant-aware repositories and
   services.
@@ -87,6 +87,18 @@ sensitivity, changed field names, participant count, `hasSummary`, and
 `bodyLength`. It must not include note bodies, pasted Teams/Copilot text, full
 meeting summaries, full note summaries, raw form payloads, contact snapshots,
 cookies, tokens, headers, environment values, or secrets.
+
+Step 8A task mutations use the same server-action boundary. Task reads and
+writes filter by explicit tenant context, and linked person, company, meeting,
+note, commitment, and introduction suggestion ids are validated in server
+services. Contextual create URLs are convenience hints only and do not carry
+trusted tenant context.
+
+Task audit metadata may include task id, status, priority, task type, linked
+entity ids, due/reminder/snooze date presence, and changed field names. It must
+not include full descriptions, why-now rationale text, note bodies, pasted
+meeting-note text, raw form payloads, sensitive values, cookies, tokens,
+environment values, or secrets.
 
 ## Development auth
 

@@ -5,6 +5,7 @@ import {
   createNote,
   findNoteById,
   findNoteProfileById,
+  listNotesForTenant,
   updateNote,
 } from "@/server/repositories/notes";
 import {
@@ -172,6 +173,12 @@ export async function getTenantNoteProfile(
     sourceReferences,
     targetReferences,
   };
+}
+
+export async function listTenantNotes(context: TenantContext) {
+  await requireTenantAccess(context);
+
+  return listNotesForTenant(context.tenantId);
 }
 
 export async function updateTenantNote(
