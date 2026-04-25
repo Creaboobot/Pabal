@@ -3,7 +3,8 @@
 The Step 3 SaaS foundation defines authentication, tenant/workspace,
 membership, role, and audit logging tables. Step 4A adds the first
 tenant-scoped relationship backbone tables. Step 4B-1 adds tenant-scoped
-action and intelligence-readiness tables.
+action and intelligence-readiness tables. Step 4B-2 adds tenant-scoped
+AI-proposal-readiness and voice-note-readiness tables.
 
 ## Foundation tables
 
@@ -52,6 +53,27 @@ Step 4B-1 intentionally does not add `AIProposal`, `AIProposalItem`,
 notifications, background jobs, search, embeddings, or provider calls. Matching
 and reminder workflows belong to later steps.
 
+## Step 4B-2 AI and voice readiness
+
+- `AIProposal`: tenant-owned proposal container with optional source note,
+  meeting, and voice-note context, optional polymorphic target reference,
+  status, explanation, confidence, and review metadata.
+- `AIProposalItem`: tenant-owned independently reviewable proposed change item
+  with action type, proposed patch JSON, optional polymorphic target, status,
+  explanation, confidence, and review metadata.
+- `VoiceNote`: tenant-owned voice-note readiness record with nullable transcript
+  text, edited transcript text, language, confidence, direct context links, and
+  nullable audio metadata placeholders. Raw audio is not required and defaults
+  to `NOT_STORED`.
+- `VoiceMention`: tenant-owned mention detected within a voice note, with
+  mention text/type, optional transcript span, optional polymorphic resolved
+  entity reference, confidence, and confirmation metadata.
+
+Step 4B-2 is schema/service readiness only. It does not call AI providers,
+transcribe audio, record audio, upload audio, apply proposal patches, mutate
+target records, or add proposal review UI. Even `APPROVED` proposal statuses
+are stored state only until a later explicit application engine exists.
+
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
 
@@ -59,3 +81,7 @@ Where practical, tenant-scoped parent models expose `@@unique([id, tenantId])`
 so children can use composite foreign keys such as `(personId, tenantId)` or
 `(meetingId, tenantId)`. This adds database-level protection in addition to
 service-layer tenant validation.
+
+Polymorphic fields such as proposal targets and voice mention resolutions cannot
+be represented as direct foreign keys, so services validate that type and id are
+provided together and that the referenced entity exists in the same tenant.

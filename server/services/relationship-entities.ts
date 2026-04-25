@@ -15,6 +15,13 @@ export class TenantScopedEntityNotFoundError extends Error {
   }
 }
 
+export class InvalidRelationshipEntityReferenceError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidRelationshipEntityReferenceError";
+  }
+}
+
 export async function relationshipEntityExistsInTenant(
   input: {
     tenantId: string;
@@ -90,6 +97,30 @@ export async function relationshipEntityExistsInTenant(
           where: { id: input.entityId, tenantId: input.tenantId },
         })) > 0
       );
+    case "AI_PROPOSAL":
+      return (
+        (await db.aIProposal.count({
+          where: { id: input.entityId, tenantId: input.tenantId },
+        })) > 0
+      );
+    case "AI_PROPOSAL_ITEM":
+      return (
+        (await db.aIProposalItem.count({
+          where: { id: input.entityId, tenantId: input.tenantId },
+        })) > 0
+      );
+    case "VOICE_NOTE":
+      return (
+        (await db.voiceNote.count({
+          where: { id: input.entityId, tenantId: input.tenantId },
+        })) > 0
+      );
+    case "VOICE_MENTION":
+      return (
+        (await db.voiceMention.count({
+          where: { id: input.entityId, tenantId: input.tenantId },
+        })) > 0
+      );
   }
 }
 
@@ -121,6 +152,35 @@ export async function assertOptionalRelationshipEntityBelongsToTenant(
 ) {
   if (!input.entityId) {
     return;
+  }
+
+  await assertRelationshipEntityBelongsToTenant(
+    {
+      tenantId: input.tenantId,
+      entityType: input.entityType,
+      entityId: input.entityId,
+    },
+    db,
+  );
+}
+
+export async function assertOptionalPolymorphicRelationshipBelongsToTenant(
+  input: {
+    tenantId: string;
+    entityType: SourceEntityType | null | undefined;
+    entityId: string | null | undefined;
+    label: string;
+  },
+  db: RelationshipEntityClient = prisma,
+) {
+  if (!input.entityType && !input.entityId) {
+    return;
+  }
+
+  if (!input.entityType || !input.entityId) {
+    throw new InvalidRelationshipEntityReferenceError(
+      `${input.label} must include both entity type and entity id`,
+    );
   }
 
   await assertRelationshipEntityBelongsToTenant(

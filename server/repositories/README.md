@@ -5,9 +5,10 @@ explicit user and tenant context and must not trust caller-provided tenant ids
 without service-layer membership checks.
 
 This stage includes auth, tenancy, Step 4A relationship backbone repositories,
-and Step 4B-1 repositories for tasks, commitments, needs, capabilities, and
-introduction suggestions.
+Step 4B-1 repositories for tasks, commitments, needs, capabilities, and
+introduction suggestions, and Step 4B-2 repositories for AI proposal and voice
+note readiness.
 
-Repositories for AI proposals, billing, integrations, search, voice capture,
-notifications, background jobs, and embeddings are intentionally not
-implemented yet.
+Repositories for billing, integrations, search, actual voice capture,
+transcription, notifications, background jobs, embeddings, and provider-backed
+AI execution are intentionally not implemented yet.

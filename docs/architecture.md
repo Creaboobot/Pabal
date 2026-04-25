@@ -44,6 +44,12 @@ capabilities, and introduction suggestions. These records follow the same
 tenant-aware repository/service pattern and use composite relations for direct
 links to Step 4A records and to each other.
 
+Step 4B-2 adds schema and server-side skeletons for AI proposal readiness and
+voice note readiness. Direct source/context links use composite tenant-aware
+relations where practical. Polymorphic proposal targets and voice mention
+resolutions are validated in services before persistence.
+
 This stage intentionally contains no product UI workflows, AI proposals, voice
-notes, matching algorithm, notifications, background jobs, billing, Microsoft
-Graph sync, LinkedIn enrichment, search, embeddings, or provider calls.
+recording, transcription, proposal application engine, matching algorithm,
+notifications, background jobs, billing, Microsoft Graph sync, LinkedIn
+enrichment, search, embeddings, or provider calls.

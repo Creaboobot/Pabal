@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
+import { seedAIVoiceReadinessDemoData } from "./seed-data/ai-voice-readiness";
 import { seedFoundationRoles } from "./seed-data/relationship-backbone";
-import { seedActionIntelligenceDemoData } from "./seed-data/action-intelligence";
 
 const prisma = new PrismaClient();
 
@@ -10,8 +10,8 @@ async function main() {
   console.log("Seeded foundation roles.");
 
   if (process.env.SEED_DEMO_DATA === "true") {
-    await seedActionIntelligenceDemoData(prisma);
-    console.log("Seeded Step 4A and Step 4B-1 demo data.");
+    await seedAIVoiceReadinessDemoData(prisma);
+    console.log("Seeded Step 4A, Step 4B-1, and Step 4B-2 demo data.");
   }
 }
 
