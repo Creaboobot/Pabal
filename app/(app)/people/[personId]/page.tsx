@@ -2,10 +2,10 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
-  Building2,
   Edit,
   Mail,
   Phone,
+  Plus,
   UserRound,
 } from "lucide-react";
 
@@ -15,9 +15,12 @@ import { EmptyState } from "@/components/states/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { archivePersonAction } from "@/modules/people/actions";
+import { AffiliationCard } from "@/modules/people/components/affiliation-card";
 import { ArchiveRecordButton } from "@/modules/people/components/archive-record-button";
 import { RelationshipBadges } from "@/modules/people/components/relationship-badges";
+import { RelatedContextSummary } from "@/modules/people/components/related-context-summary";
 import { getTenantPersonProfile } from "@/server/services/people";
+import { getTenantPersonRelatedContext } from "@/server/services/relationship-context";
 import { getCurrentUserContext } from "@/server/services/session";
 
 export const dynamic = "force-dynamic";
@@ -45,6 +48,17 @@ export default async function PersonDetailPage({
   if (!person) {
     notFound();
   }
+
+  const relatedContext = await getTenantPersonRelatedContext(context, personId);
+  const activeAffiliations = person.companyAffiliations.filter(
+    (affiliation) => !affiliation.endsAt,
+  );
+  const endedAffiliations = person.companyAffiliations.filter(
+    (affiliation) => affiliation.endsAt,
+  );
+  const primaryAffiliation = activeAffiliations.find(
+    (affiliation) => affiliation.isPrimary,
+  );
 
   return (
     <div className="space-y-6">
@@ -103,57 +117,90 @@ export default async function PersonDetailPage({
         <CockpitCard title="Related context">
           <div className="flex flex-wrap gap-2">
             <Badge variant="secondary">
-              {person._count.notes} notes
+              {relatedContext.notes.length} latest notes
             </Badge>
             <Badge variant="secondary">
-              {person._count.meetingParticipants} meetings
+              {relatedContext.meetings.length} latest meetings
             </Badge>
           </div>
         </CockpitCard>
       </section>
 
-      <CockpitCard title="Company affiliations">
-        {person.companyAffiliations.length > 0 ? (
+      {primaryAffiliation ? (
+        <CockpitCard title="Primary company">
+          <AffiliationCard
+            affiliation={primaryAffiliation}
+            mode="person"
+            personId={person.id}
+          />
+        </CockpitCard>
+      ) : null}
+
+      <CockpitCard
+        title="Active affiliations"
+        value={activeAffiliations.length}
+      >
+        {activeAffiliations.length > 0 ? (
           <div className="grid gap-3">
-            {person.companyAffiliations.map((affiliation) => (
-              <Link
-                className="rounded-md border border-border bg-background p-3 outline-none transition hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring"
-                href={`/people/companies/${affiliation.company.id}`}
+            {activeAffiliations.map((affiliation) => (
+              <AffiliationCard
+                affiliation={affiliation}
                 key={affiliation.id}
-              >
-                <div className="flex items-start gap-3">
-                  <Building2
-                    aria-hidden="true"
-                    className="mt-0.5 size-5 text-primary"
-                  />
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="font-semibold text-foreground">
-                        {affiliation.company.name}
-                      </h2>
-                      {affiliation.isPrimary ? (
-                        <Badge variant="success">Primary</Badge>
-                      ) : null}
-                    </div>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {affiliation.affiliationTitle ?? "Affiliation"}
-                      {affiliation.department
-                        ? `, ${affiliation.department}`
-                        : ""}
-                    </p>
-                  </div>
-                </div>
-              </Link>
+                mode="person"
+                personId={person.id}
+                showActions
+              />
             ))}
           </div>
         ) : (
           <EmptyState
-            description="Affiliation management is planned for Step 6B."
-            icon={Building2}
+            action={
+              <Button asChild>
+                <Link href={`/people/${person.id}/affiliations/new`}>
+                  <Plus aria-hidden="true" className="mr-2 size-4" />
+                  Add affiliation
+                </Link>
+              </Button>
+            }
+            description="Link this person to a company to make their relationship context easier to use."
+            icon={UserRound}
             title="No linked companies"
           />
         )}
       </CockpitCard>
+
+      {endedAffiliations.length > 0 ? (
+        <CockpitCard
+          title="Ended affiliations"
+          value={endedAffiliations.length}
+        >
+          <div className="grid gap-3">
+            {endedAffiliations.map((affiliation) => (
+              <AffiliationCard
+                affiliation={affiliation}
+                key={affiliation.id}
+                mode="person"
+                personId={person.id}
+                showActions
+              />
+            ))}
+          </div>
+        </CockpitCard>
+      ) : null}
+
+      {activeAffiliations.length > 0 ? (
+        <Button asChild>
+          <Link href={`/people/${person.id}/affiliations/new`}>
+            <Plus aria-hidden="true" className="mr-2 size-4" />
+            Add affiliation
+          </Link>
+        </Button>
+      ) : null}
+
+      <RelatedContextSummary
+        meetings={relatedContext.meetings}
+        notes={relatedContext.notes}
+      />
 
       <ArchiveRecordButton
         action={archivePersonAction.bind(null, person.id)}

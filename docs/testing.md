@@ -55,6 +55,12 @@ list/create/detail/edit screens, people and company create/edit/archive service
 flows, cross-tenant access denial, and audit log creation without storing full
 contact details or descriptions in audit metadata.
 
+The Step 6B tests cover affiliation validation, route smoke rendering for
+affiliation create/edit pages, tenant-aware create/edit/end/archive service
+flows, transaction-safe primary affiliation handling, clearing primary state on
+end/archive, tenant-safe related meeting/note summaries, cross-tenant
+affiliation rejection, and audit log creation with minimal metadata.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

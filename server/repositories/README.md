@@ -6,8 +6,9 @@ without service-layer membership checks.
 
 This stage includes auth, tenancy, Step 4A relationship backbone repositories,
 Step 4B-1 repositories for tasks, commitments, needs, capabilities, and
-introduction suggestions, and Step 4B-2 repositories for AI proposal and voice
-note readiness.
+introduction suggestions, Step 4B-2 repositories for AI proposal and voice note
+readiness, and Step 6B tenant-scoped affiliation and related-context read
+methods.
 
 Repositories for billing, integrations, search, actual voice capture,
 transcription, notifications, background jobs, embeddings, and provider-backed

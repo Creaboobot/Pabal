@@ -85,8 +85,25 @@ Archived people and companies are hidden from active lists and detail reads by
 repository filters. Historical relationship context remains intact.
 
 The current schema does not include a LinkedIn URL field, so Step 6A does not
-store LinkedIn URLs. `CompanyAffiliation` remains read-only in the UI until Step
-6B adds affiliation management.
+store LinkedIn URLs.
+
+## Step 6B affiliation management and related context
+
+Step 6B uses the existing `CompanyAffiliation` schema without a migration.
+Users can create, edit, end, and archive affiliations between existing people
+and companies. `isPrimary` marks the main active company link for a person.
+When a new or updated affiliation is made primary, the service transaction
+unsets other active, non-archived primary affiliations for that same person and
+tenant before saving the selected record.
+
+Ending or archiving an affiliation clears `isPrimary` and does not
+automatically choose a replacement. Archived affiliations are hidden from active
+relationship context while preserving historical records.
+
+Person and company detail pages now show read-only latest meeting and note
+summaries from existing `Meeting`, `MeetingParticipant`, and `Note` records.
+These summaries do not introduce meeting capture, note creation, AI
+summarisation, semantic search, or matching behavior.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.

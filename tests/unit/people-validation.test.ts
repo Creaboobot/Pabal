@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  companyAffiliationFormSchema,
   companyFormSchema,
+  editAffiliationFormSchema,
+  personAffiliationFormSchema,
   personFormSchema,
 } from "@/modules/people/validation";
 
@@ -90,5 +93,78 @@ describe("people and company form validation", () => {
       name: "Nordic Industrials",
       website: null,
     });
+  });
+
+  it("requires company when creating an affiliation from a person", () => {
+    const result = personAffiliationFormSchema.safeParse({
+      affiliationTitle: "",
+      companyId: "",
+      department: "",
+      endsAt: "",
+      isPrimary: false,
+      startsAt: "",
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.companyId).toBeDefined();
+  });
+
+  it("requires person when creating an affiliation from a company", () => {
+    const result = companyAffiliationFormSchema.safeParse({
+      affiliationTitle: "",
+      department: "",
+      endsAt: "",
+      isPrimary: false,
+      personId: "",
+      startsAt: "",
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.personId).toBeDefined();
+  });
+
+  it("validates affiliation date consistency", () => {
+    const result = editAffiliationFormSchema.safeParse({
+      affiliationTitle: "Advisor",
+      companyId: "company_1",
+      department: "Transformation",
+      endsAt: "2025-01-01",
+      isPrimary: false,
+      startsAt: "2025-02-01",
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.endsAt).toBeDefined();
+  });
+
+  it("limits affiliation title and department length", () => {
+    const result = editAffiliationFormSchema.safeParse({
+      affiliationTitle: "A".repeat(121),
+      companyId: "company_1",
+      department: "B".repeat(121),
+      endsAt: "",
+      isPrimary: false,
+      startsAt: "",
+    });
+
+    expect(result.success).toBe(false);
+    expect(
+      result.error?.flatten().fieldErrors.affiliationTitle,
+    ).toBeDefined();
+    expect(result.error?.flatten().fieldErrors.department).toBeDefined();
+  });
+
+  it("does not allow ended affiliations to be primary", () => {
+    const result = editAffiliationFormSchema.safeParse({
+      affiliationTitle: "Advisor",
+      companyId: "company_1",
+      department: "",
+      endsAt: "2025-01-01",
+      isPrimary: true,
+      startsAt: "",
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.isPrimary).toBeDefined();
   });
 });

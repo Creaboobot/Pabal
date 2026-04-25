@@ -52,6 +52,18 @@ cross-tenant writes fail in the service layer. Person/company create, update,
 and archive operations write audit logs with minimal metadata only; full contact
 details, descriptions, and before/after payloads are not logged.
 
+Step 6B affiliation mutations follow the same boundary. Server actions receive
+person/company/affiliation ids from route context or form controls, then
+services verify those records belong to the active tenant before writing. The
+primary-affiliation update is transactional: other active primary affiliations
+for the same person and tenant are unset before the selected affiliation is
+stored as primary. Ending or archiving an affiliation clears `isPrimary`.
+
+Affiliation audit metadata is intentionally minimal and must not include full
+contact details, note text, descriptions, raw form payloads, or sensitive
+relationship values. Related meeting and note summaries are read-only and
+tenant-scoped.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

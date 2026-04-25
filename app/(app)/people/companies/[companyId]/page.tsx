@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Edit, Globe2, UsersRound } from "lucide-react";
+import { ArrowLeft, Edit, Globe2, Plus, UsersRound } from "lucide-react";
 
 import { PageHeader } from "@/components/app/page-header";
 import { CockpitCard } from "@/components/cards/cockpit-card";
@@ -8,8 +8,11 @@ import { EmptyState } from "@/components/states/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { archiveCompanyAction } from "@/modules/people/actions";
+import { AffiliationCard } from "@/modules/people/components/affiliation-card";
 import { ArchiveRecordButton } from "@/modules/people/components/archive-record-button";
+import { RelatedContextSummary } from "@/modules/people/components/related-context-summary";
 import { getTenantCompanyProfile } from "@/server/services/companies";
+import { getTenantCompanyRelatedContext } from "@/server/services/relationship-context";
 import { getCurrentUserContext } from "@/server/services/session";
 
 export const dynamic = "force-dynamic";
@@ -37,6 +40,20 @@ export default async function CompanyDetailPage({
   if (!company) {
     notFound();
   }
+
+  const relatedContext = await getTenantCompanyRelatedContext(
+    context,
+    companyId,
+  );
+  const activeAffiliations = company.companyAffiliations.filter(
+    (affiliation) => !affiliation.endsAt,
+  );
+  const endedAffiliations = company.companyAffiliations.filter(
+    (affiliation) => affiliation.endsAt,
+  );
+  const primaryContacts = activeAffiliations.filter(
+    (affiliation) => affiliation.isPrimary,
+  );
 
   return (
     <div className="space-y-6">
@@ -87,59 +104,92 @@ export default async function CompanyDetailPage({
         <CockpitCard title="Related context">
           <div className="flex flex-wrap gap-2">
             <Badge variant="secondary">
-              {company.companyAffiliations.length} linked people
+              {activeAffiliations.length} active people
             </Badge>
             <Badge variant="secondary">
-              {company._count.notes} notes
+              {relatedContext.notes.length} latest notes
             </Badge>
             <Badge variant="secondary">
-              {company._count.primaryMeetings} meetings
+              {relatedContext.meetings.length} latest meetings
             </Badge>
           </div>
         </CockpitCard>
       </section>
 
-      <CockpitCard title="Linked people">
-        {company.companyAffiliations.length > 0 ? (
+      {primaryContacts.length > 0 ? (
+        <CockpitCard title="Primary contacts" value={primaryContacts.length}>
           <div className="grid gap-3">
-            {company.companyAffiliations.map((affiliation) => (
-              <Link
-                className="rounded-md border border-border bg-background p-3 outline-none transition hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring"
-                href={`/people/${affiliation.person.id}`}
+            {primaryContacts.map((affiliation) => (
+              <AffiliationCard
+                affiliation={affiliation}
                 key={affiliation.id}
-              >
-                <div className="flex items-start gap-3">
-                  <UsersRound
-                    aria-hidden="true"
-                    className="mt-0.5 size-5 text-primary"
-                  />
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="font-semibold text-foreground">
-                        {affiliation.person.displayName}
-                      </h2>
-                      {affiliation.isPrimary ? (
-                        <Badge variant="success">Primary</Badge>
-                      ) : null}
-                    </div>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {affiliation.affiliationTitle ??
-                        affiliation.person.jobTitle ??
-                        "Linked person"}
-                    </p>
-                  </div>
-                </div>
-              </Link>
+                mode="company"
+              />
+            ))}
+          </div>
+        </CockpitCard>
+      ) : null}
+
+      <CockpitCard title="Affiliated people" value={activeAffiliations.length}>
+        {activeAffiliations.length > 0 ? (
+          <div className="grid gap-3">
+            {activeAffiliations.map((affiliation) => (
+              <AffiliationCard
+                affiliation={affiliation}
+                key={affiliation.id}
+                mode="company"
+                showActions
+              />
             ))}
           </div>
         ) : (
           <EmptyState
-            description="Affiliation management is planned for Step 6B."
+            action={
+              <Button asChild>
+                <Link href={`/people/companies/${company.id}/affiliations/new`}>
+                  <Plus aria-hidden="true" className="mr-2 size-4" />
+                  Add person
+                </Link>
+              </Button>
+            }
+            description="Link people to this company to make the organisation useful as relationship context."
             icon={UsersRound}
             title="No linked people"
           />
         )}
       </CockpitCard>
+
+      {endedAffiliations.length > 0 ? (
+        <CockpitCard
+          title="Ended affiliations"
+          value={endedAffiliations.length}
+        >
+          <div className="grid gap-3">
+            {endedAffiliations.map((affiliation) => (
+              <AffiliationCard
+                affiliation={affiliation}
+                key={affiliation.id}
+                mode="company"
+                showActions
+              />
+            ))}
+          </div>
+        </CockpitCard>
+      ) : null}
+
+      {activeAffiliations.length > 0 ? (
+        <Button asChild>
+          <Link href={`/people/companies/${company.id}/affiliations/new`}>
+            <Plus aria-hidden="true" className="mr-2 size-4" />
+            Add person
+          </Link>
+        </Button>
+      ) : null}
+
+      <RelatedContextSummary
+        meetings={relatedContext.meetings}
+        notes={relatedContext.notes}
+      />
 
       <ArchiveRecordButton
         action={archiveCompanyAction.bind(null, company.id)}

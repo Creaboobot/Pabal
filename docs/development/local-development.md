@@ -102,5 +102,16 @@ Step 6A adds the first record-management workflow:
 
 Use local development sign-in, then create people and companies from the mobile
 shell. Archive actions hide records from active lists without permanently
-deleting them. Affiliation management and LinkedIn URL storage are intentionally
-not included in Step 6A.
+deleting them.
+
+Step 6B adds affiliation management and read-only related context:
+
+- create a person-company affiliation from a person detail page;
+- create a person-company affiliation from a company detail page;
+- edit, end, or archive an affiliation from the person-context edit route;
+- mark one active affiliation as primary for a person;
+- view latest tenant-scoped meeting and note summaries on person/company detail
+  pages.
+
+These flows do not create meetings, create notes, call AI, run search/matching,
+or store LinkedIn URLs.

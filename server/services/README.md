@@ -7,7 +7,9 @@ This stage includes foundational auth, tenant, role, session, audit, Step 4A
 relationship backbone services, and Step 4B-1 action/intelligence-readiness
 services, plus Step 4B-2 AI proposal and voice-note-readiness services. Step 5
 adds a read-only app-shell summary service for tenant-scoped counts used by the
-authenticated shell placeholders.
+authenticated shell placeholders. Step 6B adds affiliation services for
+create/edit/end/archive flows and read-only related-context services for latest
+tenant-scoped meetings and notes.
 
 Services enforce tenant access before calling repositories. They are the right
 place for membership checks, role checks, cross-tenant relation validation,
@@ -21,3 +23,8 @@ execution, and voice processing are intentionally not implemented yet.
 
 The app-shell summary service is read-only. It must not create records, apply
 AI proposals, start capture workflows, or run search/matching logic.
+
+Affiliation services own the transaction that keeps a person's primary company
+link deterministic: setting one active affiliation as primary unsets other
+active primary affiliations for that person in the same tenant. Ending or
+archiving an affiliation clears its primary flag and writes a minimal audit log.
