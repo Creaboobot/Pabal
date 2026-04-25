@@ -100,6 +100,15 @@ pnpm prisma:seed
 
 ### Docker Compose
 
+Verify the Compose file and PostgreSQL health path:
+
+```bash
+docker compose config
+docker compose up -d postgres
+docker compose ps
+docker compose down -v
+```
+
 Start PostgreSQL and the app:
 
 ```bash
