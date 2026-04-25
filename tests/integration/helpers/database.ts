@@ -7,6 +7,11 @@ export const describeWithDatabase = process.env.DATABASE_URL
 
 export async function resetDatabase() {
   await prisma.sourceReference.deleteMany();
+  await prisma.task.deleteMany();
+  await prisma.introductionSuggestion.deleteMany();
+  await prisma.commitment.deleteMany();
+  await prisma.need.deleteMany();
+  await prisma.capability.deleteMany();
   await prisma.note.deleteMany();
   await prisma.meetingParticipant.deleteMany();
   await prisma.companyAffiliation.deleteMany();

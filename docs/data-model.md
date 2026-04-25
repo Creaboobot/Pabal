@@ -2,7 +2,8 @@
 
 The Step 3 SaaS foundation defines authentication, tenant/workspace,
 membership, role, and audit logging tables. Step 4A adds the first
-tenant-scoped relationship backbone tables.
+tenant-scoped relationship backbone tables. Step 4B-1 adds tenant-scoped
+action and intelligence-readiness tables.
 
 ## Foundation tables
 
@@ -34,10 +35,22 @@ tenant-scoped relationship backbone tables.
   records. Services must validate that both source and target belong to the same
   tenant before creating a reference.
 
-Step 4A intentionally does not add `Task`, `Commitment`, `Need`, `Capability`,
-`IntroductionSuggestion`, `AIProposal`, `AIProposalItem`, `VoiceNote`,
-`VoiceMention`, billing, Microsoft Graph, or LinkedIn enrichment tables. Those
-belong to later steps.
+## Step 4B-1 action and intelligence readiness
+
+- `Task`: tenant-owned follow-up/action shell with optional person, company,
+  meeting, note, commitment, and introduction suggestion links.
+- `Commitment`: tenant-owned promise/obligation ledger, distinct from generic
+  tasks, with owner/counterparty person or company links.
+- `Need`: tenant-owned problem, requirement, request, opportunity, or interest.
+- `Capability`: tenant-owned expertise, access, asset, experience, or solution
+  potential.
+- `IntroductionSuggestion`: tenant-owned relationship brokerage suggestion that
+  can link a need, capability, people, and companies.
+
+Step 4B-1 intentionally does not add `AIProposal`, `AIProposalItem`,
+`VoiceNote`, `VoiceMention`, billing, Microsoft Graph, LinkedIn enrichment,
+notifications, background jobs, search, embeddings, or provider calls. Matching
+and reminder workflows belong to later steps.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.

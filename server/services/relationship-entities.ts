@@ -60,6 +60,36 @@ export async function relationshipEntityExistsInTenant(
           where: { id: input.entityId, tenantId: input.tenantId },
         })) > 0
       );
+    case "TASK":
+      return (
+        (await db.task.count({
+          where: { id: input.entityId, tenantId: input.tenantId },
+        })) > 0
+      );
+    case "COMMITMENT":
+      return (
+        (await db.commitment.count({
+          where: { id: input.entityId, tenantId: input.tenantId },
+        })) > 0
+      );
+    case "NEED":
+      return (
+        (await db.need.count({
+          where: { id: input.entityId, tenantId: input.tenantId },
+        })) > 0
+      );
+    case "CAPABILITY":
+      return (
+        (await db.capability.count({
+          where: { id: input.entityId, tenantId: input.tenantId },
+        })) > 0
+      );
+    case "INTRODUCTION_SUGGESTION":
+      return (
+        (await db.introductionSuggestion.count({
+          where: { id: input.entityId, tenantId: input.tenantId },
+        })) > 0
+      );
   }
 }
 
@@ -79,4 +109,26 @@ export async function assertRelationshipEntityBelongsToTenant(
       input.entityId,
     );
   }
+}
+
+export async function assertOptionalRelationshipEntityBelongsToTenant(
+  input: {
+    tenantId: string;
+    entityType: SourceEntityType;
+    entityId: string | null | undefined;
+  },
+  db: RelationshipEntityClient = prisma,
+) {
+  if (!input.entityId) {
+    return;
+  }
+
+  await assertRelationshipEntityBelongsToTenant(
+    {
+      tenantId: input.tenantId,
+      entityType: input.entityType,
+      entityId: input.entityId,
+    },
+    db,
+  );
 }

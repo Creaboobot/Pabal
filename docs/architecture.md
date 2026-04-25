@@ -39,6 +39,11 @@ explicit tenant context, and services call `requireTenantAccess` before
 tenant-scoped reads or writes. Cross-tenant direct relations use composite
 tenant-aware foreign keys where Prisma/PostgreSQL can express them.
 
-This stage intentionally contains no product UI workflows, tasks, commitments,
-needs, capabilities, introduction suggestions, AI proposals, voice notes,
-billing, Microsoft Graph sync, LinkedIn enrichment, or provider calls.
+Step 4B-1 adds schema and server-side skeletons for tasks, commitments, needs,
+capabilities, and introduction suggestions. These records follow the same
+tenant-aware repository/service pattern and use composite relations for direct
+links to Step 4A records and to each other.
+
+This stage intentionally contains no product UI workflows, AI proposals, voice
+notes, matching algorithm, notifications, background jobs, billing, Microsoft
+Graph sync, LinkedIn enrichment, search, embeddings, or provider calls.

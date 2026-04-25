@@ -1,9 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
-import {
-  seedFoundationRoles,
-  seedRelationshipBackboneDemoData,
-} from "./seed-data/relationship-backbone";
+import { seedFoundationRoles } from "./seed-data/relationship-backbone";
+import { seedActionIntelligenceDemoData } from "./seed-data/action-intelligence";
 
 const prisma = new PrismaClient();
 
@@ -12,8 +10,8 @@ async function main() {
   console.log("Seeded foundation roles.");
 
   if (process.env.SEED_DEMO_DATA === "true") {
-    await seedRelationshipBackboneDemoData(prisma);
-    console.log("Seeded Step 4A relationship backbone demo data.");
+    await seedActionIntelligenceDemoData(prisma);
+    console.log("Seeded Step 4A and Step 4B-1 demo data.");
   }
 }
 

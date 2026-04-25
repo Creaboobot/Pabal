@@ -33,6 +33,11 @@ tenant-scoped reads and lists, cross-tenant relationship rejection, database
 foreign-key enforcement for tenant-aware relations, source-reference validation,
 and idempotent demo seed data.
 
+The Step 4B-1 integration tests cover tenant isolation for tasks, commitments,
+needs, capabilities, and introduction suggestions; cross-tenant direct relation
+rejection; source-reference validation for 4B-1 records; and idempotent demo
+seed data.
+
 Vitest runs test files serially because the integration suite uses a shared
 test database and resets tables between cases.
 
