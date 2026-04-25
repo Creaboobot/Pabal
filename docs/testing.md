@@ -38,6 +38,12 @@ needs, capabilities, and introduction suggestions; cross-tenant direct relation
 rejection; source-reference validation for 4B-1 records; and idempotent demo
 seed data.
 
+The Step 4B-2 integration tests cover tenant isolation for AI proposals,
+AI proposal items, voice notes, and voice mentions; polymorphic target pair
+validation; cross-tenant direct relation rejection; source-reference validation
+for 4B-2 records; proof that proposal item creation does not mutate target
+records; and idempotent demo seed data.
+
 Vitest runs test files serially because the integration suite uses a shared
 test database and resets tables between cases.
 

@@ -51,8 +51,9 @@ pnpm prisma:deploy
 pnpm prisma:seed
 ```
 
-To also seed the small deterministic Step 4A relationship demo dataset and the
-Step 4B-1 action/intelligence-readiness demo records, set:
+To also seed the small deterministic Step 4A relationship demo dataset,
+Step 4B-1 action/intelligence-readiness demo records, and Step 4B-2
+AI/voice-readiness demo records, set:
 
 ```bash
 SEED_DEMO_DATA=true
@@ -65,3 +66,6 @@ PowerShell:
 $env:SEED_DEMO_DATA = "true"
 pnpm prisma:seed
 ```
+
+Step 4B-2 seed data stores only placeholder transcript/proposal metadata. It
+does not store real audio, provider responses, or external integration data.

@@ -65,9 +65,11 @@ foundation: Auth.js-compatible authentication wiring, tenants/workspaces,
 memberships, roles, protected route shells, and audit logging baseline. It also
 includes the Step 4A relationship backbone models and the Step 4B-1
 action/intelligence-readiness models for tasks, commitments, needs,
-capabilities, and introduction suggestions. It does not implement full CRUD
-screens, AI proposals, AI workflows, billing, Microsoft Graph, LinkedIn
-enrichment, voice capture, or production deployment.
+capabilities, and introduction suggestions. It also includes Step 4B-2
+schema/readiness models for AI proposals and voice notes. It does not implement
+full CRUD screens, AI provider calls, proposal application, transcription,
+audio recording/upload, billing, Microsoft Graph, LinkedIn enrichment, or
+production deployment.
 
 ### Requirements
 
@@ -118,9 +120,11 @@ pnpm prisma:deploy
 pnpm prisma:seed
 ```
 
-Optional deterministic demo relationship and Step 4B-1 action/intelligence
-data can be seeded by setting `SEED_DEMO_DATA=true` before
-`pnpm prisma:seed`.
+Optional deterministic demo relationship, Step 4B-1 action/intelligence, and
+Step 4B-2 AI/voice-readiness data can be seeded by setting
+`SEED_DEMO_DATA=true` before `pnpm prisma:seed`. The Step 4B-2 seed stores only
+placeholder transcript/proposal metadata; it does not store real audio or call
+AI/transcription providers.
 
 ### Docker Compose
 

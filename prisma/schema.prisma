@@ -72,6 +72,10 @@ enum SourceEntityType {
   NEED
   CAPABILITY
   INTRODUCTION_SUGGESTION
+  AI_PROPOSAL
+  AI_PROPOSAL_ITEM
+  VOICE_NOTE
+  VOICE_MENTION
 }
 
 enum TaskStatus {
@@ -158,6 +162,71 @@ enum IntroductionSuggestionStatus {
   PARKED
 }
 
+enum AIProposalType {
+  NOTE_EXTRACTION
+  VOICE_NOTE_EXTRACTION
+  MEETING_EXTRACTION
+  RELATIONSHIP_UPDATE
+  FOLLOW_UP_SUGGESTION
+  INTRODUCTION_SUGGESTION
+  OTHER
+}
+
+enum AIProposalStatus {
+  PENDING_REVIEW
+  IN_REVIEW
+  APPROVED
+  PARTIALLY_APPROVED
+  REJECTED
+  DISMISSED
+}
+
+enum AIProposalActionType {
+  CREATE
+  UPDATE
+  ARCHIVE
+  LINK
+  UNLINK
+  NO_OP
+}
+
+enum AIProposalItemStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  NEEDS_CLARIFICATION
+}
+
+enum VoiceNoteStatus {
+  DRAFT
+  AWAITING_TRANSCRIPTION
+  TRANSCRIBED
+  TRANSCRIPTION_FAILED
+  READY_FOR_REVIEW
+  REVIEWED
+  DELETED
+}
+
+enum VoiceAudioRetentionStatus {
+  NOT_STORED
+  PENDING_DELETION
+  DELETED
+  RETAINED_WITH_CONSENT
+}
+
+enum VoiceMentionType {
+  PERSON
+  COMPANY
+  MEETING
+  NOTE
+  TASK
+  COMMITMENT
+  NEED
+  CAPABILITY
+  INTRODUCTION_SUGGESTION
+  UNKNOWN
+}
+
 model User {
   id                             String                   @id @default(cuid())
   name                           String?
@@ -191,6 +260,15 @@ model User {
   updatedCapabilities            Capability[]             @relation("CapabilityUpdatedBy")
   createdIntroductionSuggestions IntroductionSuggestion[] @relation("IntroductionSuggestionCreatedBy")
   updatedIntroductionSuggestions IntroductionSuggestion[] @relation("IntroductionSuggestionUpdatedBy")
+  createdAIProposals             AIProposal[]             @relation("AIProposalCreatedBy")
+  reviewedAIProposals            AIProposal[]             @relation("AIProposalReviewedBy")
+  createdAIProposalItems         AIProposalItem[]         @relation("AIProposalItemCreatedBy")
+  reviewedAIProposalItems        AIProposalItem[]         @relation("AIProposalItemReviewedBy")
+  createdVoiceNotes              VoiceNote[]              @relation("VoiceNoteCreatedBy")
+  updatedVoiceNotes              VoiceNote[]              @relation("VoiceNoteUpdatedBy")
+  createdVoiceMentions           VoiceMention[]           @relation("VoiceMentionCreatedBy")
+  updatedVoiceMentions           VoiceMention[]           @relation("VoiceMentionUpdatedBy")
+  confirmedVoiceMentions         VoiceMention[]           @relation("VoiceMentionConfirmedBy")
   createdSourceReferences        SourceReference[]        @relation("SourceReferenceCreatedBy")
   createdAt                      DateTime                 @default(now()) @map("created_at")
   updatedAt                      DateTime                 @updatedAt @map("updated_at")
@@ -257,6 +335,10 @@ model Tenant {
   needs                   Need[]
   capabilities            Capability[]
   introductionSuggestions IntroductionSuggestion[]
+  aiProposals             AIProposal[]
+  aiProposalItems         AIProposalItem[]
+  voiceNotes              VoiceNote[]
+  voiceMentions           VoiceMention[]
   sourceReferences        SourceReference[]
   createdAt               DateTime                 @default(now()) @map("created_at")
   updatedAt               DateTime                 @updatedAt @map("updated_at")
@@ -339,6 +421,7 @@ model Person {
   capabilities                Capability[]             @relation("PersonCapabilities")
   introductionSuggestionsFrom IntroductionSuggestion[] @relation("IntroductionFromPerson")
   introductionSuggestionsTo   IntroductionSuggestion[] @relation("IntroductionToPerson")
+  voiceNotes                  VoiceNote[]              @relation("PersonVoiceNotes")
   createdAt                   DateTime                 @default(now()) @map("created_at")
   updatedAt                   DateTime                 @updatedAt @map("updated_at")
 
@@ -374,6 +457,7 @@ model Company {
   capabilities                Capability[]             @relation("CompanyCapabilities")
   introductionSuggestionsFrom IntroductionSuggestion[] @relation("IntroductionFromCompany")
   introductionSuggestionsTo   IntroductionSuggestion[] @relation("IntroductionToCompany")
+  voiceNotes                  VoiceNote[]              @relation("CompanyVoiceNotes")
   createdAt                   DateTime                 @default(now()) @map("created_at")
   updatedAt                   DateTime                 @updatedAt @map("updated_at")
 
@@ -431,6 +515,8 @@ model Meeting {
   tasks            Task[]               @relation("MeetingTasks")
   commitments      Commitment[]         @relation("MeetingCommitments")
   needs            Need[]               @relation("MeetingNeeds")
+  aiProposals      AIProposal[]         @relation("MeetingAIProposals")
+  voiceNotes       VoiceNote[]          @relation("MeetingVoiceNotes")
   createdByUser    User?                @relation("MeetingCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
   updatedByUser    User?                @relation("MeetingUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
   createdAt        DateTime             @default(now()) @map("created_at")
@@ -492,6 +578,8 @@ model Note {
   commitments     Commitment[] @relation("NoteCommitments")
   needs           Need[]       @relation("NoteNeeds")
   capabilities    Capability[] @relation("NoteCapabilities")
+  aiProposals     AIProposal[] @relation("NoteAIProposals")
+  voiceNotes      VoiceNote[]  @relation("NoteVoiceNotes")
   createdByUser   User?        @relation("NoteCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
   updatedByUser   User?        @relation("NoteUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
   createdAt       DateTime     @default(now()) @map("created_at")
@@ -709,6 +797,158 @@ model IntroductionSuggestion {
   @@index([tenantId, toCompanyId])
   @@index([tenantId, archivedAt])
   @@map("introduction_suggestions")
+}
+
+model AIProposal {
+  id                String            @id @default(cuid())
+  tenantId          String            @map("tenant_id")
+  proposalType      AIProposalType    @default(OTHER) @map("proposal_type")
+  status            AIProposalStatus  @default(PENDING_REVIEW)
+  sourceNoteId      String?           @map("source_note_id")
+  sourceMeetingId   String?           @map("source_meeting_id")
+  sourceVoiceNoteId String?           @map("source_voice_note_id")
+  targetEntityType  SourceEntityType? @map("target_entity_type")
+  targetEntityId    String?           @map("target_entity_id")
+  title             String
+  summary           String?
+  explanation       String?
+  confidence        Float?
+  createdByUserId   String?           @map("created_by_user_id")
+  reviewedByUserId  String?           @map("reviewed_by_user_id")
+  reviewedAt        DateTime?         @map("reviewed_at")
+  reviewNote        String?           @map("review_note")
+  archivedAt        DateTime?         @map("archived_at")
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sourceNote        Note?             @relation("NoteAIProposals", fields: [sourceNoteId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  sourceMeeting     Meeting?          @relation("MeetingAIProposals", fields: [sourceMeetingId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  sourceVoiceNote   VoiceNote?        @relation("VoiceNoteAIProposals", fields: [sourceVoiceNoteId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  items             AIProposalItem[]  @relation("AIProposalItems")
+  createdByUser     User?             @relation("AIProposalCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  reviewedByUser    User?             @relation("AIProposalReviewedBy", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  @@unique([id, tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, proposalType])
+  @@index([tenantId, sourceNoteId])
+  @@index([tenantId, sourceMeetingId])
+  @@index([tenantId, sourceVoiceNoteId])
+  @@index([tenantId, targetEntityType, targetEntityId], map: "ai_proposals_tenant_target_idx")
+  @@index([tenantId, createdAt])
+  @@index([tenantId, archivedAt])
+  @@map("ai_proposals")
+}
+
+model AIProposalItem {
+  id               String               @id @default(cuid())
+  tenantId         String               @map("tenant_id")
+  aiProposalId     String               @map("ai_proposal_id")
+  actionType       AIProposalActionType @default(NO_OP) @map("action_type")
+  status           AIProposalItemStatus @default(PENDING_REVIEW)
+  targetEntityType SourceEntityType?    @map("target_entity_type")
+  targetEntityId   String?              @map("target_entity_id")
+  proposedPatch    Json                 @map("proposed_patch")
+  explanation      String?
+  confidence       Float?
+  createdByUserId  String?              @map("created_by_user_id")
+  reviewedByUserId String?              @map("reviewed_by_user_id")
+  reviewedAt       DateTime?            @map("reviewed_at")
+  reviewNote       String?              @map("review_note")
+  archivedAt       DateTime?            @map("archived_at")
+  tenant           Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  aiProposal       AIProposal           @relation("AIProposalItems", fields: [aiProposalId, tenantId], references: [id, tenantId], onDelete: Cascade)
+  createdByUser    User?                @relation("AIProposalItemCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  reviewedByUser   User?                @relation("AIProposalItemReviewedBy", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @updatedAt @map("updated_at")
+
+  @@unique([id, tenantId])
+  @@index([tenantId, aiProposalId])
+  @@index([tenantId, status])
+  @@index([tenantId, actionType])
+  @@index([tenantId, targetEntityType, targetEntityId], map: "ai_proposal_items_tenant_target_idx")
+  @@index([tenantId, archivedAt])
+  @@map("ai_proposal_items")
+}
+
+model VoiceNote {
+  id                   String                    @id @default(cuid())
+  tenantId             String                    @map("tenant_id")
+  status               VoiceNoteStatus           @default(DRAFT)
+  title                String?
+  personId             String?                   @map("person_id")
+  companyId            String?                   @map("company_id")
+  meetingId            String?                   @map("meeting_id")
+  noteId               String?                   @map("note_id")
+  transcriptText       String?                   @map("transcript_text")
+  editedTranscriptText String?                   @map("edited_transcript_text")
+  language             String?
+  transcriptConfidence Float?                    @map("transcript_confidence")
+  audioStorageKey      String?                   @map("audio_storage_key")
+  audioMimeType        String?                   @map("audio_mime_type")
+  audioSizeBytes       Int?                      @map("audio_size_bytes")
+  audioDurationSeconds Int?                      @map("audio_duration_seconds")
+  audioRetentionStatus VoiceAudioRetentionStatus @default(NOT_STORED) @map("audio_retention_status")
+  rawAudioDeletedAt    DateTime?                 @map("raw_audio_deleted_at")
+  retentionExpiresAt   DateTime?                 @map("retention_expires_at")
+  createdByUserId      String?                   @map("created_by_user_id")
+  updatedByUserId      String?                   @map("updated_by_user_id")
+  archivedAt           DateTime?                 @map("archived_at")
+  tenant               Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  person               Person?                   @relation("PersonVoiceNotes", fields: [personId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  company              Company?                  @relation("CompanyVoiceNotes", fields: [companyId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  meeting              Meeting?                  @relation("MeetingVoiceNotes", fields: [meetingId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  note                 Note?                     @relation("NoteVoiceNotes", fields: [noteId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  aiProposals          AIProposal[]              @relation("VoiceNoteAIProposals")
+  mentions             VoiceMention[]            @relation("VoiceNoteMentions")
+  createdByUser        User?                     @relation("VoiceNoteCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedByUser        User?                     @relation("VoiceNoteUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  createdAt            DateTime                  @default(now()) @map("created_at")
+  updatedAt            DateTime                  @updatedAt @map("updated_at")
+
+  @@unique([id, tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, personId])
+  @@index([tenantId, companyId])
+  @@index([tenantId, meetingId])
+  @@index([tenantId, noteId])
+  @@index([tenantId, createdAt])
+  @@index([tenantId, archivedAt])
+  @@map("voice_notes")
+}
+
+model VoiceMention {
+  id                       String            @id @default(cuid())
+  tenantId                 String            @map("tenant_id")
+  voiceNoteId              String            @map("voice_note_id")
+  mentionText              String            @map("mention_text")
+  mentionType              VoiceMentionType  @default(UNKNOWN) @map("mention_type")
+  startChar                Int?              @map("start_char")
+  endChar                  Int?              @map("end_char")
+  resolvedEntityType       SourceEntityType? @map("resolved_entity_type")
+  resolvedEntityId         String?           @map("resolved_entity_id")
+  confidence               Float?
+  requiresUserConfirmation Boolean           @default(true) @map("requires_user_confirmation")
+  confirmedByUserId        String?           @map("confirmed_by_user_id")
+  confirmedAt              DateTime?         @map("confirmed_at")
+  createdByUserId          String?           @map("created_by_user_id")
+  updatedByUserId          String?           @map("updated_by_user_id")
+  archivedAt               DateTime?         @map("archived_at")
+  tenant                   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  voiceNote                VoiceNote         @relation("VoiceNoteMentions", fields: [voiceNoteId, tenantId], references: [id, tenantId], onDelete: Cascade)
+  confirmedByUser          User?             @relation("VoiceMentionConfirmedBy", fields: [confirmedByUserId], references: [id], onDelete: SetNull)
+  createdByUser            User?             @relation("VoiceMentionCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedByUser            User?             @relation("VoiceMentionUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  createdAt                DateTime          @default(now()) @map("created_at")
+  updatedAt                DateTime          @updatedAt @map("updated_at")
+
+  @@unique([id, tenantId])
+  @@index([tenantId, voiceNoteId])
+  @@index([tenantId, mentionType])
+  @@index([tenantId, resolvedEntityType, resolvedEntityId], map: "voice_mentions_tenant_resolved_idx")
+  @@index([tenantId, archivedAt])
+  @@map("voice_mentions")
 }
 
 model SourceReference {

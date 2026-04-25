@@ -30,6 +30,18 @@ Direct links among tasks, commitments, needs, capabilities, introduction
 suggestions, and Step 4A records use composite tenant-aware foreign keys where
 practical. `SourceReference` validation now includes Step 4B-1 entity types.
 
+Step 4B-2 AI proposal and voice-note-readiness records include `tenantId`.
+Direct links from AI proposals, proposal items, voice notes, and voice mentions
+use composite tenant-aware foreign keys where practical. Polymorphic proposal
+targets and voice mention resolutions are service-validated: type and id must be
+provided together, and the referenced record must exist in the same tenant.
+
+AI proposal records store proposed patches only. Creating proposal or proposal
+item records must not mutate target records, even when stored status values are
+`APPROVED`. Voice-note records store transcript and retention metadata only;
+raw audio is not required, and the default audio retention status is
+`NOT_STORED`.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when
