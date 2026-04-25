@@ -19,6 +19,56 @@ enum RoleKey {
   VIEWER
 }
 
+enum RelationshipStatus {
+  UNKNOWN
+  ACTIVE
+  DORMANT
+  ARCHIVED
+}
+
+enum RelationshipTemperature {
+  UNKNOWN
+  COLD
+  COOL
+  NEUTRAL
+  WARM
+  HOT
+}
+
+enum MeetingParticipantRole {
+  UNKNOWN
+  ORGANIZER
+  HOST
+  ATTENDEE
+  OPTIONAL
+}
+
+enum NoteType {
+  GENERAL
+  PERSON
+  COMPANY
+  MEETING
+  SOURCE_EXCERPT
+}
+
+enum Sensitivity {
+  NORMAL
+  SENSITIVE_BUSINESS
+  PERSONAL
+  CONFIDENTIAL
+  DO_NOT_USE_IN_OUTREACH
+  DO_NOT_SHARE
+}
+
+enum SourceEntityType {
+  PERSON
+  COMPANY
+  COMPANY_AFFILIATION
+  MEETING
+  MEETING_PARTICIPANT
+  NOTE
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -30,6 +80,19 @@ model User {
   memberships   Membership[]
   auditLogs     AuditLog[] @relation("AuditActor")
   defaultTenant Tenant?   @relation("DefaultTenantOwner")
+  createdPeople Person[]  @relation("PersonCreatedBy")
+  updatedPeople Person[]  @relation("PersonUpdatedBy")
+  createdCompanies Company[] @relation("CompanyCreatedBy")
+  updatedCompanies Company[] @relation("CompanyUpdatedBy")
+  createdCompanyAffiliations CompanyAffiliation[] @relation("CompanyAffiliationCreatedBy")
+  updatedCompanyAffiliations CompanyAffiliation[] @relation("CompanyAffiliationUpdatedBy")
+  createdMeetings Meeting[] @relation("MeetingCreatedBy")
+  updatedMeetings Meeting[] @relation("MeetingUpdatedBy")
+  createdMeetingParticipants MeetingParticipant[] @relation("MeetingParticipantCreatedBy")
+  updatedMeetingParticipants MeetingParticipant[] @relation("MeetingParticipantUpdatedBy")
+  createdNotes Note[] @relation("NoteCreatedBy")
+  updatedNotes Note[] @relation("NoteUpdatedBy")
+  createdSourceReferences SourceReference[] @relation("SourceReferenceCreatedBy")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
@@ -84,6 +147,13 @@ model Tenant {
   defaultForUser   User?        @relation("DefaultTenantOwner", fields: [defaultForUserId], references: [id], onDelete: SetNull)
   memberships      Membership[]
   auditLogs        AuditLog[]
+  people           Person[]
+  companies        Company[]
+  companyAffiliations CompanyAffiliation[]
+  meetings         Meeting[]
+  meetingParticipants MeetingParticipant[]
+  notes            Note[]
+  sourceReferences SourceReference[]
   createdAt        DateTime     @default(now()) @map("created_at")
   updatedAt        DateTime     @updatedAt @map("updated_at")
 
@@ -136,4 +206,198 @@ model AuditLog {
   @@index([actorUserId, createdAt])
   @@index([action])
   @@map("audit_logs")
+}
+
+model Person {
+  id                      String                  @id @default(cuid())
+  tenantId                String                  @map("tenant_id")
+  displayName             String                  @map("display_name")
+  firstName               String?                 @map("first_name")
+  lastName                String?                 @map("last_name")
+  email                   String?
+  phone                   String?
+  jobTitle                String?                 @map("job_title")
+  relationshipStatus      RelationshipStatus      @default(UNKNOWN) @map("relationship_status")
+  relationshipTemperature RelationshipTemperature @default(UNKNOWN) @map("relationship_temperature")
+  createdByUserId         String?                 @map("created_by_user_id")
+  updatedByUserId         String?                 @map("updated_by_user_id")
+  archivedAt              DateTime?               @map("archived_at")
+  tenant                  Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdByUser           User?                   @relation("PersonCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedByUser           User?                   @relation("PersonUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  companyAffiliations     CompanyAffiliation[]    @relation("PersonCompanyAffiliations")
+  meetingParticipants     MeetingParticipant[]    @relation("PersonMeetingParticipants")
+  notes                   Note[]                  @relation("PersonNotes")
+  createdAt               DateTime                @default(now()) @map("created_at")
+  updatedAt               DateTime                @updatedAt @map("updated_at")
+
+  @@unique([id, tenantId])
+  @@index([tenantId, displayName])
+  @@index([tenantId, email])
+  @@index([tenantId, archivedAt])
+  @@map("people")
+}
+
+model Company {
+  id                  String               @id @default(cuid())
+  tenantId            String               @map("tenant_id")
+  name                String
+  normalizedName      String?              @map("normalized_name")
+  website             String?
+  industry            String?
+  description         String?
+  createdByUserId     String?              @map("created_by_user_id")
+  updatedByUserId     String?              @map("updated_by_user_id")
+  archivedAt          DateTime?            @map("archived_at")
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdByUser       User?                @relation("CompanyCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedByUser       User?                @relation("CompanyUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  companyAffiliations CompanyAffiliation[] @relation("CompanyAffiliations")
+  primaryMeetings     Meeting[]            @relation("MeetingPrimaryCompany")
+  meetingParticipants MeetingParticipant[] @relation("CompanyMeetingParticipants")
+  notes               Note[]               @relation("CompanyNotes")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+
+  @@unique([id, tenantId])
+  @@index([tenantId, name])
+  @@index([tenantId, normalizedName])
+  @@index([tenantId, archivedAt])
+  @@map("companies")
+}
+
+model CompanyAffiliation {
+  id              String    @id @default(cuid())
+  tenantId        String    @map("tenant_id")
+  personId        String    @map("person_id")
+  companyId       String    @map("company_id")
+  affiliationTitle String?   @map("affiliation_title")
+  department      String?
+  startsAt        DateTime? @map("starts_at")
+  endsAt          DateTime? @map("ends_at")
+  isPrimary       Boolean   @default(false) @map("is_primary")
+  createdByUserId String?   @map("created_by_user_id")
+  updatedByUserId String?   @map("updated_by_user_id")
+  archivedAt      DateTime? @map("archived_at")
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  person          Person    @relation("PersonCompanyAffiliations", fields: [personId, tenantId], references: [id, tenantId], onDelete: Cascade)
+  company         Company   @relation("CompanyAffiliations", fields: [companyId, tenantId], references: [id, tenantId], onDelete: Cascade)
+  createdByUser   User?     @relation("CompanyAffiliationCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedByUser   User?     @relation("CompanyAffiliationUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@unique([id, tenantId])
+  @@index([tenantId, personId])
+  @@index([tenantId, companyId])
+  @@index([tenantId, archivedAt])
+  @@map("company_affiliations")
+}
+
+model Meeting {
+  id                  String               @id @default(cuid())
+  tenantId            String               @map("tenant_id")
+  title               String
+  occurredAt          DateTime?            @map("occurred_at")
+  endedAt             DateTime?            @map("ended_at")
+  location            String?
+  summary             String?
+  primaryCompanyId    String?              @map("primary_company_id")
+  createdByUserId     String?              @map("created_by_user_id")
+  updatedByUserId     String?              @map("updated_by_user_id")
+  archivedAt          DateTime?            @map("archived_at")
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  primaryCompany      Company?             @relation("MeetingPrimaryCompany", fields: [primaryCompanyId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  participants        MeetingParticipant[] @relation("MeetingParticipants")
+  notes               Note[]               @relation("MeetingNotes")
+  createdByUser       User?                @relation("MeetingCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedByUser       User?                @relation("MeetingUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+
+  @@unique([id, tenantId])
+  @@index([tenantId, occurredAt])
+  @@index([tenantId, primaryCompanyId])
+  @@index([tenantId, archivedAt])
+  @@map("meetings")
+}
+
+model MeetingParticipant {
+  id              String                 @id @default(cuid())
+  tenantId        String                 @map("tenant_id")
+  meetingId       String                 @map("meeting_id")
+  personId        String?                @map("person_id")
+  companyId       String?                @map("company_id")
+  nameSnapshot    String?                @map("name_snapshot")
+  emailSnapshot   String?                @map("email_snapshot")
+  participantRole MeetingParticipantRole @default(UNKNOWN) @map("participant_role")
+  createdByUserId String?                @map("created_by_user_id")
+  updatedByUserId String?                @map("updated_by_user_id")
+  tenant          Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  meeting         Meeting                @relation("MeetingParticipants", fields: [meetingId, tenantId], references: [id, tenantId], onDelete: Cascade)
+  person          Person?                @relation("PersonMeetingParticipants", fields: [personId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  company         Company?               @relation("CompanyMeetingParticipants", fields: [companyId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  createdByUser   User?                  @relation("MeetingParticipantCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedByUser   User?                  @relation("MeetingParticipantUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  createdAt       DateTime               @default(now()) @map("created_at")
+  updatedAt       DateTime               @updatedAt @map("updated_at")
+
+  @@unique([id, tenantId])
+  @@unique([tenantId, meetingId, personId])
+  @@index([tenantId, meetingId])
+  @@index([tenantId, personId])
+  @@index([tenantId, companyId])
+  @@map("meeting_participants")
+}
+
+model Note {
+  id              String      @id @default(cuid())
+  tenantId        String      @map("tenant_id")
+  body            String
+  summary         String?
+  noteType        NoteType    @default(GENERAL) @map("note_type")
+  sensitivity     Sensitivity @default(NORMAL)
+  personId        String?     @map("person_id")
+  companyId       String?     @map("company_id")
+  meetingId       String?     @map("meeting_id")
+  createdByUserId String?     @map("created_by_user_id")
+  updatedByUserId String?     @map("updated_by_user_id")
+  archivedAt      DateTime?   @map("archived_at")
+  tenant          Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  person          Person?     @relation("PersonNotes", fields: [personId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  company         Company?    @relation("CompanyNotes", fields: [companyId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  meeting         Meeting?    @relation("MeetingNotes", fields: [meetingId, tenantId], references: [id, tenantId], onDelete: Restrict)
+  createdByUser   User?       @relation("NoteCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedByUser   User?       @relation("NoteUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  @@unique([id, tenantId])
+  @@index([tenantId, noteType])
+  @@index([tenantId, personId])
+  @@index([tenantId, companyId])
+  @@index([tenantId, meetingId])
+  @@index([tenantId, archivedAt])
+  @@map("notes")
+}
+
+model SourceReference {
+  id               String           @id @default(cuid())
+  tenantId         String           @map("tenant_id")
+  sourceEntityType SourceEntityType @map("source_entity_type")
+  sourceEntityId   String           @map("source_entity_id")
+  targetEntityType SourceEntityType @map("target_entity_type")
+  targetEntityId   String           @map("target_entity_id")
+  label            String?
+  reason           String?
+  confidence       Float?
+  createdByUserId  String           @map("created_by_user_id")
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdByUser    User             @relation("SourceReferenceCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  createdAt        DateTime         @default(now()) @map("created_at")
+
+  @@index([tenantId, sourceEntityType, sourceEntityId])
+  @@index([tenantId, targetEntityType, targetEntityId])
+  @@index([tenantId, createdAt])
+  @@map("source_references")
 }

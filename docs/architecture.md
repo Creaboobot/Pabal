@@ -10,7 +10,8 @@ and PostgreSQL.
 - `modules`: future domain modules. This maps to the domain-module concept in
   the build brief.
 - `server/services`: application service orchestration, including auth context,
-  tenant access checks, role seeding, and audit logging.
+  tenant access checks, role seeding, audit logging, and Step 4A relationship
+  backbone validation.
 - `server/repositories`: database access boundaries. Tenant-scoped reads require
   explicit `tenantId` and `userId` inputs.
 - `server/providers`: external provider adapters.
@@ -30,5 +31,14 @@ Next.js middleware performs only coarse authentication checks for protected
 route groups such as `/account` and `/settings`. Tenant membership and role
 checks are enforced in server-side services and repositories, not middleware.
 
-This stage intentionally contains no product records, AI, billing, Microsoft
-Graph sync, LinkedIn enrichment, voice capture, or product workflows.
+## Relationship backbone boundary
+
+Step 4A adds server-side schema and skeletons for people, companies,
+affiliations, meetings, notes, and source references. Repositories require
+explicit tenant context, and services call `requireTenantAccess` before
+tenant-scoped reads or writes. Cross-tenant direct relations use composite
+tenant-aware foreign keys where Prisma/PostgreSQL can express them.
+
+This stage intentionally contains no product UI workflows, tasks, commitments,
+needs, capabilities, introduction suggestions, AI proposals, voice notes,
+billing, Microsoft Graph sync, LinkedIn enrichment, or provider calls.

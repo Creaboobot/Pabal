@@ -1,49 +1,20 @@
-import { PrismaClient, type RoleKey } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+
+import {
+  seedFoundationRoles,
+  seedRelationshipBackboneDemoData,
+} from "./seed-data/relationship-backbone";
 
 const prisma = new PrismaClient();
 
-const roles: Array<{
-  key: RoleKey;
-  name: string;
-  description: string;
-}> = [
-  {
-    key: "OWNER",
-    name: "Owner",
-    description: "Workspace owner with full foundation administration rights.",
-  },
-  {
-    key: "ADMIN",
-    name: "Admin",
-    description: "Workspace administrator for future team management.",
-  },
-  {
-    key: "MEMBER",
-    name: "Member",
-    description: "Standard workspace member.",
-  },
-  {
-    key: "VIEWER",
-    name: "Viewer",
-    description: "Read-only workspace member for future review workflows.",
-  },
-];
-
 async function main() {
-  await Promise.all(
-    roles.map((role) =>
-      prisma.role.upsert({
-        where: { key: role.key },
-        create: role,
-        update: {
-          name: role.name,
-          description: role.description,
-        },
-      }),
-    ),
-  );
-
+  await seedFoundationRoles(prisma);
   console.log("Seeded foundation roles.");
+
+  if (process.env.SEED_DEMO_DATA === "true") {
+    await seedRelationshipBackboneDemoData(prisma);
+    console.log("Seeded Step 4A relationship backbone demo data.");
+  }
 }
 
 void main()

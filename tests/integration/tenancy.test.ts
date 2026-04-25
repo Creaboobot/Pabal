@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, expect, it } from "vitest";
 
 import { prisma } from "@/server/db/prisma";
 import { writeAuditLog } from "@/server/services/audit-log";
@@ -8,28 +8,11 @@ import {
   requireTenantAccess,
   TenantAccessDeniedError,
 } from "@/server/services/tenancy";
-
-const describeWithDatabase = process.env.DATABASE_URL ? describe : describe.skip;
-
-async function resetDatabase() {
-  await prisma.auditLog.deleteMany();
-  await prisma.membership.deleteMany();
-  await prisma.tenant.deleteMany();
-  await prisma.account.deleteMany();
-  await prisma.session.deleteMany();
-  await prisma.verificationToken.deleteMany();
-  await prisma.user.deleteMany();
-  await prisma.role.deleteMany();
-}
-
-async function createUser(email: string, name = "Test User") {
-  return prisma.user.create({
-    data: {
-      email,
-      name,
-    },
-  });
-}
+import {
+  createUser,
+  describeWithDatabase,
+  resetDatabase,
+} from "@/tests/integration/helpers/database";
 
 describeWithDatabase("tenant foundation", () => {
   beforeEach(async () => {

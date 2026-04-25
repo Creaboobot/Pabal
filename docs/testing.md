@@ -28,6 +28,11 @@ pnpm prisma:seed
 pnpm test:integration
 ```
 
+The Step 4A integration tests cover tenant-scoped person/company creation,
+tenant-scoped reads and lists, cross-tenant relationship rejection, database
+foreign-key enforcement for tenant-aware relations, source-reference validation,
+and idempotent demo seed data.
+
 CI runs Prisma generation, validation, migrations, seed, lint, typecheck,
 Vitest, production build, Docker build, Docker Compose config, and Docker
 Compose PostgreSQL health verification. Playwright is configured but not run in
