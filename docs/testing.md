@@ -9,12 +9,16 @@ The scaffold uses:
 Core commands:
 
 ```bash
+pnpm lint
+pnpm typecheck
 pnpm test
 pnpm test:unit
 pnpm test:integration
 pnpm test:e2e
+pnpm audit:prod
 ```
 
 CI runs lint, typecheck, Vitest, Prisma validation, production build, and Docker
-build. Playwright is configured but not run in CI until browser installation and
-app startup requirements are expanded deliberately.
+build. CI also validates the Docker Compose file and boots the PostgreSQL service
+until its health check passes. Playwright is configured but not run in CI until
+browser installation and app startup requirements are expanded deliberately.

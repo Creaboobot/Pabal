@@ -9,6 +9,8 @@ Use `pnpm dev` for local development after copying `.env.example` to `.env`.
 ## Docker
 
 `docker compose up --build` starts PostgreSQL and the app container.
+`APP_PORT` and `POSTGRES_PORT` can be overridden from `.env.local` for local
+port conflicts.
 
 Tool profiles are available for migration and seed commands:
 
@@ -18,4 +20,5 @@ docker compose run --rm seed
 ```
 
 The production image runs the Next.js production server and must not bake
-secrets into the image.
+secrets into the image. The image includes a container health check against
+`/api/health`.

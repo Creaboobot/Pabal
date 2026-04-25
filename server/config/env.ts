@@ -4,8 +4,11 @@ const emptyStringToUndefined = z.literal("").transform(() => undefined);
 
 const optionalString = z.union([z.string().min(1), emptyStringToUndefined]).optional();
 const optionalUrl = z.union([z.string().url(), emptyStringToUndefined]).optional();
-const optionalBoolean = z
-  .union([z.enum(["true", "false"]).transform((value) => value === "true"), emptyStringToUndefined])
+const optionalFlag = z
+  .union([
+    z.enum(["true", "false", "1", "0"]).transform((value) => value === "true" || value === "1"),
+    emptyStringToUndefined,
+  ])
   .optional();
 
 export const runtimeEnvSchema = z.object({
@@ -13,6 +16,7 @@ export const runtimeEnvSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
+  NEXT_TELEMETRY_DISABLED: optionalFlag,
 
   AUTH_SECRET: optionalString,
   AUTH_MICROSOFT_ENTRA_ID_ID: optionalString,
@@ -43,10 +47,10 @@ export const runtimeEnvSchema = z.object({
 
   SENTRY_DSN: optionalString,
 
-  FEATURE_MICROSOFT_GRAPH: optionalBoolean,
-  FEATURE_LINKEDIN_MANUAL_ENRICHMENT: optionalBoolean,
-  FEATURE_VOICE_CAPTURE: optionalBoolean,
-  FEATURE_BILLING: optionalBoolean,
+  FEATURE_MICROSOFT_GRAPH: optionalFlag,
+  FEATURE_LINKEDIN_MANUAL_ENRICHMENT: optionalFlag,
+  FEATURE_VOICE_CAPTURE: optionalFlag,
+  FEATURE_BILLING: optionalFlag,
 });
 
 const readinessEnvSchema = z.object({
