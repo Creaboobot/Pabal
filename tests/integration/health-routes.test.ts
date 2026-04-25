@@ -3,6 +3,15 @@ import { describe, expect, it } from "vitest";
 import { GET as health } from "@/app/api/health/route";
 import { GET as ready } from "@/app/api/ready/route";
 
+function restoreEnvValue(name: string, value: string | undefined) {
+  if (value === undefined) {
+    delete process.env[name];
+    return;
+  }
+
+  process.env[name] = value;
+}
+
 describe("foundation route handlers", () => {
   it("returns health status", async () => {
     const response = health();
@@ -27,7 +36,26 @@ describe("foundation route handlers", () => {
       expect(response.status).toBe(200);
       expect(body.status).toBe("ready");
     } finally {
-      process.env.DATABASE_URL = previousDatabaseUrl;
+      restoreEnvValue("DATABASE_URL", previousDatabaseUrl);
+    }
+  });
+
+  it("fails readiness safely without exposing environment values", async () => {
+    const previousDatabaseUrl = process.env.DATABASE_URL;
+    delete process.env.DATABASE_URL;
+
+    try {
+      const response = ready();
+      const body = await response.json();
+      const serialized = JSON.stringify(body);
+
+      expect(response.status).toBe(503);
+      expect(body.status).toBe("not_ready");
+      expect(serialized).not.toContain("postgresql://");
+      expect(serialized).not.toContain("AUTH_SECRET");
+      expect(serialized).not.toContain("OPENAI_API_KEY");
+    } finally {
+      restoreEnvValue("DATABASE_URL", previousDatabaseUrl);
     }
   });
 });

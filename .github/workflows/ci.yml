@@ -6,12 +6,21 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   checks:
     name: Foundation checks
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       DATABASE_URL: postgresql://pobal:pobal@localhost:5432/pobal?schema=public
+      NEXT_TELEMETRY_DISABLED: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,8 +36,15 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
 
+      - name: Show tool versions
+        run: |
+          node --version
+          pnpm --version
+          docker --version
+          docker compose version
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Lint
         run: pnpm lint
@@ -53,8 +69,15 @@ jobs:
 
       - name: Docker Compose PostgreSQL health
         run: |
+          set -euo pipefail
+
           docker compose up -d postgres
           container_id="$(docker compose ps -q postgres)"
+          if [ -z "$container_id" ]; then
+            echo "No PostgreSQL container id returned by docker compose"
+            docker compose ps
+            exit 1
+          fi
 
           for attempt in {1..30}; do
             status="$(docker inspect --format='{{.State.Health.Status}}' "$container_id")"

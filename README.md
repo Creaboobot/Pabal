@@ -74,7 +74,7 @@ Microsoft Graph, LinkedIn enrichment, or production deployment.
 
 ```bash
 pnpm install
-Copy-Item .env.example .env
+Copy-Item .env.example .env.local
 pnpm prisma:validate
 pnpm dev
 ```
@@ -84,6 +84,7 @@ The app runs at `http://localhost:3000`.
 ### Useful commands
 
 ```bash
+pnpm check
 pnpm build
 pnpm start
 pnpm lint
@@ -92,6 +93,7 @@ pnpm test
 pnpm test:unit
 pnpm test:integration
 pnpm test:e2e
+pnpm audit:prod
 pnpm prisma:validate
 pnpm prisma:migrate
 pnpm prisma:deploy
@@ -127,3 +129,8 @@ docker compose run --rm seed
 - `GET /api/health` returns a basic service health payload.
 - `GET /api/ready` validates runtime readiness and returns `503` when required
   runtime values such as `DATABASE_URL` are missing.
+
+### Developer docs
+
+- [Local development](docs/development/local-development.md)
+- [Quality gates](docs/development/quality-gates.md)

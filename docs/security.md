@@ -10,3 +10,4 @@ Foundation rules:
 - Keep external providers behind server-side adapters.
 - Do not add tenant-owned data models before tenant isolation is implemented.
 - Future sensitive operations must be audit-logged.
+- Health and readiness endpoints must return status only, never secret values.
