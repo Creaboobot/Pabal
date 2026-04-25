@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CapabilityCard } from "@/modules/opportunities/components/capability-card";
+import { IntroductionSuggestionCard } from "@/modules/opportunities/components/introduction-suggestion-card";
 import { NeedCard } from "@/modules/opportunities/components/need-card";
 import { getTenantOpportunityHub } from "@/server/services/opportunities";
 import { getCurrentUserContext } from "@/server/services/session";
@@ -40,9 +41,15 @@ export default async function OpportunitiesPage() {
                 New capability
               </Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link href="/opportunities/introductions/new">
+                <Plus aria-hidden="true" className="mr-2 size-4" />
+                New introduction
+              </Link>
+            </Button>
           </div>
         }
-        description="Manual needs and capabilities for relationship brokerage. No matching algorithm or AI recommendations run here."
+        description="Manual needs, capabilities, and introductions for relationship brokerage. No matching algorithm or AI recommendations run here."
         eyebrow="Brokerage"
         title="Opportunities"
       />
@@ -78,14 +85,21 @@ export default async function OpportunitiesPage() {
           title="Introductions"
           value={hub.counts.activeIntroductions}
         >
-          <p className="text-sm leading-6 text-muted-foreground">
-            Introduction workflows arrive in Step 10A-2. Existing suggestions
-            stay visible as readiness signals.
-          </p>
+          <div className="grid gap-3">
+            <p className="text-sm leading-6 text-muted-foreground">
+              Manual introduction suggestions linked to needs, capabilities,
+              people, and companies.
+            </p>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/opportunities/introductions">
+                View introductions
+              </Link>
+            </Button>
+          </div>
         </CockpitCard>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
+      <section className="grid gap-4 xl:grid-cols-3">
         <CockpitCard title="Latest needs" value={hub.latestNeeds.length}>
           {hub.latestNeeds.length > 0 ? (
             <div className="grid gap-3">
@@ -139,6 +153,36 @@ export default async function OpportunitiesPage() {
             />
           )}
         </CockpitCard>
+
+        <CockpitCard
+          title="Latest introductions"
+          value={hub.latestIntroductions.length}
+        >
+          {hub.latestIntroductions.length > 0 ? (
+            <div className="grid gap-3">
+              {hub.latestIntroductions.map((suggestion) => (
+                <IntroductionSuggestionCard
+                  key={suggestion.id}
+                  suggestion={suggestion}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              action={
+                <Button asChild>
+                  <Link href="/opportunities/introductions/new">
+                    <Plus aria-hidden="true" className="mr-2 size-4" />
+                    Add introduction
+                  </Link>
+                </Button>
+              }
+              description="Manually connect a need, capability, person, or company when a useful introduction emerges."
+              icon={Handshake}
+              title="No introductions yet"
+            />
+          )}
+        </CockpitCard>
       </section>
 
       <section
@@ -170,7 +214,8 @@ export default async function OpportunitiesPage() {
           <div className="mt-3 flex gap-3">
             <Handshake aria-hidden="true" className="size-5 text-primary" />
             <p className="text-sm leading-6 text-muted-foreground">
-              Status is visible while introduction workflows remain inactive.
+              Status is manual. Pabal does not draft messages, score matches,
+              or send outreach.
             </p>
           </div>
         </CockpitCard>

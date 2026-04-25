@@ -173,8 +173,8 @@ Approval is status-only in this step. The proposal framework does not apply
 patches, create records, mutate targets, call AI providers, generate proposals,
 send messages, or run background jobs.
 
-Step 10A-1 promotes the manual need and capability workflows under the
-Opportunities area:
+Step 10A promotes the manual need, capability, and introduction workflows under
+the Opportunities area:
 
 - `/opportunities`
 - `/opportunities/needs`
@@ -185,6 +185,10 @@ Opportunities area:
 - `/opportunities/capabilities/new`
 - `/opportunities/capabilities/[capabilityId]`
 - `/opportunities/capabilities/[capabilityId]/edit`
+- `/opportunities/introductions`
+- `/opportunities/introductions/new`
+- `/opportunities/introductions/[introductionSuggestionId]`
+- `/opportunities/introductions/[introductionSuggestionId]/edit`
 
 Need and capability server actions validate input with Zod, call
 `getCurrentUserContext()`, and delegate to tenant-aware services. Query
@@ -192,9 +196,15 @@ parameters from people, company, meeting, and note pages are treated as
 convenience hints only. Services validate linked records inside the active
 tenant before writing and use safe audit metadata.
 
-The Opportunities hub shows manual counts and latest need/capability records.
-It does not run introduction workflows, matching, scoring, AI generation,
-semantic search, embeddings, notifications, or background jobs.
+Introduction suggestion server actions follow the same boundary. Suggestions
+are manually linked to needs, capabilities, people, and companies. Meeting and
+note provenance is stored with tenant-validated `SourceReference` records
+where provided. Dismissal maps to the existing rejected status.
+
+The Opportunities hub shows manual counts and latest need, capability, and
+introduction suggestion records. It does not run matching, scoring, AI
+generation, message drafting, outreach sending, semantic search, embeddings,
+notifications, or background jobs.
 
 ## Relationship backbone boundary
 

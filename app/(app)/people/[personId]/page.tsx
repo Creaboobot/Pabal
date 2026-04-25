@@ -106,6 +106,14 @@ export default async function PersonDetailPage({
                 Create capability
               </Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link
+                href={`/opportunities/introductions/new?fromPersonId=${person.id}`}
+              >
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                Create introduction
+              </Link>
+            </Button>
           </div>
         }
         description={person.jobTitle ?? "Relationship record"}

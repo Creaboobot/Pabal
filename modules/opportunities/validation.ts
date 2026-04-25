@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   editableCapabilityStatuses,
   editableCapabilityTypes,
+  editableIntroductionStatuses,
   editableNeedStatuses,
   editableNeedTypes,
   editablePriorities,
@@ -69,8 +70,53 @@ export const capabilityFormSchema = z.object({
   title: requiredText("Capability title", 180),
 });
 
+export const introductionSuggestionFormSchema = z
+  .object({
+    capabilityId: nullableId("Capability"),
+    confidence: nullableConfidence,
+    fromCompanyId: nullableId("From company"),
+    fromPersonId: nullableId("From person"),
+    needId: nullableId("Need"),
+    rationale: requiredText("Rationale", 4000),
+    sourceMeetingId: nullableId("Source meeting"),
+    sourceNoteId: nullableId("Source note"),
+    status: z.enum(editableIntroductionStatuses),
+    toCompanyId: nullableId("To company"),
+    toPersonId: nullableId("To person"),
+  })
+  .superRefine((data, context) => {
+    if (data.fromPersonId && data.fromPersonId === data.toPersonId) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Choose a different person for each side.",
+        path: ["toPersonId"],
+      });
+    }
+
+    const contextAnchors = [
+      data.needId,
+      data.capabilityId,
+      data.fromPersonId,
+      data.fromCompanyId,
+      data.toPersonId,
+      data.toCompanyId,
+    ].filter(Boolean);
+
+    if (contextAnchors.length < 2) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "Add at least two linked records so the introduction has enough context.",
+        path: ["needId"],
+      });
+    }
+  });
+
 export type NeedFormValues = z.infer<typeof needFormSchema>;
 export type CapabilityFormValues = z.infer<typeof capabilityFormSchema>;
+export type IntroductionSuggestionFormValues = z.infer<
+  typeof introductionSuggestionFormSchema
+>;
 
 export function formDataValue(formData: FormData, key: string) {
   return formData.get(key);

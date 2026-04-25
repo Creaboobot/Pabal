@@ -51,9 +51,21 @@ export type OpportunityFormNote = {
   summary: string | null;
 };
 
+export type OpportunityFormNeed = {
+  id: string;
+  title: string;
+};
+
+export type OpportunityFormCapability = {
+  id: string;
+  title: string;
+};
+
 export type OpportunityFormOptions = {
+  capabilities: OpportunityFormCapability[];
   companies: OpportunityFormCompany[];
   meetings: OpportunityFormMeeting[];
+  needs: OpportunityFormNeed[];
   notes: OpportunityFormNote[];
   people: OpportunityFormPerson[];
 };

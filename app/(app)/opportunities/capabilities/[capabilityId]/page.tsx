@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Building2, Edit, FileText, UserRound } from "lucide-react";
+import {
+  ArrowLeft,
+  Building2,
+  Edit,
+  FileText,
+  Handshake,
+  UserRound,
+} from "lucide-react";
 
 import { PageHeader } from "@/components/app/page-header";
 import { CockpitCard } from "@/components/cards/cockpit-card";
@@ -59,6 +66,14 @@ export default async function CapabilityDetailPage({
               <Link href={`/opportunities/capabilities/${capability.id}/edit`}>
                 <Edit aria-hidden="true" className="mr-2 size-4" />
                 Edit
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link
+                href={`/opportunities/introductions/new?capabilityId=${capability.id}`}
+              >
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                Create introduction
               </Link>
             </Button>
           </div>

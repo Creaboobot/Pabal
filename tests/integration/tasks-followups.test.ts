@@ -35,6 +35,9 @@ async function createTaskContext(email: string) {
   const person = await createTenantPerson(context, {
     displayName: `${email} Person`,
   });
+  const introductionTargetPerson = await createTenantPerson(context, {
+    displayName: `${email} Introduction Target`,
+  });
   const meeting = await createTenantMeeting(context, {
     primaryCompanyId: company.id,
     title: `${email} Meeting`,
@@ -74,7 +77,7 @@ async function createTaskContext(email: string) {
       fromPersonId: person.id,
       needId: need.id,
       rationale: "Manual relationship brokerage context.",
-      toPersonId: person.id,
+      toPersonId: introductionTargetPerson.id,
     },
   );
 

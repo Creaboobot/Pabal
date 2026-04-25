@@ -1,5 +1,5 @@
 import { listTenantCapabilitiesWithContext } from "@/server/services/capabilities";
-import { listTenantIntroductionSuggestions } from "@/server/services/introduction-suggestions";
+import { listTenantIntroductionSuggestionsWithContext } from "@/server/services/introduction-suggestions";
 import { listTenantNeedsWithContext } from "@/server/services/needs";
 import {
   requireTenantAccess,
@@ -12,7 +12,7 @@ export async function getTenantOpportunityHub(context: TenantContext) {
   const [needs, capabilities, introductionSuggestions] = await Promise.all([
     listTenantNeedsWithContext(context),
     listTenantCapabilitiesWithContext(context),
-    listTenantIntroductionSuggestions(context),
+    listTenantIntroductionSuggestionsWithContext(context),
   ]);
   const openNeeds = needs.filter((need) =>
     ["OPEN", "IN_PROGRESS", "PARKED"].includes(need.status),
@@ -33,6 +33,7 @@ export async function getTenantOpportunityHub(context: TenantContext) {
       openNeeds: openNeeds.length,
     },
     latestCapabilities: activeCapabilities.slice(0, 5),
+    latestIntroductions: activeIntroductions.slice(0, 5),
     latestNeeds: openNeeds.slice(0, 5),
   };
 }

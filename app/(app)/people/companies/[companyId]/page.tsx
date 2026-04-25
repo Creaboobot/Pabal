@@ -107,6 +107,14 @@ export default async function CompanyDetailPage({
                 Create capability
               </Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link
+                href={`/opportunities/introductions/new?fromCompanyId=${company.id}`}
+              >
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                Create introduction
+              </Link>
+            </Button>
           </div>
         }
         description={company.industry ?? "Organisation record"}

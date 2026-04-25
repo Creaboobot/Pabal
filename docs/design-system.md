@@ -129,15 +129,17 @@ Proposal screens should avoid provider, generation, extraction, notification,
 or background-job affordances. They review existing stored proposal records
 only.
 
-Step 10A-1 extends the same patterns for manual needs and capabilities:
+Step 10A extends the same patterns for manual needs, capabilities, and
+introduction suggestions:
 
 - opportunity hub cards for counts and latest manual records;
-- compact need and capability cards instead of tables;
+- compact need, capability, and introduction cards instead of tables;
 - full-page mobile forms for create/edit;
 - status, priority, sensitivity, confidence, and context badges;
 - source/provenance sections where source references already exist;
 - inline archive confirmation controls.
 
-Need and capability screens should keep brokerage readiness manual and avoid
-introduction-workflow, matching, scoring, AI generation, semantic-search,
-embedding, notification, or background-job affordances.
+Need, capability, and introduction screens should keep brokerage readiness
+manual and avoid automated matching, scoring, AI generation, message drafting,
+outreach sending, semantic-search, embedding, notification, or background-job
+affordances.
