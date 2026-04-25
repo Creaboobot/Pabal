@@ -80,8 +80,8 @@ pnpm dev
 
 Then open `http://localhost:3000`. Signed-in users are redirected to `/today`.
 Unauthenticated requests to `/today`, `/capture`, `/commitments`, `/meetings`,
-`/notes`, `/tasks`, `/people`, `/opportunities`, `/search`, `/account`, and
-`/settings` redirect to `/sign-in`.
+`/notes`, `/tasks`, `/people`, `/proposals`, `/opportunities`, `/search`,
+`/account`, and `/settings` redirect to `/sign-in`.
 
 The Step 5 screens are mobile-first shell placeholders. They show read-only
 tenant-scoped summaries and design patterns only; they do not create records,
@@ -187,3 +187,16 @@ The Today screen shows commitment sections for overdue, due-today, upcoming,
 waiting, and recently fulfilled commitments. Step 8B does not create tasks
 automatically, send reminders, run background jobs, parse notes, extract
 commitments, or call AI providers.
+
+## Proposal Review
+
+Step 9 adds status-only AI proposal review:
+
+- `/proposals`
+- `/proposals/[proposalId]`
+
+Seed demo data with `SEED_DEMO_DATA=true` to preview stored proposal records.
+Users can approve, reject, mark items as needing clarification, approve/reject
+all pending items, or dismiss a proposal. These actions update proposal review
+status and write audit logs only. They do not apply patches, mutate target
+records, create tasks or commitments, call AI providers, or run background jobs.

@@ -17,6 +17,7 @@ import {
   CommitmentCard,
   type CommitmentCardCommitment,
 } from "@/modules/commitments/components/commitment-card";
+import { getTenantAIProposalReviewSummary } from "@/server/services/ai-proposals";
 import {
   TaskCard,
   type TaskCardTask,
@@ -93,11 +94,13 @@ export default async function TodayPage() {
     redirect("/sign-in?callbackUrl=/today");
   }
 
-  const [summary, taskBoard, commitmentBoard] = await Promise.all([
-    getAppShellSummary(context),
-    getTenantTaskBoard(context),
-    getTenantCommitmentBoard(context),
-  ]);
+  const [summary, taskBoard, commitmentBoard, proposalReviewSummary] =
+    await Promise.all([
+      getAppShellSummary(context),
+      getTenantTaskBoard(context),
+      getTenantCommitmentBoard(context),
+      getTenantAIProposalReviewSummary(context),
+    ]);
   const hasDailySignals =
     summary.action.openTasks > 0 ||
     summary.action.openCommitments > 0 ||
@@ -115,6 +118,9 @@ export default async function TodayPage() {
     commitmentBoard.upcoming.length > 0 ||
     commitmentBoard.waiting.length > 0 ||
     commitmentBoard.recentlyFulfilled.length > 0;
+  const hasProposalAttention =
+    proposalReviewSummary.pendingProposals > 0 ||
+    proposalReviewSummary.itemsNeedingClarification > 0;
 
   return (
     <div className="space-y-6">
@@ -222,6 +228,32 @@ export default async function TodayPage() {
           />
         </CockpitCard>
       )}
+
+      {hasProposalAttention ? (
+        <CockpitCard
+          title="Proposal review"
+          value={proposalReviewSummary.pendingProposals}
+        >
+          <div className="grid gap-3">
+            <p className="text-sm leading-6 text-muted-foreground">
+              Stored proposal records are waiting for human review. Approval is
+              status-only and does not apply patches.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="secondary">
+                {proposalReviewSummary.itemsNeedingClarification} needing
+                clarification
+              </Badge>
+              <Button asChild variant="outline">
+                <Link href="/proposals">
+                  <Sparkles aria-hidden="true" className="mr-2 size-4" />
+                  Review proposals
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </CockpitCard>
+      ) : null}
 
       {hasCommitmentSections ? (
         <section

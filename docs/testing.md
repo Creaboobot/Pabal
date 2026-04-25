@@ -95,6 +95,14 @@ companies, meetings, and notes, linked task display through the existing
 tenant-scoped Today commitment board summaries, and audit safety without full
 descriptions or sensitive payloads.
 
+The Step 9 tests cover proposal review validation, safe proposed patch preview
+masking/truncation, route smoke rendering for `/proposals` and
+`/proposals/[proposalId]`, proposal list/detail tenant isolation, approve,
+reject, needs-clarification, approve-all, reject-all, dismiss actions,
+deterministic proposal status rollup, proof that approval does not mutate
+target records, tenant-scoped Today proposal review summaries, and audit safety
+without proposed patch JSON or source text.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

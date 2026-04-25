@@ -27,6 +27,7 @@ export const config = {
     "/meetings/:path*",
     "/notes/:path*",
     "/people/:path*",
+    "/proposals/:path*",
     "/opportunities/:path*",
     "/search/:path*",
     "/account/:path*",

@@ -113,3 +113,18 @@ Step 8B extends the same patterns for the manual commitment ledger:
 Commitment screens should keep tasks distinct from commitments and avoid
 automatic task creation, reminder-delivery, background-job, AI extraction, or
 autonomous workflow affordances.
+
+Step 9 extends the same patterns for AI proposal confirmation:
+
+- compact proposal inbox cards instead of tables;
+- proposal item cards with status, action type, confidence, source, and target
+  context;
+- readable proposed patch previews that mask sensitive-looking values and
+  truncate long text;
+- inline confirmation controls for approve, reject, needs-clarification,
+  approve-all, reject-all, and dismiss actions;
+- clear copy that approval is status-only and does not apply changes.
+
+Proposal screens should avoid provider, generation, extraction, notification,
+or background-job affordances. They review existing stored proposal records
+only.

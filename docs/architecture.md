@@ -29,9 +29,9 @@ for user/account persistence and future OAuth compatibility.
 
 Next.js middleware performs only coarse authentication checks for protected
 route groups such as `/today`, `/capture`, `/commitments`, `/meetings`,
-`/notes`, `/tasks`, `/people`, `/opportunities`, `/search`, `/account`, and
-`/settings`. Tenant membership and role checks are enforced in server-side
-services and repositories, not middleware.
+`/notes`, `/tasks`, `/people`, `/proposals`, `/opportunities`, `/search`,
+`/account`, and `/settings`. Tenant membership and role checks are enforced in
+server-side services and repositories, not middleware.
 
 ## Mobile app shell
 
@@ -157,6 +157,21 @@ sections from Step 8A. Overdue commitment state is derived at read time from
 `dueAt` or the due-window boundary. Step 8B does not add reminder delivery,
 notifications, background jobs, automatic task creation, commitment extraction,
 AI recommendations, or parsing of notes/meeting notes.
+
+Step 9 adds the AI proposal confirmation framework:
+
+- `/proposals`
+- `/proposals/[proposalId]`
+
+Proposal server actions validate ids with Zod, call `getCurrentUserContext()`,
+and delegate to tenant-aware AI proposal services. Users can approve, reject,
+or mark proposal items as needing clarification, approve/reject all pending
+items, and dismiss a proposal. Review status rolls up deterministically from
+item statuses.
+
+Approval is status-only in this step. The proposal framework does not apply
+patches, create records, mutate targets, call AI providers, generate proposals,
+send messages, or run background jobs.
 
 ## Relationship backbone boundary
 

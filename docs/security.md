@@ -12,9 +12,9 @@ Foundation rules:
 - Enforce tenant and role checks in server-side services, route handlers, or
   server actions.
 - Protected app shell routes are `/today`, `/capture`, `/commitments`,
-  `/meetings`, `/notes`, `/tasks`, `/people`, `/opportunities`, `/search`,
-  `/account`, and `/settings`; middleware protects those route groups without
-  database tenant/RBAC logic.
+  `/meetings`, `/notes`, `/tasks`, `/people`, `/proposals`, `/opportunities`,
+  `/search`, `/account`, and `/settings`; middleware protects those route
+  groups without database tenant/RBAC logic.
 - Tenant-owned data models must go through tenant-aware repositories and
   services.
 - Use composite tenant-aware foreign keys where practical so cross-tenant links
@@ -112,6 +112,21 @@ sensitivity, linked entity ids, due-date presence, due-window presence, and
 changed field names. It must not include full descriptions, note bodies, pasted
 meeting-note text, raw form payloads, sensitive values, cookies, tokens,
 environment values, or secrets.
+
+Step 9 proposal review uses the same boundary. Proposal reads and item review
+updates filter by explicit tenant context. Cross-tenant proposal reads return
+no record, cross-tenant item review attempts fail, and source/target context is
+resolved only inside the active tenant.
+
+Approval is review-only. Approving a proposal item records that the user
+accepted it as conceptually valid, but it does not apply the proposed patch,
+create records, mutate target records, call AI providers, or run jobs.
+
+Proposal review audit metadata may include proposal id, proposal item id,
+proposal type, action type, target entity type/id, confidence presence, and
+status transition. It must not include proposed patch JSON, note bodies, pasted
+meeting-note text, transcript text, raw AI output, raw form payloads, cookies,
+tokens, headers, environment values, or secrets.
 
 ## Development auth
 
