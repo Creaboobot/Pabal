@@ -1,6 +1,6 @@
 type FieldErrorProps = {
   id: string;
-  message?: string;
+  message?: string | undefined;
 };
 
 export function FieldError({ id, message }: FieldErrorProps) {
