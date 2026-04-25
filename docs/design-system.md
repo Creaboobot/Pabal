@@ -28,6 +28,9 @@ summary cards, and common states.
 - `CockpitCard`
 - `Badge`
 - `EmptyState`, `LoadingState`, and `ErrorState`
+- Mobile-first record forms with compact labels, clear validation messages, and
+  explicit save/cancel actions.
+- Inline archive confirmation for reversible archive actions.
 
 Cards use compact spacing and small-radius borders. Badges are used for status,
 sensitivity, relationship temperature, and readiness labels. Empty states should
@@ -38,3 +41,7 @@ state the current condition without implying that a workflow exists.
 This design-system step does not add CRUD screens, capture workflows, AI
 proposal review, voice recording, transcription, semantic search, matching,
 notifications, analytics, or provider integrations.
+
+Step 6A extends the primitives for people/company record management only. It
+does not add affiliation management, LinkedIn URL fields, AI enrichment, voice
+capture, semantic search, or matching flows.

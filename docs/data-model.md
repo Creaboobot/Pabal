@@ -74,6 +74,20 @@ transcribe audio, record audio, upload audio, apply proposal patches, mutate
 target records, or add proposal review UI. Even `APPROVED` proposal statuses
 are stored state only until a later explicit application engine exists.
 
+## Step 6A people and company workflow
+
+Step 6A uses the existing `Person` and `Company` schema without a migration.
+People can be created, edited, and archived with display name, contact details,
+title/role, relationship status, and relationship temperature. Companies can be
+created, edited, and archived with name, website, industry, and description.
+
+Archived people and companies are hidden from active lists and detail reads by
+repository filters. Historical relationship context remains intact.
+
+The current schema does not include a LinkedIn URL field, so Step 6A does not
+store LinkedIn URLs. `CompanyAffiliation` remains read-only in the UI until Step
+6B adds affiliation management.
+
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
 

@@ -35,6 +35,39 @@ export function findCompanyById(
   });
 }
 
+export function findCompanyProfileById(
+  input: {
+    tenantId: string;
+    companyId: string;
+  },
+  db: CompaniesClient = prisma,
+) {
+  return db.company.findFirst({
+    where: {
+      id: input.companyId,
+      tenantId: input.tenantId,
+      archivedAt: null,
+    },
+    include: {
+      companyAffiliations: {
+        where: {
+          archivedAt: null,
+        },
+        include: {
+          person: true,
+        },
+        orderBy: [{ isPrimary: "desc" }, { updatedAt: "desc" }],
+      },
+      _count: {
+        select: {
+          notes: true,
+          primaryMeetings: true,
+        },
+      },
+    },
+  });
+}
+
 export function listCompaniesForTenant(
   tenantId: string,
   db: CompaniesClient = prisma,
@@ -47,5 +80,49 @@ export function listCompaniesForTenant(
     orderBy: {
       name: "asc",
     },
+  });
+}
+
+export function listCompaniesForTenantWithProfiles(
+  tenantId: string,
+  db: CompaniesClient = prisma,
+) {
+  return db.company.findMany({
+    where: {
+      tenantId,
+      archivedAt: null,
+    },
+    include: {
+      companyAffiliations: {
+        where: {
+          archivedAt: null,
+        },
+        select: {
+          id: true,
+        },
+      },
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+}
+
+export async function updateCompany(
+  input: {
+    tenantId: string;
+    companyId: string;
+    data: Prisma.CompanyUncheckedUpdateInput;
+  },
+  db: CompaniesClient = prisma,
+) {
+  return db.company.update({
+    where: {
+      id_tenantId: {
+        id: input.companyId,
+        tenantId: input.tenantId,
+      },
+    },
+    data: input.data,
   });
 }

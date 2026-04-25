@@ -68,10 +68,12 @@ action/intelligence-readiness models for tasks, commitments, needs,
 capabilities, and introduction suggestions. It also includes Step 4B-2
 schema/readiness models for AI proposals and voice notes. Step 5 adds the
 mobile-first authenticated app shell and read-only route placeholders for
-Today, Capture, People, Opportunities, and Search. It does not implement full
-CRUD screens, AI provider calls, proposal application, transcription, audio
-recording/upload, billing, Microsoft Graph, LinkedIn enrichment, production
-search, matching, notifications, or production deployment.
+Today, Capture, People, Opportunities, and Search. Step 6A adds the first real
+product workflow: mobile-first people and company record management. It does
+not implement affiliation management UI, LinkedIn URL storage, AI provider
+calls, proposal application, transcription, audio recording/upload, billing,
+Microsoft Graph, LinkedIn enrichment, production search, matching,
+notifications, or production deployment.
 
 ### Requirements
 
@@ -118,6 +120,16 @@ The primary mobile navigation is:
 These screens are shell/design-system placeholders with read-only summaries
 from existing tenant-scoped records. They do not create, update, approve,
 record, transcribe, search semantically, or match records.
+
+People and company records are available under `/people`:
+
+- `/people` for people list and person creation.
+- `/people/[personId]` for person detail and edit/archive actions.
+- `/people/companies` for company list and company creation.
+- `/people/companies/[companyId]` for company detail and edit/archive actions.
+
+Step 6A intentionally does not add affiliation management UI or LinkedIn URL
+fields.
 
 ### Useful commands
 
