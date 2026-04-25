@@ -97,3 +97,19 @@ Step 8A extends the same patterns for manual follow-up tasks:
 Task screens should preserve bottom-nav spacing, keep lifecycle actions clear,
 and avoid notification, background-job, AI recommendation, or automatic
 extraction affordances.
+
+Step 8B extends the same patterns for the manual commitment ledger:
+
+- compact commitment cards instead of tables;
+- full-page mobile forms for create/edit;
+- due, overdue, status, owner, counterparty, and sensitivity badges;
+- linked-context badges for people, companies, meetings, and notes;
+- read-only linked task displays where an existing task references the
+  commitment;
+- inline confirmation controls for fulfil/cancel/archive lifecycle actions;
+- Today sections for overdue, due-today, upcoming, waiting, and recently
+  fulfilled commitments.
+
+Commitment screens should keep tasks distinct from commitments and avoid
+automatic task creation, reminder-delivery, background-job, AI extraction, or
+autonomous workflow affordances.

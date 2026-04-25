@@ -28,10 +28,10 @@ database session duplication. Standard Auth.js Prisma models are still present
 for user/account persistence and future OAuth compatibility.
 
 Next.js middleware performs only coarse authentication checks for protected
-route groups such as `/today`, `/capture`, `/meetings`, `/notes`, `/tasks`,
-`/people`, `/opportunities`, `/search`, `/account`, and `/settings`. Tenant
-membership and role checks are enforced in server-side services and
-repositories, not middleware.
+route groups such as `/today`, `/capture`, `/commitments`, `/meetings`,
+`/notes`, `/tasks`, `/people`, `/opportunities`, `/search`, `/account`, and
+`/settings`. Tenant membership and role checks are enforced in server-side
+services and repositories, not middleware.
 
 ## Mobile app shell
 
@@ -137,6 +137,26 @@ upcoming, and recently completed tasks. Overdue and due-today states are
 derived at read time from `dueAt`; Step 8A does not add reminder delivery,
 notifications, background jobs, automatic extraction, AI recommendations, or
 commitment-ledger screens.
+
+Step 8B adds the manual commitment-ledger workflow:
+
+- `/commitments`
+- `/commitments/new`
+- `/commitments/[commitmentId]`
+- `/commitments/[commitmentId]/edit`
+
+Commitment server actions validate input with Zod, call
+`getCurrentUserContext()`, and delegate to tenant-aware services. Commitments
+can link to existing people, companies, meetings, and notes, and linked tasks
+are displayed read-only through the existing `Task.commitmentId` relation.
+Lifecycle actions fulfil, cancel, and archive commitments with safe audit logs.
+
+The Today screen now includes commitment sections for overdue, due-today,
+upcoming, waiting, and recently fulfilled commitments while preserving the task
+sections from Step 8A. Overdue commitment state is derived at read time from
+`dueAt` or the due-window boundary. Step 8B does not add reminder delivery,
+notifications, background jobs, automatic task creation, commitment extraction,
+AI recommendations, or parsing of notes/meeting notes.
 
 ## Relationship backbone boundary
 

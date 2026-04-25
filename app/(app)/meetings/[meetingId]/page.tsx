@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Edit,
   FileText,
+  Handshake,
   MapPin,
   Plus,
   UsersRound,
@@ -72,6 +73,12 @@ export default async function MeetingDetailPage({
               <Link href={`/tasks/new?meetingId=${meeting.id}`}>
                 <Plus aria-hidden="true" className="mr-2 size-4" />
                 Create task
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/commitments/new?meetingId=${meeting.id}`}>
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                Create commitment
               </Link>
             </Button>
           </div>

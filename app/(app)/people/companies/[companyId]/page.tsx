@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Edit, Globe2, Plus, UsersRound } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit,
+  Globe2,
+  Handshake,
+  Plus,
+  UsersRound,
+} from "lucide-react";
 
 import { PageHeader } from "@/components/app/page-header";
 import { CockpitCard } from "@/components/cards/cockpit-card";
@@ -76,6 +83,12 @@ export default async function CompanyDetailPage({
               <Link href={`/tasks/new?companyId=${company.id}`}>
                 <Plus aria-hidden="true" className="mr-2 size-4" />
                 Create follow-up
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/commitments/new?companyId=${company.id}`}>
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                Create commitment
               </Link>
             </Button>
           </div>

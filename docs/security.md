@@ -11,9 +11,10 @@ Foundation rules:
 - Keep Next.js middleware limited to coarse authentication checks.
 - Enforce tenant and role checks in server-side services, route handlers, or
   server actions.
-- Protected app shell routes are `/today`, `/capture`, `/meetings`, `/notes`,
-  `/tasks`, `/people`, `/opportunities`, `/search`, `/account`, and `/settings`;
-  middleware protects those route groups without database tenant/RBAC logic.
+- Protected app shell routes are `/today`, `/capture`, `/commitments`,
+  `/meetings`, `/notes`, `/tasks`, `/people`, `/opportunities`, `/search`,
+  `/account`, and `/settings`; middleware protects those route groups without
+  database tenant/RBAC logic.
 - Tenant-owned data models must go through tenant-aware repositories and
   services.
 - Use composite tenant-aware foreign keys where practical so cross-tenant links
@@ -97,6 +98,18 @@ trusted tenant context.
 Task audit metadata may include task id, status, priority, task type, linked
 entity ids, due/reminder/snooze date presence, and changed field names. It must
 not include full descriptions, why-now rationale text, note bodies, pasted
+meeting-note text, raw form payloads, sensitive values, cookies, tokens,
+environment values, or secrets.
+
+Step 8B commitment mutations use the same boundary. Commitment reads and writes
+filter by explicit tenant context, and linked owner/counterparty person/company,
+meeting, and note ids are validated in server services. Contextual create URLs
+are convenience hints only and do not carry trusted tenant context. Overdue
+state is derived at read time and is not mutated by a background job.
+
+Commitment audit metadata may include commitment id, status, owner type,
+sensitivity, linked entity ids, due-date presence, due-window presence, and
+changed field names. It must not include full descriptions, note bodies, pasted
 meeting-note text, raw form payloads, sensitive values, cookies, tokens,
 environment values, or secrets.
 

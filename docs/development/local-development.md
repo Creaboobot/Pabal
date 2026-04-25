@@ -79,9 +79,9 @@ pnpm dev
 ```
 
 Then open `http://localhost:3000`. Signed-in users are redirected to `/today`.
-Unauthenticated requests to `/today`, `/capture`, `/meetings`, `/notes`,
-`/tasks`, `/people`, `/opportunities`, `/search`, `/account`, and `/settings` redirect to
-`/sign-in`.
+Unauthenticated requests to `/today`, `/capture`, `/commitments`, `/meetings`,
+`/notes`, `/tasks`, `/people`, `/opportunities`, `/search`, `/account`, and
+`/settings` redirect to `/sign-in`.
 
 The Step 5 screens are mobile-first shell placeholders. They show read-only
 tenant-scoped summaries and design patterns only; they do not create records,
@@ -167,3 +167,23 @@ The Today screen shows task sections for overdue, due-today, upcoming, and
 recently completed manual tasks. Step 8A does not send reminders, run
 background jobs, parse notes, create tasks automatically, call AI providers, or
 add the commitment-ledger workflow.
+
+## Commitment Ledger
+
+Step 8B adds manual commitments:
+
+- `/commitments`
+- `/commitments/new`
+- `/commitments/[commitmentId]`
+- `/commitments/[commitmentId]/edit`
+
+People, company, meeting, and note detail pages include contextual links into
+`/commitments/new`. Those query parameters only preselect form fields;
+commitment server actions still validate every linked record inside the active
+tenant. Commitment lifecycle actions can fulfil, cancel, and archive records
+without deleting linked relationship context.
+
+The Today screen shows commitment sections for overdue, due-today, upcoming,
+waiting, and recently fulfilled commitments. Step 8B does not create tasks
+automatically, send reminders, run background jobs, parse notes, extract
+commitments, or call AI providers.

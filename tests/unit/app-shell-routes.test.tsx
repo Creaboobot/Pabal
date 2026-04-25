@@ -8,6 +8,10 @@ const mocks = vi.hoisted(() => ({
   getTenantPersonRelatedContext: vi.fn(),
   getTenantCompanyRelatedContext: vi.fn(),
   getTenantCompanyAffiliationForPerson: vi.fn(),
+  getTenantCommitment: vi.fn(),
+  getTenantCommitmentBoard: vi.fn(),
+  getTenantCommitmentFormOptions: vi.fn(),
+  getTenantCommitmentProfile: vi.fn(),
   getTenantMeeting: vi.fn(),
   getTenantMeetingProfile: vi.fn(),
   getTenantNoteProfile: vi.fn(),
@@ -84,8 +88,18 @@ vi.mock("@/server/services/tasks", () => ({
   getTenantTaskProfile: mocks.getTenantTaskProfile,
 }));
 
+vi.mock("@/server/services/commitments", () => ({
+  getTenantCommitment: mocks.getTenantCommitment,
+  getTenantCommitmentBoard: mocks.getTenantCommitmentBoard,
+  getTenantCommitmentProfile: mocks.getTenantCommitmentProfile,
+}));
+
 vi.mock("@/server/services/task-form-options", () => ({
   getTenantTaskFormOptions: mocks.getTenantTaskFormOptions,
+}));
+
+vi.mock("@/server/services/commitment-form-options", () => ({
+  getTenantCommitmentFormOptions: mocks.getTenantCommitmentFormOptions,
 }));
 
 vi.mock("@/server/services/relationship-context", () => ({
@@ -157,6 +171,14 @@ vi.mock("@/modules/tasks/components/task-form", () => ({
 
 vi.mock("@/modules/tasks/components/task-action-button", () => ({
   TaskActionButton: () => <div>Task lifecycle control</div>,
+}));
+
+vi.mock("@/modules/commitments/components/commitment-form", () => ({
+  CommitmentForm: () => <form aria-label="Commitment form" />,
+}));
+
+vi.mock("@/modules/commitments/components/commitment-action-button", () => ({
+  CommitmentActionButton: () => <div>Commitment lifecycle control</div>,
 }));
 
 const tenantContext = {
@@ -287,8 +309,12 @@ const noteProfile = {
 };
 
 const taskProfile = {
-  commitment: null,
-  commitmentId: null,
+  commitment: {
+    id: "commitment_test_1",
+    status: "OPEN",
+    title: "Send benchmark outline",
+  },
+  commitmentId: "commitment_test_1",
   company: companyProfile,
   companyId: companyProfile.id,
   completedAt: null,
@@ -314,6 +340,42 @@ const taskProfile = {
   whyNowRationale: "The meeting created a clear next step.",
 };
 
+const commitmentProfile = {
+  counterpartyCompany: companyProfile,
+  counterpartyCompanyId: companyProfile.id,
+  counterpartyPerson: personProfile,
+  counterpartyPersonId: personProfile.id,
+  createdAt: new Date("2026-04-24T12:00:00.000Z"),
+  description: "Send the benchmark outline after the meeting.",
+  dueAt: new Date("2026-04-25T10:00:00.000Z"),
+  dueWindowEnd: null,
+  dueWindowStart: null,
+  id: "commitment_test_1",
+  meeting: meetingProfile,
+  meetingId: meetingProfile.id,
+  note: noteProfile,
+  noteId: noteProfile.id,
+  ownerCompany: null,
+  ownerCompanyId: null,
+  ownerPerson: null,
+  ownerPersonId: null,
+  ownerType: "ME",
+  sensitivity: "NORMAL",
+  status: "OPEN",
+  tasks: [
+    {
+      dueAt: taskProfile.dueAt,
+      id: taskProfile.id,
+      priority: taskProfile.priority,
+      status: taskProfile.status,
+      taskType: taskProfile.taskType,
+      title: taskProfile.title,
+    },
+  ],
+  title: "Send benchmark outline",
+  updatedAt: new Date("2026-04-24T12:00:00.000Z"),
+};
+
 const taskBoard = {
   dueToday: [taskProfile],
   openWithoutDue: [],
@@ -322,10 +384,31 @@ const taskBoard = {
   upcoming: [],
 };
 
+const commitmentBoard = {
+  dueToday: [commitmentProfile],
+  openWithoutDue: [],
+  overdue: [],
+  recentlyFulfilled: [],
+  upcoming: [],
+  waiting: [],
+};
+
 const taskFormOptions = {
-  commitments: [],
+  commitments: [
+    {
+      id: commitmentProfile.id,
+      title: commitmentProfile.title,
+    },
+  ],
   companies: [companyProfile],
   introductionSuggestions: [],
+  meetings: [meetingProfile],
+  notes: [noteProfile],
+  people: [personProfile],
+};
+
+const commitmentFormOptions = {
+  companies: [companyProfile],
   meetings: [meetingProfile],
   notes: [noteProfile],
   people: [personProfile],
@@ -378,6 +461,12 @@ describe("protected app routes", () => {
     mocks.getTenantCompanyAffiliationForPerson.mockResolvedValue(
       affiliationProfile,
     );
+    mocks.getTenantCommitment.mockResolvedValue(commitmentProfile);
+    mocks.getTenantCommitmentBoard.mockResolvedValue(commitmentBoard);
+    mocks.getTenantCommitmentFormOptions.mockResolvedValue(
+      commitmentFormOptions,
+    );
+    mocks.getTenantCommitmentProfile.mockResolvedValue(commitmentProfile);
     mocks.getTenantPersonRelatedContext.mockResolvedValue(relatedContext);
     mocks.getTenantCompanyRelatedContext.mockResolvedValue(relatedContext);
     mocks.listTenantPeople.mockResolvedValue([personProfile]);
@@ -439,6 +528,7 @@ describe("protected app routes", () => {
     ["Create note", () => import("@/app/(app)/notes/new/page")],
     ["Paste meeting notes", () => import("@/app/(app)/capture/meeting/page")],
     ["Tasks", () => import("@/app/(app)/tasks/page")],
+    ["Commitments", () => import("@/app/(app)/commitments/page")],
   ])("renders the %s meeting workflow route", async (heading, importPage) => {
     await renderRoute(importPage);
 
@@ -456,6 +546,17 @@ describe("protected app routes", () => {
       screen.getByRole("heading", { level: 1, name: "Create task" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Task form")).toBeInTheDocument();
+  });
+
+  it("renders the commitment create route", async () => {
+    const Page = (await import("@/app/(app)/commitments/new/page")).default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Create commitment" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Commitment form")).toBeInTheDocument();
   });
 
   it("renders the meeting detail route", async () => {
@@ -571,6 +672,45 @@ describe("protected app routes", () => {
       screen.getByRole("heading", { level: 1, name: "Send follow-up" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Task form")).toBeInTheDocument();
+  });
+
+  it("renders the commitment detail route", async () => {
+    const Page = (
+      await import("@/app/(app)/commitments/[commitmentId]/page")
+    ).default;
+
+    render(
+      await Page({
+        params: Promise.resolve({ commitmentId: "commitment_test_1" }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Send benchmark outline",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the commitment edit route", async () => {
+    const Page = (
+      await import("@/app/(app)/commitments/[commitmentId]/edit/page")
+    ).default;
+
+    render(
+      await Page({
+        params: Promise.resolve({ commitmentId: "commitment_test_1" }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Send benchmark outline",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Commitment form")).toBeInTheDocument();
   });
 
   it("renders the person detail route", async () => {

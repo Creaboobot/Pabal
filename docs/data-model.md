@@ -8,7 +8,8 @@ AI-proposal-readiness and voice-note-readiness tables. Step 7A adds source
 metadata to meetings and notes. Step 7B uses that metadata for manual notes and
 pasted meeting-note capture without changing the schema. Step 8A uses the
 existing `Task` model for manual follow-up workflows without changing the
-schema.
+schema. Step 8B uses the existing `Commitment` model for the manual commitment
+ledger without changing the schema.
 
 ## Foundation tables
 
@@ -175,6 +176,39 @@ Overdue, due-today, and upcoming sections are derived from `dueAt` at read
 time. Step 8A does not add reminder delivery, notifications, recurring tasks,
 background jobs, automatic extraction, AI proposals, or commitment-ledger
 screens.
+
+## Step 8B commitment ledger
+
+Step 8B promotes the existing `Commitment` model from schema readiness into a
+manual commitment ledger. It does not add a migration.
+
+Commitments remain tenant-scoped and can link directly to:
+
+- owner person or owner company, depending on `ownerType`;
+- counterparty person and/or counterparty company;
+- `Meeting`;
+- `Note`.
+
+Those links already use tenant-aware composite relations in Prisma, and
+commitment services also validate linked records before writing. Owner
+semantics stay simple:
+
+- `ME` and `UNKNOWN` commitments cannot include owner person/company ids;
+- `OTHER_PERSON` commitments require an owner person;
+- `COMPANY` commitments require an owner company.
+
+Commitment lifecycle uses existing fields only:
+
+- create defaults to `OPEN`;
+- fulfil sets `status = DONE`;
+- cancel sets `status = CANCELLED`;
+- archive sets `archivedAt` and never hard-deletes the commitment.
+
+Overdue, due-today, upcoming, waiting, and recently fulfilled sections are
+derived at read time from status plus `dueAt` or the due-window boundary. Step
+8B does not add reminder delivery, notifications, recurring commitments,
+background jobs, automatic task creation, automatic commitment extraction,
+AI proposals, or parsing of notes/meeting notes.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.

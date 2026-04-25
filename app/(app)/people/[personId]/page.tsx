@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
   Edit,
+  Handshake,
   Mail,
   Phone,
   Plus,
@@ -81,6 +82,12 @@ export default async function PersonDetailPage({
               <Link href={`/tasks/new?personId=${person.id}`}>
                 <Plus aria-hidden="true" className="mr-2 size-4" />
                 Create follow-up
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/commitments/new?personId=${person.id}`}>
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                Create commitment
               </Link>
             </Button>
           </div>

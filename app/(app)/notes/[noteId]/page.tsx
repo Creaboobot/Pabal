@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Edit,
   FileText,
+  Handshake,
   Plus,
   UserRound,
 } from "lucide-react";
@@ -82,6 +83,12 @@ export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
               <Link href={`/tasks/new?noteId=${note.id}`}>
                 <Plus aria-hidden="true" className="mr-2 size-4" />
                 Create task
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/commitments/new?noteId=${note.id}`}>
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                Create commitment
               </Link>
             </Button>
           </div>

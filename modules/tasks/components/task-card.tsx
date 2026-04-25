@@ -123,8 +123,13 @@ export function TaskCard({ task }: TaskCardProps) {
           ) : null}
           {task.commitment ? (
             <Badge variant="outline">
-              <Handshake aria-hidden="true" className="mr-1 size-3.5" />
-              {task.commitment.title}
+              <Link
+                className="flex items-center gap-1 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                href={`/commitments/${task.commitment.id}`}
+              >
+                <Handshake aria-hidden="true" className="size-3.5" />
+                {task.commitment.title}
+              </Link>
             </Badge>
           ) : null}
           {task.introductionSuggestion ? (

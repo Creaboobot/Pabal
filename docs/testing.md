@@ -86,6 +86,15 @@ people, companies, meetings, notes, commitments, and introduction suggestions,
 cross-tenant read/write/link failures, tenant-scoped Today task board summaries,
 and audit safety without full descriptions or why-now rationale text.
 
+The Step 8B tests cover commitment validation, route smoke rendering for
+`/commitments`, `/commitments/new`, `/commitments/[commitmentId]`, and
+`/commitments/[commitmentId]/edit`, manual commitment
+create/update/fulfil/cancel/archive service flows, tenant-safe links to people,
+companies, meetings, and notes, linked task display through the existing
+`Task.commitmentId` relation, cross-tenant read/write/link failures,
+tenant-scoped Today commitment board summaries, and audit safety without full
+descriptions or sensitive payloads.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

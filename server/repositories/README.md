@@ -14,6 +14,9 @@ Step 7B adds note profile/update helpers, meeting-linked note summaries, and
 source-reference source lookups used by note detail and pasted-capture flows.
 Step 8A extends task repositories with context-aware task profiles, list
 queries, and update helpers for manual follow-up lifecycle workflows.
+Step 8B extends commitment repositories with context-aware commitment profiles,
+list queries, update helpers, and linked task display for the manual commitment
+ledger.
 
 Repositories for billing, integrations, search, actual voice capture,
 transcription, notifications, background jobs, embeddings, and provider-backed
