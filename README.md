@@ -76,11 +76,12 @@ audit-logged archive/remove actions. Step 7B adds manual note workflows and
 pasted Teams/Copilot meeting-note capture as user-provided text only. Step 8A
 adds manual follow-up task workflows and Today task sections. Step 8B adds the
 manual commitment ledger and Today commitment sections. Step 9 adds the
-status-only AI proposal confirmation framework. It does not implement LinkedIn
-URL storage, AI provider calls, proposal application, transcription, audio
+status-only AI proposal confirmation framework. Step 10A-1 adds manual needs
+and capabilities under Opportunities. It does not implement LinkedIn URL
+storage, AI provider calls, proposal application, transcription, audio
 recording/upload, billing, Microsoft Graph, LinkedIn enrichment, production
 search, matching, notifications, reminders, background jobs, automatic task
-creation, or production deployment.
+creation, introduction workflows, or production deployment.
 
 ### Requirements
 
@@ -216,6 +217,26 @@ Proposal review is status-only in Step 9. Approving a proposal item means the
 user accepted it as conceptually valid. It does not apply patches, create
 records, call AI providers, mutate target records, send messages, or start
 background jobs.
+
+Manual relationship intelligence is available under `/opportunities`:
+
+- `/opportunities` for the manual intelligence hub.
+- `/opportunities/needs` for need records.
+- `/opportunities/needs/new` for manual need creation.
+- `/opportunities/needs/[needId]` for need detail and archive actions.
+- `/opportunities/needs/[needId]/edit` for need edits.
+- `/opportunities/capabilities` for capability records.
+- `/opportunities/capabilities/new` for manual capability creation.
+- `/opportunities/capabilities/[capabilityId]` for capability detail and
+  archive actions.
+- `/opportunities/capabilities/[capabilityId]/edit` for capability edits.
+
+Needs can link to people, companies, meetings, and notes. Capabilities can link
+to people, companies, and notes; the current schema has no direct meeting link
+for capabilities. Contextual create links are convenience hints only, and
+server actions validate all linked records inside the active workspace. Step
+10A-1 does not add introduction routes, matching, scoring, AI generation,
+semantic search, embeddings, notifications, jobs, or permanent deletion.
 
 ### Useful commands
 

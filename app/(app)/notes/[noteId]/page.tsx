@@ -2,11 +2,13 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
+  BadgeCheck,
   Building2,
   CalendarDays,
   Edit,
   FileText,
   Handshake,
+  Lightbulb,
   Plus,
   UserRound,
 } from "lucide-react";
@@ -89,6 +91,20 @@ export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
               <Link href={`/commitments/new?noteId=${note.id}`}>
                 <Handshake aria-hidden="true" className="mr-2 size-4" />
                 Create commitment
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/opportunities/needs/new?noteId=${note.id}`}>
+                <Lightbulb aria-hidden="true" className="mr-2 size-4" />
+                Create need
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link
+                href={`/opportunities/capabilities/new?noteId=${note.id}`}
+              >
+                <BadgeCheck aria-hidden="true" className="mr-2 size-4" />
+                Create capability
               </Link>
             </Button>
           </div>

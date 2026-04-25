@@ -1,10 +1,15 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BadgeCheck, Handshake, Lightbulb } from "lucide-react";
+import { BadgeCheck, Handshake, Lightbulb, Plus } from "lucide-react";
 
 import { PageHeader } from "@/components/app/page-header";
 import { CockpitCard } from "@/components/cards/cockpit-card";
+import { EmptyState } from "@/components/states/empty-state";
 import { Badge } from "@/components/ui/badge";
-import { getAppShellSummary } from "@/server/services/app-shell-summary";
+import { Button } from "@/components/ui/button";
+import { CapabilityCard } from "@/modules/opportunities/components/capability-card";
+import { NeedCard } from "@/modules/opportunities/components/need-card";
+import { getTenantOpportunityHub } from "@/server/services/opportunities";
 import { getCurrentUserContext } from "@/server/services/session";
 
 export const dynamic = "force-dynamic";
@@ -16,12 +21,28 @@ export default async function OpportunitiesPage() {
     redirect("/sign-in?callbackUrl=/opportunities");
   }
 
-  const summary = await getAppShellSummary(context);
+  const hub = await getTenantOpportunityHub(context);
 
   return (
     <div className="space-y-6">
       <PageHeader
-        description="Needs, capabilities, and introductions are kept visible as relationship-brokerage readiness signals."
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Button asChild>
+              <Link href="/opportunities/needs/new">
+                <Plus aria-hidden="true" className="mr-2 size-4" />
+                New need
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/opportunities/capabilities/new">
+                <Plus aria-hidden="true" className="mr-2 size-4" />
+                New capability
+              </Link>
+            </Button>
+          </div>
+        }
+        description="Manual needs and capabilities for relationship brokerage. No matching algorithm or AI recommendations run here."
         eyebrow="Brokerage"
         title="Opportunities"
       />
@@ -30,26 +51,93 @@ export default async function OpportunitiesPage() {
         aria-label="Opportunity summary"
         className="grid gap-3 sm:grid-cols-3"
       >
-        <CockpitCard title="Needs" value={summary.opportunities.needs}>
-          <p className="text-sm leading-6 text-muted-foreground">
-            Problems, requests, and interests found across the network.
-          </p>
+        <CockpitCard title="Open needs" value={hub.counts.openNeeds}>
+          <div className="grid gap-3">
+            <p className="text-sm leading-6 text-muted-foreground">
+              Problems, requests, objectives, and interests documented manually.
+            </p>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/opportunities/needs">View needs</Link>
+            </Button>
+          </div>
         </CockpitCard>
         <CockpitCard
-          title="Capabilities"
-          value={summary.opportunities.capabilities}
+          title="Active capabilities"
+          value={hub.counts.activeCapabilities}
         >
-          <p className="text-sm leading-6 text-muted-foreground">
-            Expertise, access, assets, and solution potential.
-          </p>
+          <div className="grid gap-3">
+            <p className="text-sm leading-6 text-muted-foreground">
+              Expertise, access, assets, and solution potential in the network.
+            </p>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/opportunities/capabilities">View capabilities</Link>
+            </Button>
+          </div>
         </CockpitCard>
         <CockpitCard
           title="Introductions"
-          value={summary.opportunities.introductionSuggestions}
+          value={hub.counts.activeIntroductions}
         >
           <p className="text-sm leading-6 text-muted-foreground">
-            Source-linked suggestions without an active matching algorithm.
+            Introduction workflows arrive in Step 10A-2. Existing suggestions
+            stay visible as readiness signals.
           </p>
+        </CockpitCard>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        <CockpitCard title="Latest needs" value={hub.latestNeeds.length}>
+          {hub.latestNeeds.length > 0 ? (
+            <div className="grid gap-3">
+              {hub.latestNeeds.map((need) => (
+                <NeedCard key={need.id} need={need} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              action={
+                <Button asChild>
+                  <Link href="/opportunities/needs/new">
+                    <Plus aria-hidden="true" className="mr-2 size-4" />
+                    Add need
+                  </Link>
+                </Button>
+              }
+              description="Capture a request, problem, objective, or opportunity from the network."
+              icon={Lightbulb}
+              title="No needs yet"
+            />
+          )}
+        </CockpitCard>
+
+        <CockpitCard
+          title="Latest capabilities"
+          value={hub.latestCapabilities.length}
+        >
+          {hub.latestCapabilities.length > 0 ? (
+            <div className="grid gap-3">
+              {hub.latestCapabilities.map((capability) => (
+                <CapabilityCard
+                  capability={capability}
+                  key={capability.id}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              action={
+                <Button asChild>
+                  <Link href="/opportunities/capabilities/new">
+                    <Plus aria-hidden="true" className="mr-2 size-4" />
+                    Add capability
+                  </Link>
+                </Button>
+              }
+              description="Capture expertise, access, assets, experience, or possible solutions."
+              icon={BadgeCheck}
+              title="No capabilities yet"
+            />
+          )}
         </CockpitCard>
       </section>
 

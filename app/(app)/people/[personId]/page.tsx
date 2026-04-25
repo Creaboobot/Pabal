@@ -2,8 +2,10 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
+  BadgeCheck,
   Edit,
   Handshake,
+  Lightbulb,
   Mail,
   Phone,
   Plus,
@@ -88,6 +90,20 @@ export default async function PersonDetailPage({
               <Link href={`/commitments/new?personId=${person.id}`}>
                 <Handshake aria-hidden="true" className="mr-2 size-4" />
                 Create commitment
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/opportunities/needs/new?personId=${person.id}`}>
+                <Lightbulb aria-hidden="true" className="mr-2 size-4" />
+                Create need
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link
+                href={`/opportunities/capabilities/new?personId=${person.id}`}
+              >
+                <BadgeCheck aria-hidden="true" className="mr-2 size-4" />
+                Create capability
               </Link>
             </Button>
           </div>

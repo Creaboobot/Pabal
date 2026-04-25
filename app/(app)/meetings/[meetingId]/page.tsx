@@ -2,11 +2,13 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
+  BadgeCheck,
   Building2,
   CalendarDays,
   Edit,
   FileText,
   Handshake,
+  Lightbulb,
   MapPin,
   Plus,
   UsersRound,
@@ -79,6 +81,24 @@ export default async function MeetingDetailPage({
               <Link href={`/commitments/new?meetingId=${meeting.id}`}>
                 <Handshake aria-hidden="true" className="mr-2 size-4" />
                 Create commitment
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/opportunities/needs/new?meetingId=${meeting.id}`}>
+                <Lightbulb aria-hidden="true" className="mr-2 size-4" />
+                Create need
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link
+                href={
+                  meeting.notes[0]
+                    ? `/opportunities/capabilities/new?noteId=${meeting.notes[0].id}`
+                    : "/opportunities/capabilities/new"
+                }
+              >
+                <BadgeCheck aria-hidden="true" className="mr-2 size-4" />
+                Create capability
               </Link>
             </Button>
           </div>

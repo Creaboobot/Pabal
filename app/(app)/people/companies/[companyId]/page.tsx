@@ -2,9 +2,11 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
+  BadgeCheck,
   Edit,
   Globe2,
   Handshake,
+  Lightbulb,
   Plus,
   UsersRound,
 } from "lucide-react";
@@ -89,6 +91,20 @@ export default async function CompanyDetailPage({
               <Link href={`/commitments/new?companyId=${company.id}`}>
                 <Handshake aria-hidden="true" className="mr-2 size-4" />
                 Create commitment
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/opportunities/needs/new?companyId=${company.id}`}>
+                <Lightbulb aria-hidden="true" className="mr-2 size-4" />
+                Create need
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link
+                href={`/opportunities/capabilities/new?companyId=${company.id}`}
+              >
+                <BadgeCheck aria-hidden="true" className="mr-2 size-4" />
+                Create capability
               </Link>
             </Button>
           </div>
