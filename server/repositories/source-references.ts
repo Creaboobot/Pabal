@@ -42,3 +42,23 @@ export function listSourceReferencesForTarget(
     },
   });
 }
+
+export function listSourceReferencesForSource(
+  input: {
+    tenantId: string;
+    sourceEntityType: SourceEntityType;
+    sourceEntityId: string;
+  },
+  db: SourceReferencesClient = prisma,
+) {
+  return db.sourceReference.findMany({
+    where: {
+      tenantId: input.tenantId,
+      sourceEntityType: input.sourceEntityType,
+      sourceEntityId: input.sourceEntityId,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+}

@@ -35,6 +35,61 @@ export function findNoteById(
   });
 }
 
+export function findNoteProfileById(
+  input: {
+    tenantId: string;
+    noteId: string;
+  },
+  db: NotesClient = prisma,
+) {
+  return db.note.findFirst({
+    where: {
+      id: input.noteId,
+      tenantId: input.tenantId,
+      archivedAt: null,
+    },
+    include: {
+      company: true,
+      meeting: true,
+      person: true,
+    },
+  });
+}
+
+export function listNotesForMeeting(
+  input: {
+    tenantId: string;
+    meetingId: string;
+    take?: number;
+  },
+  db: NotesClient = prisma,
+) {
+  const query: Prisma.NoteFindManyArgs = {
+    where: {
+      tenantId: input.tenantId,
+      meetingId: input.meetingId,
+      archivedAt: null,
+    },
+    orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+    select: {
+      body: true,
+      createdAt: true,
+      id: true,
+      noteType: true,
+      sensitivity: true,
+      sourceType: true,
+      summary: true,
+      updatedAt: true,
+    },
+  };
+
+  if (input.take !== undefined) {
+    query.take = input.take;
+  }
+
+  return db.note.findMany(query);
+}
+
 export function listNotesForTenant(tenantId: string, db: NotesClient = prisma) {
   return db.note.findMany({
     where: {
@@ -44,5 +99,24 @@ export function listNotesForTenant(tenantId: string, db: NotesClient = prisma) {
     orderBy: {
       createdAt: "desc",
     },
+  });
+}
+
+export function updateNote(
+  input: {
+    tenantId: string;
+    noteId: string;
+    data: Prisma.NoteUncheckedUpdateInput;
+  },
+  db: NotesClient = prisma,
+) {
+  return db.note.update({
+    where: {
+      id_tenantId: {
+        id: input.noteId,
+        tenantId: input.tenantId,
+      },
+    },
+    data: input.data,
   });
 }

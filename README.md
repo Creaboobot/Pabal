@@ -72,10 +72,11 @@ Today, Capture, People, Opportunities, and Search. Step 6A adds the first real
 product workflow: mobile-first people and company record management. Step 6B
 adds basic affiliation management and read-only related meeting/note summaries.
 Step 7A adds manual meeting records, meeting participants, source metadata, and
-audit-logged archive/remove actions. It does not implement LinkedIn URL storage,
-AI provider calls, proposal
-application, transcription, audio recording/upload, billing, Microsoft Graph,
-LinkedIn enrichment, production search, matching, notifications, or production
+audit-logged archive/remove actions. Step 7B adds manual note workflows and
+pasted Teams/Copilot meeting-note capture as user-provided text only. It does
+not implement LinkedIn URL storage, AI provider calls, proposal application,
+transcription, audio recording/upload, billing, Microsoft Graph, LinkedIn
+enrichment, production search, matching, notifications, or production
 deployment.
 
 ### Requirements
@@ -153,7 +154,22 @@ Manual meeting records are available under `/meetings`:
 Participant removal deletes only the `MeetingParticipant` association. It does
 not delete people, companies, meetings, notes, or source references. The source
 metadata enum currently supports `MANUAL` and `TEAMS_COPILOT_PASTE`, but Step
-7A does not add Teams import, note creation, AI extraction, or summarisation.
+7A itself did not add Teams import, note creation, AI extraction, or
+summarisation.
+
+Manual notes are available through contextual routes:
+
+- `/notes/new` for a general manual note.
+- `/notes/[noteId]` for note detail.
+- `/notes/[noteId]/edit` for note edits and archive actions.
+- `/meetings/[meetingId]/notes/new` to add a note to an existing meeting.
+- `/capture/meeting` to paste user-provided Teams/Copilot meeting notes into a
+  new meeting plus linked source note.
+
+Pasted meeting-note capture stores the pasted text in `Note.body`, marks the
+meeting and note with `TEAMS_COPILOT_PASTE`, and creates a safe `NOTE ->
+MEETING` source reference. It does not parse, summarise, extract tasks,
+commitments, needs, capabilities, or create AI proposals.
 
 ### Useful commands
 

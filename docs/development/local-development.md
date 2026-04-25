@@ -131,5 +131,19 @@ The Capture screen links to `/meetings/new`. Meeting forms are full-page mobile
 forms, write tenant-aware audit logs, and never accept a trusted tenant id from
 the client. Participant removal deletes only the meeting-participant link.
 
-Step 7A does not add `/capture/meeting`, `/notes/*`, Teams import, Microsoft
-Graph, AI extraction, summarisation, task extraction, or commitment extraction.
+Step 7B adds manual notes and pasted meeting-note capture:
+
+- `/notes/new`
+- `/notes/[noteId]`
+- `/notes/[noteId]/edit`
+- `/meetings/[meetingId]/notes/new`
+- `/capture/meeting`
+
+Use `/capture/meeting` to paste user-provided Teams/Copilot text into a new
+meeting plus linked note. The flow stores the pasted text as `Note.body`, marks
+the meeting and note as `TEAMS_COPILOT_PASTE`, and creates a source reference
+from the note to the meeting.
+
+Step 7B still does not add Teams import, Microsoft Graph, AI extraction,
+summarisation, task extraction, commitment extraction, voice recording,
+transcription, or proposal generation.

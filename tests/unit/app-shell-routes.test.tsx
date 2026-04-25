@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   getTenantCompanyAffiliationForPerson: vi.fn(),
   getTenantMeeting: vi.fn(),
   getTenantMeetingProfile: vi.fn(),
+  getTenantNoteProfile: vi.fn(),
   getAppShellSummary: vi.fn(),
   getCurrentUserContext: vi.fn(),
   getTenantCompany: vi.fn(),
@@ -71,6 +72,10 @@ vi.mock("@/server/services/meetings", () => ({
   listTenantMeetings: mocks.listTenantMeetings,
 }));
 
+vi.mock("@/server/services/notes", () => ({
+  getTenantNoteProfile: mocks.getTenantNoteProfile,
+}));
+
 vi.mock("@/server/services/relationship-context", () => ({
   getTenantCompanyRelatedContext: mocks.getTenantCompanyRelatedContext,
   getTenantPersonRelatedContext: mocks.getTenantPersonRelatedContext,
@@ -120,6 +125,18 @@ vi.mock("@/modules/meetings/components/meeting-action-button", () => ({
 
 vi.mock("@/modules/meetings/components/participant-card", () => ({
   ParticipantCard: () => <article>Participant card</article>,
+}));
+
+vi.mock("@/modules/notes/components/note-form", () => ({
+  NoteForm: () => <form aria-label="Note form" />,
+}));
+
+vi.mock("@/modules/notes/components/pasted-meeting-capture-form", () => ({
+  PastedMeetingCaptureForm: () => <form aria-label="Pasted meeting form" />,
+}));
+
+vi.mock("@/modules/notes/components/note-action-button", () => ({
+  NoteActionButton: () => <div>Note lifecycle control</div>,
 }));
 
 const tenantContext = {
@@ -197,6 +214,18 @@ const meetingProfile = {
   endedAt: new Date("2026-04-24T11:00:00.000Z"),
   id: "meeting_test_1",
   location: "Teams",
+  notes: [
+    {
+      body: "Detailed note body for relationship context.",
+      createdAt: new Date("2026-04-24T10:05:00.000Z"),
+      id: "note_test_1",
+      noteType: "MEETING",
+      sensitivity: "NORMAL",
+      sourceType: "MANUAL",
+      summary: "Short note summary.",
+      updatedAt: new Date("2026-04-24T10:05:00.000Z"),
+    },
+  ],
   occurredAt: new Date("2026-04-24T10:00:00.000Z"),
   participants: [
     {
@@ -216,6 +245,25 @@ const meetingProfile = {
   summary: "Discussed relationship context.",
   title: "MBSE readiness discussion",
   updatedAt: new Date("2026-04-24T10:00:00.000Z"),
+};
+
+const noteProfile = {
+  body: "Detailed note body for relationship context.",
+  company: companyProfile,
+  companyId: companyProfile.id,
+  createdAt: new Date("2026-04-24T10:05:00.000Z"),
+  id: "note_test_1",
+  meeting: meetingProfile,
+  meetingId: meetingProfile.id,
+  noteType: "MEETING",
+  person: personProfile,
+  personId: personProfile.id,
+  sensitivity: "NORMAL",
+  sourceReferences: [],
+  sourceType: "MANUAL",
+  summary: "Short note summary.",
+  targetReferences: [],
+  updatedAt: new Date("2026-04-24T10:05:00.000Z"),
 };
 
 const affiliationProfile = {
@@ -255,6 +303,7 @@ describe("protected app routes", () => {
     mocks.getTenantCompany.mockResolvedValue(companyProfile);
     mocks.getTenantMeeting.mockResolvedValue(meetingProfile);
     mocks.getTenantMeetingProfile.mockResolvedValue(meetingProfile);
+    mocks.getTenantNoteProfile.mockResolvedValue(noteProfile);
     mocks.getTenantPerson.mockResolvedValue(personProfile);
     mocks.getTenantPersonProfile.mockResolvedValue(personProfile);
     mocks.getTenantCompanyProfile.mockResolvedValue(companyProfile);
@@ -319,6 +368,8 @@ describe("protected app routes", () => {
   it.each([
     ["Meetings", () => import("@/app/(app)/meetings/page")],
     ["Create meeting", () => import("@/app/(app)/meetings/new/page")],
+    ["Create note", () => import("@/app/(app)/notes/new/page")],
+    ["Paste meeting notes", () => import("@/app/(app)/capture/meeting/page")],
   ])("renders the %s meeting workflow route", async (heading, importPage) => {
     await renderRoute(importPage);
 
@@ -378,6 +429,46 @@ describe("protected app routes", () => {
     expect(
       screen.getByLabelText("Meeting participant form"),
     ).toBeInTheDocument();
+  });
+
+  it("renders the meeting note create route", async () => {
+    const Page = (
+      await import("@/app/(app)/meetings/[meetingId]/notes/new/page")
+    ).default;
+
+    render(
+      await Page({ params: Promise.resolve({ meetingId: "meeting_test_1" }) }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "MBSE readiness discussion",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Note form")).toBeInTheDocument();
+  });
+
+  it("renders the note detail route", async () => {
+    const Page = (await import("@/app/(app)/notes/[noteId]/page")).default;
+
+    render(await Page({ params: Promise.resolve({ noteId: "note_test_1" }) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Meeting note" }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the note edit route", async () => {
+    const Page = (await import("@/app/(app)/notes/[noteId]/edit/page"))
+      .default;
+
+    render(await Page({ params: Promise.resolve({ noteId: "note_test_1" }) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Meeting note" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Note form")).toBeInTheDocument();
   });
 
   it("renders the person detail route", async () => {

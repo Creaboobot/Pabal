@@ -5,7 +5,8 @@ membership, role, and audit logging tables. Step 4A adds the first
 tenant-scoped relationship backbone tables. Step 4B-1 adds tenant-scoped
 action and intelligence-readiness tables. Step 4B-2 adds tenant-scoped
 AI-proposal-readiness and voice-note-readiness tables. Step 7A adds source
-metadata to meetings and notes.
+metadata to meetings and notes. Step 7B uses that metadata for manual notes and
+pasted meeting-note capture without changing the schema.
 
 ## Foundation tables
 
@@ -126,6 +127,24 @@ participants are allowed for external attendees.
 
 Participant removal hard-deletes only the `MeetingParticipant` association.
 The linked person, company, meeting, notes, and source references are preserved.
+
+## Step 7B notes and pasted capture
+
+Step 7B uses the existing `Note`, `Meeting`, and `SourceReference` models
+without a migration. Manual notes can link directly to a person, company, and/or
+meeting through tenant-aware composite relations already present in the schema.
+
+The pasted Teams/Copilot capture flow creates:
+
+- one `Meeting` with `sourceType = TEAMS_COPILOT_PASTE`;
+- one linked `Note` with `noteType = MEETING` and
+  `sourceType = TEAMS_COPILOT_PASTE`;
+- optional manually selected `MeetingParticipant` rows for known people;
+- one `SourceReference` from `NOTE` to `MEETING`.
+
+The flow stores pasted user text in `Note.body` and optional manual summary in
+`Note.summary` / `Meeting.summary`. It does not create tasks, commitments,
+needs, capabilities, AI proposals, voice notes, or extracted structured data.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.

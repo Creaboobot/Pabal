@@ -59,6 +59,23 @@ export function findMeetingProfileById(
           createdAt: "asc",
         },
       },
+      notes: {
+        orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+        select: {
+          body: true,
+          createdAt: true,
+          id: true,
+          noteType: true,
+          sensitivity: true,
+          sourceType: true,
+          summary: true,
+          updatedAt: true,
+        },
+        take: 5,
+        where: {
+          archivedAt: null,
+        },
+      },
       _count: {
         select: {
           notes: true,
