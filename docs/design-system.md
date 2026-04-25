@@ -57,3 +57,15 @@ Step 6B extends the same mobile-first patterns for affiliations:
 The related context sections should stay brief on mobile and must not imply
 that meeting capture, note creation, AI summarisation, or semantic search exists
 yet.
+
+Step 7A extends the patterns for meetings:
+
+- meeting list cards instead of tables;
+- full-page mobile forms for create/edit and participant add;
+- compact participant cards/chips with inline remove confirmation;
+- source badges for `MANUAL` and `TEAMS_COPILOT_PASTE`;
+- short note-count displays without note creation UI.
+
+Meeting screens should preserve bottom-nav spacing, keep archive/remove
+confirmations inline, and avoid implying that AI extraction, transcription,
+Teams import, or note workflows exist.

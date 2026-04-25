@@ -4,7 +4,8 @@ The Step 3 SaaS foundation defines authentication, tenant/workspace,
 membership, role, and audit logging tables. Step 4A adds the first
 tenant-scoped relationship backbone tables. Step 4B-1 adds tenant-scoped
 action and intelligence-readiness tables. Step 4B-2 adds tenant-scoped
-AI-proposal-readiness and voice-note-readiness tables.
+AI-proposal-readiness and voice-note-readiness tables. Step 7A adds source
+metadata to meetings and notes.
 
 ## Foundation tables
 
@@ -27,11 +28,12 @@ AI-proposal-readiness and voice-note-readiness tables.
 - `CompanyAffiliation`: tenant-owned link between a person and a company. The
   schema uses composite tenant-aware foreign keys to prevent cross-tenant
   person/company links.
-- `Meeting`: tenant-owned meeting shell with optional primary company.
+- `Meeting`: tenant-owned meeting shell with optional primary company and
+  `sourceType`.
 - `MeetingParticipant`: tenant-owned meeting participant link with
   `participantRole`, avoiding confusion with the SaaS `Role` model.
 - `Note`: tenant-owned note that may link directly to person, company, and/or
-  meeting context.
+  meeting context, with `sourceType` for future manual paste workflows.
 - `SourceReference`: controlled polymorphic provenance link between tenant-owned
   records. Services must validate that both source and target belong to the same
   tenant before creating a reference.
@@ -104,6 +106,26 @@ Person and company detail pages now show read-only latest meeting and note
 summaries from existing `Meeting`, `MeetingParticipant`, and `Note` records.
 These summaries do not introduce meeting capture, note creation, AI
 summarisation, semantic search, or matching behavior.
+
+## Step 7A meetings foundation
+
+Step 7A adds a focused `RecordSourceType` enum with:
+
+- `MANUAL`
+- `TEAMS_COPILOT_PASTE`
+
+`Meeting.sourceType` and `Note.sourceType` default to `MANUAL`. This is source
+metadata only. It does not add Teams import, Microsoft Graph, Copilot import,
+note creation UI, AI extraction, or summarisation.
+
+Manual meeting workflows use the existing `Meeting` and `MeetingParticipant`
+models. `MeetingParticipant` keeps tenant-aware composite relations to
+`Meeting`, `Person`, and `Company`. A known-person participant is unique per
+meeting through `@@unique([tenantId, meetingId, personId])`; snapshot-only
+participants are allowed for external attendees.
+
+Participant removal hard-deletes only the `MeetingParticipant` association.
+The linked person, company, meeting, notes, and source references are preserved.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.

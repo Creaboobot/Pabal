@@ -79,8 +79,9 @@ pnpm dev
 ```
 
 Then open `http://localhost:3000`. Signed-in users are redirected to `/today`.
-Unauthenticated requests to `/today`, `/capture`, `/people`, `/opportunities`,
-`/search`, `/account`, and `/settings` redirect to `/sign-in`.
+Unauthenticated requests to `/today`, `/capture`, `/meetings`, `/people`,
+`/opportunities`, `/search`, `/account`, and `/settings` redirect to
+`/sign-in`.
 
 The Step 5 screens are mobile-first shell placeholders. They show read-only
 tenant-scoped summaries and design patterns only; they do not create records,
@@ -113,5 +114,22 @@ Step 6B adds affiliation management and read-only related context:
 - view latest tenant-scoped meeting and note summaries on person/company detail
   pages.
 
-These flows do not create meetings, create notes, call AI, run search/matching,
-or store LinkedIn URLs.
+These flows do not create notes, call AI, run search/matching, or store
+LinkedIn URLs.
+
+## Meetings
+
+Step 7A adds manual meeting records:
+
+- `/meetings`
+- `/meetings/new`
+- `/meetings/[meetingId]`
+- `/meetings/[meetingId]/edit`
+- `/meetings/[meetingId]/participants/new`
+
+The Capture screen links to `/meetings/new`. Meeting forms are full-page mobile
+forms, write tenant-aware audit logs, and never accept a trusted tenant id from
+the client. Participant removal deletes only the meeting-participant link.
+
+Step 7A does not add `/capture/meeting`, `/notes/*`, Teams import, Microsoft
+Graph, AI extraction, summarisation, task extraction, or commitment extraction.

@@ -8,12 +8,15 @@ const mocks = vi.hoisted(() => ({
   getTenantPersonRelatedContext: vi.fn(),
   getTenantCompanyRelatedContext: vi.fn(),
   getTenantCompanyAffiliationForPerson: vi.fn(),
+  getTenantMeeting: vi.fn(),
+  getTenantMeetingProfile: vi.fn(),
   getAppShellSummary: vi.fn(),
   getCurrentUserContext: vi.fn(),
   getTenantCompany: vi.fn(),
   getTenantPerson: vi.fn(),
   listTenantCompaniesWithProfiles: vi.fn(),
   listTenantCompanies: vi.fn(),
+  listTenantMeetings: vi.fn(),
   listTenantPeopleWithProfiles: vi.fn(),
   listTenantPeople: vi.fn(),
   notFound: vi.fn(() => {
@@ -62,6 +65,12 @@ vi.mock("@/server/services/company-affiliations", () => ({
     mocks.getTenantCompanyAffiliationForPerson,
 }));
 
+vi.mock("@/server/services/meetings", () => ({
+  getTenantMeeting: mocks.getTenantMeeting,
+  getTenantMeetingProfile: mocks.getTenantMeetingProfile,
+  listTenantMeetings: mocks.listTenantMeetings,
+}));
+
 vi.mock("@/server/services/relationship-context", () => ({
   getTenantCompanyRelatedContext: mocks.getTenantCompanyRelatedContext,
   getTenantPersonRelatedContext: mocks.getTenantPersonRelatedContext,
@@ -95,6 +104,22 @@ vi.mock("@/modules/people/components/company-form", () => ({
 
 vi.mock("@/modules/people/components/affiliation-form", () => ({
   AffiliationForm: () => <form aria-label="Affiliation form" />,
+}));
+
+vi.mock("@/modules/meetings/components/meeting-form", () => ({
+  MeetingForm: () => <form aria-label="Meeting form" />,
+}));
+
+vi.mock("@/modules/meetings/components/meeting-participant-form", () => ({
+  MeetingParticipantForm: () => <form aria-label="Meeting participant form" />,
+}));
+
+vi.mock("@/modules/meetings/components/meeting-action-button", () => ({
+  MeetingActionButton: () => <div>Meeting lifecycle control</div>,
+}));
+
+vi.mock("@/modules/meetings/components/participant-card", () => ({
+  ParticipantCard: () => <article>Participant card</article>,
 }));
 
 const tenantContext = {
@@ -162,6 +187,37 @@ const relatedContext = {
   notes: [],
 };
 
+const meetingProfile = {
+  _count: {
+    notes: 1,
+    participants: 1,
+  },
+  archivedAt: null,
+  createdAt: new Date("2026-04-24T10:00:00.000Z"),
+  endedAt: new Date("2026-04-24T11:00:00.000Z"),
+  id: "meeting_test_1",
+  location: "Teams",
+  occurredAt: new Date("2026-04-24T10:00:00.000Z"),
+  participants: [
+    {
+      company: companyProfile,
+      companyId: companyProfile.id,
+      emailSnapshot: "anna@example.com",
+      id: "participant_test_1",
+      nameSnapshot: "Anna Keller",
+      participantRole: "HOST",
+      person: personProfile,
+      personId: personProfile.id,
+    },
+  ],
+  primaryCompany: companyProfile,
+  primaryCompanyId: companyProfile.id,
+  sourceType: "MANUAL",
+  summary: "Discussed relationship context.",
+  title: "MBSE readiness discussion",
+  updatedAt: new Date("2026-04-24T10:00:00.000Z"),
+};
+
 const affiliationProfile = {
   affiliationTitle: "Advisor",
   company: companyProfile,
@@ -197,6 +253,8 @@ describe("protected app routes", () => {
     mocks.getCurrentUserContext.mockResolvedValue(tenantContext);
     mocks.getAppShellSummary.mockResolvedValue(appSummary);
     mocks.getTenantCompany.mockResolvedValue(companyProfile);
+    mocks.getTenantMeeting.mockResolvedValue(meetingProfile);
+    mocks.getTenantMeetingProfile.mockResolvedValue(meetingProfile);
     mocks.getTenantPerson.mockResolvedValue(personProfile);
     mocks.getTenantPersonProfile.mockResolvedValue(personProfile);
     mocks.getTenantCompanyProfile.mockResolvedValue(companyProfile);
@@ -207,6 +265,7 @@ describe("protected app routes", () => {
     mocks.getTenantCompanyRelatedContext.mockResolvedValue(relatedContext);
     mocks.listTenantPeople.mockResolvedValue([personProfile]);
     mocks.listTenantCompanies.mockResolvedValue([companyProfile]);
+    mocks.listTenantMeetings.mockResolvedValue([meetingProfile]);
     mocks.listTenantPeopleWithProfiles.mockResolvedValue([
       {
         ...personProfile,
@@ -254,6 +313,70 @@ describe("protected app routes", () => {
 
     expect(
       screen.getByRole("heading", { level: 1, name: heading }),
+    ).toBeInTheDocument();
+  });
+
+  it.each([
+    ["Meetings", () => import("@/app/(app)/meetings/page")],
+    ["Create meeting", () => import("@/app/(app)/meetings/new/page")],
+  ])("renders the %s meeting workflow route", async (heading, importPage) => {
+    await renderRoute(importPage);
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: heading }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the meeting detail route", async () => {
+    const Page = (await import("@/app/(app)/meetings/[meetingId]/page"))
+      .default;
+
+    render(
+      await Page({ params: Promise.resolve({ meetingId: "meeting_test_1" }) }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "MBSE readiness discussion",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the meeting edit route", async () => {
+    const Page = (await import("@/app/(app)/meetings/[meetingId]/edit/page"))
+      .default;
+
+    render(
+      await Page({ params: Promise.resolve({ meetingId: "meeting_test_1" }) }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "MBSE readiness discussion",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Meeting form")).toBeInTheDocument();
+  });
+
+  it("renders the meeting participant create route", async () => {
+    const Page = (
+      await import("@/app/(app)/meetings/[meetingId]/participants/new/page")
+    ).default;
+
+    render(
+      await Page({ params: Promise.resolve({ meetingId: "meeting_test_1" }) }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "MBSE readiness discussion",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Meeting participant form"),
     ).toBeInTheDocument();
   });
 

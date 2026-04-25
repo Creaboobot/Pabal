@@ -1,18 +1,36 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ClipboardPenLine, Mic, NotebookPen, UserPlus } from "lucide-react";
+import {
+  ClipboardPenLine,
+  Mic,
+  NotebookPen,
+  UserPlus,
+  type LucideIcon,
+} from "lucide-react";
 
 import { PageHeader } from "@/components/app/page-header";
 import { CockpitCard } from "@/components/cards/cockpit-card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { getAppShellSummary } from "@/server/services/app-shell-summary";
 import { getCurrentUserContext } from "@/server/services/session";
 
 export const dynamic = "force-dynamic";
 
-const captureSurfaces = [
+type CaptureSurface = {
+  actionLabel?: string;
+  description: string;
+  href?: string;
+  icon: LucideIcon;
+  title: string;
+};
+
+const captureSurfaces: CaptureSurface[] = [
   {
     title: "Meeting note",
-    description: "Paste or write notes before they become structured memory.",
+    description: "Create a meeting record for manual relationship context.",
+    href: "/meetings/new",
+    actionLabel: "Create meeting",
     icon: NotebookPen,
   },
   {
@@ -62,9 +80,16 @@ export default async function CapturePage() {
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-primary">
                   <Icon aria-hidden="true" className="size-5" />
                 </span>
-                <p className="text-sm leading-6 text-muted-foreground">
-                  {surface.description}
-                </p>
+                <div className="min-w-0">
+                  <p className="text-sm leading-6 text-muted-foreground">
+                    {surface.description}
+                  </p>
+                  {surface.href && surface.actionLabel ? (
+                    <Button asChild className="mt-3" size="sm">
+                      <Link href={surface.href}>{surface.actionLabel}</Link>
+                    </Button>
+                  ) : null}
+                </div>
               </div>
             </CockpitCard>
           );

@@ -71,7 +71,9 @@ mobile-first authenticated app shell and read-only route placeholders for
 Today, Capture, People, Opportunities, and Search. Step 6A adds the first real
 product workflow: mobile-first people and company record management. Step 6B
 adds basic affiliation management and read-only related meeting/note summaries.
-It does not implement LinkedIn URL storage, AI provider calls, proposal
+Step 7A adds manual meeting records, meeting participants, source metadata, and
+audit-logged archive/remove actions. It does not implement LinkedIn URL storage,
+AI provider calls, proposal
 application, transcription, audio recording/upload, billing, Microsoft Graph,
 LinkedIn enrichment, production search, matching, notifications, or production
 deployment.
@@ -105,7 +107,7 @@ Edit `.env.local` before starting the app:
 The app runs at `http://localhost:3000`. Development sign-in is available at
 `/sign-in` only when `ENABLE_DEV_AUTH=true` and `NODE_ENV` is not production.
 Signed-in users land on `/today`; unauthenticated access to `/today`,
-`/capture`, `/people`, `/opportunities`, `/search`, `/account`, and
+`/capture`, `/meetings`, `/people`, `/opportunities`, `/search`, `/account`, and
 `/settings` redirects to `/sign-in`.
 
 ### App shell routes
@@ -136,8 +138,22 @@ People and company records are available under `/people`:
 
 Affiliation mutations are tenant-aware, audit-logged, and use transaction-safe
 primary affiliation handling. Related meetings and notes are read-only
-summaries only; meeting capture and note creation remain later work. The current
-schema does not include LinkedIn URL fields.
+summaries only. The current schema does not include LinkedIn URL fields.
+
+Manual meeting records are available under `/meetings`:
+
+- `/meetings` for the active meeting list.
+- `/meetings/new` for manual meeting creation.
+- `/meetings/[meetingId]` for meeting detail, participant list, note count, and
+  archive action.
+- `/meetings/[meetingId]/edit` for meeting edits.
+- `/meetings/[meetingId]/participants/new` to add a known person or snapshot
+  participant.
+
+Participant removal deletes only the `MeetingParticipant` association. It does
+not delete people, companies, meetings, notes, or source references. The source
+metadata enum currently supports `MANUAL` and `TEAMS_COPILOT_PASTE`, but Step
+7A does not add Teams import, note creation, AI extraction, or summarisation.
 
 ### Useful commands
 
