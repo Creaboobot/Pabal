@@ -43,5 +43,17 @@ proposal review, voice recording, transcription, semantic search, matching,
 notifications, analytics, or provider integrations.
 
 Step 6A extends the primitives for people/company record management only. It
-does not add affiliation management, LinkedIn URL fields, AI enrichment, voice
-capture, semantic search, or matching flows.
+does not add LinkedIn URL fields, AI enrichment, voice capture, semantic search,
+or matching flows.
+
+Step 6B extends the same mobile-first patterns for affiliations:
+
+- compact affiliation cards instead of tables;
+- full-page mobile forms for create/edit;
+- inline confirmation controls for end/archive actions;
+- short read-only related meeting/note sections;
+- badges for primary, ended, and sensitivity states.
+
+The related context sections should stay brief on mobile and must not imply
+that meeting capture, note creation, AI summarisation, or semantic search exists
+yet.

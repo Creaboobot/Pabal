@@ -5,10 +5,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   getTenantCompanyProfile: vi.fn(),
   getTenantPersonProfile: vi.fn(),
+  getTenantPersonRelatedContext: vi.fn(),
+  getTenantCompanyRelatedContext: vi.fn(),
+  getTenantCompanyAffiliationForPerson: vi.fn(),
   getAppShellSummary: vi.fn(),
   getCurrentUserContext: vi.fn(),
+  getTenantCompany: vi.fn(),
+  getTenantPerson: vi.fn(),
   listTenantCompaniesWithProfiles: vi.fn(),
+  listTenantCompanies: vi.fn(),
   listTenantPeopleWithProfiles: vi.fn(),
+  listTenantPeople: vi.fn(),
   notFound: vi.fn(() => {
     throw new Error("notFound");
   }),
@@ -37,22 +44,45 @@ vi.mock("@/server/services/app-shell-summary", () => ({
 }));
 
 vi.mock("@/server/services/people", () => ({
+  getTenantPerson: mocks.getTenantPerson,
   getTenantPersonProfile: mocks.getTenantPersonProfile,
+  listTenantPeople: mocks.listTenantPeople,
   listTenantPeopleWithProfiles: mocks.listTenantPeopleWithProfiles,
 }));
 
 vi.mock("@/server/services/companies", () => ({
+  getTenantCompany: mocks.getTenantCompany,
   getTenantCompanyProfile: mocks.getTenantCompanyProfile,
+  listTenantCompanies: mocks.listTenantCompanies,
   listTenantCompaniesWithProfiles: mocks.listTenantCompaniesWithProfiles,
 }));
 
+vi.mock("@/server/services/company-affiliations", () => ({
+  getTenantCompanyAffiliationForPerson:
+    mocks.getTenantCompanyAffiliationForPerson,
+}));
+
+vi.mock("@/server/services/relationship-context", () => ({
+  getTenantCompanyRelatedContext: mocks.getTenantCompanyRelatedContext,
+  getTenantPersonRelatedContext: mocks.getTenantPersonRelatedContext,
+}));
+
 vi.mock("@/modules/people/actions", () => ({
+  archiveAffiliationAction: vi.fn(),
   archiveCompanyAction: vi.fn(),
   archivePersonAction: vi.fn(),
+  createCompanyAffiliationAction: vi.fn(),
+  createPersonAffiliationAction: vi.fn(),
+  endAffiliationAction: vi.fn(),
+  updateAffiliationAction: vi.fn(),
 }));
 
 vi.mock("@/modules/people/components/archive-record-button", () => ({
   ArchiveRecordButton: () => <div>Archive control</div>,
+}));
+
+vi.mock("@/modules/people/components/affiliation-action-button", () => ({
+  AffiliationActionButton: () => <div>Affiliation lifecycle control</div>,
 }));
 
 vi.mock("@/modules/people/components/person-form", () => ({
@@ -61,6 +91,10 @@ vi.mock("@/modules/people/components/person-form", () => ({
 
 vi.mock("@/modules/people/components/company-form", () => ({
   CompanyForm: () => <form aria-label="Company form" />,
+}));
+
+vi.mock("@/modules/people/components/affiliation-form", () => ({
+  AffiliationForm: () => <form aria-label="Affiliation form" />,
 }));
 
 const tenantContext = {
@@ -123,6 +157,24 @@ const companyProfile = {
   website: "https://example.com",
 };
 
+const relatedContext = {
+  meetings: [],
+  notes: [],
+};
+
+const affiliationProfile = {
+  affiliationTitle: "Advisor",
+  company: companyProfile,
+  companyId: companyProfile.id,
+  department: "Transformation",
+  endsAt: null,
+  id: "affiliation_test_1",
+  isPrimary: true,
+  person: personProfile,
+  personId: personProfile.id,
+  startsAt: null,
+};
+
 type AsyncPage = () => Promise<ReactElement>;
 
 const routes: Array<[string, () => Promise<{ default: AsyncPage }>]> = [
@@ -144,8 +196,17 @@ describe("protected app routes", () => {
     vi.clearAllMocks();
     mocks.getCurrentUserContext.mockResolvedValue(tenantContext);
     mocks.getAppShellSummary.mockResolvedValue(appSummary);
+    mocks.getTenantCompany.mockResolvedValue(companyProfile);
+    mocks.getTenantPerson.mockResolvedValue(personProfile);
     mocks.getTenantPersonProfile.mockResolvedValue(personProfile);
     mocks.getTenantCompanyProfile.mockResolvedValue(companyProfile);
+    mocks.getTenantCompanyAffiliationForPerson.mockResolvedValue(
+      affiliationProfile,
+    );
+    mocks.getTenantPersonRelatedContext.mockResolvedValue(relatedContext);
+    mocks.getTenantCompanyRelatedContext.mockResolvedValue(relatedContext);
+    mocks.listTenantPeople.mockResolvedValue([personProfile]);
+    mocks.listTenantCompanies.mockResolvedValue([companyProfile]);
     mocks.listTenantPeopleWithProfiles.mockResolvedValue([
       {
         ...personProfile,
@@ -244,5 +305,56 @@ describe("protected app routes", () => {
       screen.getByRole("heading", { level: 1, name: "Nordic Industrials" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Company form")).toBeInTheDocument();
+  });
+
+  it("renders the person affiliation create route", async () => {
+    const Page = (await import("@/app/(app)/people/[personId]/affiliations/new/page"))
+      .default;
+
+    render(await Page({ params: Promise.resolve({ personId: "person_test_1" }) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Anna Keller" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Affiliation form")).toBeInTheDocument();
+  });
+
+  it("renders the company affiliation create route", async () => {
+    const Page = (
+      await import(
+        "@/app/(app)/people/companies/[companyId]/affiliations/new/page"
+      )
+    ).default;
+
+    render(
+      await Page({ params: Promise.resolve({ companyId: "company_test_1" }) }),
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Nordic Industrials" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Affiliation form")).toBeInTheDocument();
+  });
+
+  it("renders the affiliation edit route", async () => {
+    const Page = (
+      await import(
+        "@/app/(app)/people/[personId]/affiliations/[affiliationId]/edit/page"
+      )
+    ).default;
+
+    render(
+      await Page({
+        params: Promise.resolve({
+          affiliationId: "affiliation_test_1",
+          personId: "person_test_1",
+        }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Nordic Industrials" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Affiliation form")).toBeInTheDocument();
   });
 });

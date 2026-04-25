@@ -66,7 +66,25 @@ screens live under the existing protected app shell:
 
 Server actions validate form input with Zod, call `getCurrentUserContext()`,
 and delegate mutations to tenant-aware services. The client never supplies a
-trusted tenant id. Affiliation management UI remains deferred to Step 6B.
+trusted tenant id.
+
+Step 6B adds affiliation management inside the same People area:
+
+- `/people/[personId]/affiliations/new`
+- `/people/[personId]/affiliations/[affiliationId]/edit`
+- `/people/companies/[companyId]/affiliations/new`
+
+Affiliation server actions call tenant-aware services, never trust client
+tenant ids, and use a transaction when setting a primary affiliation. That
+transaction verifies the person/company/affiliation tenant, unsets other active
+primary affiliations for the same person, writes the selected affiliation, and
+adds audit logs. Ending or archiving an affiliation clears its primary flag and
+does not choose a replacement automatically.
+
+Person and company detail pages also show read-only related meeting and note
+summaries. These summaries use tenant-scoped repository methods and do not
+create meetings, create notes, run AI summarisation, search semantically, or
+match relationships.
 
 ## Relationship backbone boundary
 

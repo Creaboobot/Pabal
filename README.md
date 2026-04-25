@@ -69,11 +69,12 @@ capabilities, and introduction suggestions. It also includes Step 4B-2
 schema/readiness models for AI proposals and voice notes. Step 5 adds the
 mobile-first authenticated app shell and read-only route placeholders for
 Today, Capture, People, Opportunities, and Search. Step 6A adds the first real
-product workflow: mobile-first people and company record management. It does
-not implement affiliation management UI, LinkedIn URL storage, AI provider
-calls, proposal application, transcription, audio recording/upload, billing,
-Microsoft Graph, LinkedIn enrichment, production search, matching,
-notifications, or production deployment.
+product workflow: mobile-first people and company record management. Step 6B
+adds basic affiliation management and read-only related meeting/note summaries.
+It does not implement LinkedIn URL storage, AI provider calls, proposal
+application, transcription, audio recording/upload, billing, Microsoft Graph,
+LinkedIn enrichment, production search, matching, notifications, or production
+deployment.
 
 ### Requirements
 
@@ -127,9 +128,16 @@ People and company records are available under `/people`:
 - `/people/[personId]` for person detail and edit/archive actions.
 - `/people/companies` for company list and company creation.
 - `/people/companies/[companyId]` for company detail and edit/archive actions.
+- `/people/[personId]/affiliations/new` to link a person to a company.
+- `/people/[personId]/affiliations/[affiliationId]/edit` to edit, end, or
+  archive an affiliation.
+- `/people/companies/[companyId]/affiliations/new` to link an existing person
+  to a company.
 
-Step 6A intentionally does not add affiliation management UI or LinkedIn URL
-fields.
+Affiliation mutations are tenant-aware, audit-logged, and use transaction-safe
+primary affiliation handling. Related meetings and notes are read-only
+summaries only; meeting capture and note creation remain later work. The current
+schema does not include LinkedIn URL fields.
 
 ### Useful commands
 
