@@ -57,3 +57,73 @@ Do **not** ask Codex to build the full application in one step.
 ## Manual repository upload
 
 If uploading this pack manually through GitHub, upload the full folder contents to the root of the `Creaboobot/Pobal` repository and commit them. Then start Codex with the prompt in `FIRST_CODEX_PROMPT.md`.
+
+## Local development
+
+This repository now contains the initial foundation scaffold only. It does not
+implement authentication, tenancy, product records, AI workflows, billing,
+Microsoft Graph, LinkedIn enrichment, or production deployment.
+
+### Requirements
+
+- Node.js `22.13.1` from `.node-version` / `.nvmrc`
+- pnpm `9.15.4` from `packageManager`
+- Docker and Docker Compose for local PostgreSQL
+
+### Setup
+
+```bash
+pnpm install
+Copy-Item .env.example .env
+pnpm prisma:validate
+pnpm dev
+```
+
+The app runs at `http://localhost:3000`.
+
+### Useful commands
+
+```bash
+pnpm build
+pnpm start
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm test:unit
+pnpm test:integration
+pnpm test:e2e
+pnpm prisma:validate
+pnpm prisma:migrate
+pnpm prisma:deploy
+pnpm prisma:seed
+```
+
+### Docker Compose
+
+Verify the Compose file and PostgreSQL health path:
+
+```bash
+docker compose config
+docker compose up -d postgres
+docker compose ps
+docker compose down -v
+```
+
+Start PostgreSQL and the app:
+
+```bash
+docker compose up --build
+```
+
+Run migration or seed commands against the local PostgreSQL service:
+
+```bash
+docker compose run --rm migrate
+docker compose run --rm seed
+```
+
+### Runtime checks
+
+- `GET /api/health` returns a basic service health payload.
+- `GET /api/ready` validates runtime readiness and returns `503` when required
+  runtime values such as `DATABASE_URL` are missing.
