@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
+  Archive,
   ArrowLeft,
   BadgeCheck,
   Building2,
@@ -85,6 +86,14 @@ export default async function SettingsPage() {
       icon: FileDown,
       title: "Privacy & export",
       value: "JSON export",
+    },
+    {
+      description:
+        "Review archived records, restore supported records, and inspect retention boundaries.",
+      href: canOpenAdmin ? "/settings/archive" : undefined,
+      icon: Archive,
+      title: "Archive & retention",
+      value: canOpenAdmin ? "Restore controls" : "Owner/admin only",
     },
   ];
 

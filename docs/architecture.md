@@ -353,6 +353,22 @@ Step 14B does not add CSV/ZIP export, background jobs, scheduled exports,
 external export storage, deletion workflows, retention automation, or legal
 advice generation.
 
+Step 14C adds archive and retention controls:
+
+- `/settings/archive` is an owner/admin settings route for browsing archived
+  tenant records and restoring supported records.
+- `server/repositories/archive-management.ts` performs explicit per-model
+  tenant-scoped archive reads and restore updates for models with `archivedAt`.
+- `server/services/archive-management.ts` enforces workspace admin access,
+  normalizes record-type filters, and writes safe type-specific restore audit
+  logs.
+- VoiceNote retention is displayed as read-only metadata; raw audio deletion and
+  retention jobs are not implemented.
+
+Step 14C does not add permanent deletion, tenant/account deletion, audit-log
+deletion/editing, purge jobs, retention automation, external storage cleanup,
+or legal workflow automation.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,

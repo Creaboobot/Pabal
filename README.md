@@ -96,8 +96,10 @@ existing tenant, membership, and role models. Step 13B adds billing readiness
 with a disabled/mock provider boundary and a read-only billing settings page.
 Step 14A adds a tenant-scoped, read-only governance and audit log viewer for
 workspace admins. Step 14B adds tenant-scoped JSON data exports and a privacy
-settings overview. It does not implement AI proposal application, VoiceMention
-extraction, target record mutation, live billing, live
+settings overview. Step 14C adds owner/admin archive browsing, restore controls,
+and read-only retention visibility without permanent deletion. It does not
+implement AI proposal application, VoiceMention extraction, target record
+mutation, live billing, live
 Microsoft Graph, LinkedIn automation, production search,
 matching, scoring, notifications, reminders, background jobs, automatic task
 creation, deletion workflows, retention jobs, CSV/ZIP exports, message drafting,
@@ -280,6 +282,8 @@ Workspace administration is available under settings:
   overview cards.
 - `/settings/privacy` for tenant-scoped JSON exports and privacy-control
   visibility.
+- `/settings/archive` for owner/admin archived-record browsing, restore
+  controls, and read-only voice retention information.
 
 Billing readiness uses a disabled provider by default and a mock provider for
 local/test verification only. It does not add a Stripe provider, Stripe SDK,
@@ -301,6 +305,13 @@ Exports may contain sensitive relationship intelligence such as note bodies,
 voice transcripts, and AI proposal patches. Deletion and retention controls are
 deferred to later steps, and the privacy copy is product guidance rather than
 legal advice.
+
+Archive controls are available under `/settings/archive` for workspace
+owners/admins. Archive is reversible for supported `archivedAt` records and is
+not permanent deletion. Restoring a person whose stored relationship status is
+`ARCHIVED` maps that status to `UNKNOWN` because the previous status is not
+stored. Archived records may still appear in exports when in scope. Raw audio is
+not retained by default; VoiceNote retention metadata is read-only in this step.
 
 Manual relationship intelligence is available under `/opportunities`:
 
