@@ -50,7 +50,9 @@ const captureSurfaces: CaptureSurface[] = [
   },
   {
     title: "Voice note",
-    description: "Transcript-ready space without recorder or upload controls.",
+    description: "Record a short voice note and review the stored transcript.",
+    href: "/capture/voice",
+    actionLabel: "Record voice note",
     icon: Mic,
   },
   {

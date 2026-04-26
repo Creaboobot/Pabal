@@ -29,9 +29,10 @@ for user/account persistence and future OAuth compatibility.
 
 Next.js middleware performs only coarse authentication checks for protected
 route groups such as `/today`, `/capture`, `/commitments`, `/meetings`,
-`/notes`, `/tasks`, `/people`, `/proposals`, `/opportunities`, `/search`,
-`/account`, and `/settings`. Tenant membership and role checks are enforced in
-server-side services and repositories, not middleware.
+`/notes`, `/tasks`, `/people`, `/proposals`, `/opportunities`,
+`/voice-notes`, `/search`, `/account`, and `/settings`. Tenant membership and
+role checks are enforced in server-side services and repositories, not
+middleware.
 
 ## Mobile app shell
 
@@ -244,6 +245,22 @@ not store raw audio, persist raw provider responses, create `VoiceMention` or
 `AIProposal` records, structure transcripts, mutate target records, add browser
 recording UI, or call OpenAI outside the transcription adapter.
 
+Step 11A-2 adds the protected mobile voice capture and transcript-review
+surface:
+
+- `/capture/voice`
+- `/voice-notes/[voiceNoteId]`
+- `/voice-notes/[voiceNoteId]/edit`
+
+The browser recorder uses `navigator.mediaDevices.getUserMedia` and
+`MediaRecorder`, keeps recorded audio in browser memory until upload or cancel,
+and submits multipart audio to the existing transcription endpoint. Voice-note
+detail and edit pages read and update tenant-scoped `VoiceNote` records through
+server services. Editing can save a title, reviewed transcript text, and direct
+source links; archiving sets `archivedAt`. This step does not store raw audio,
+re-transcribe, create `VoiceMention`, `AIProposal`, or `AIProposalItem` records,
+structure transcripts, or mutate linked records.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,
@@ -262,8 +279,8 @@ voice note readiness. Direct source/context links use composite tenant-aware
 relations where practical. Polymorphic proposal targets and voice mention
 resolutions are validated in services before persistence.
 
-This stage intentionally contains no product UI workflows, AI proposal
-generation, voice recording UI, transcript review UI, proposal application
-engine, matching algorithm, notifications, background jobs, billing, Microsoft
-Graph sync, LinkedIn enrichment, semantic search, embeddings, or provider calls
-outside approved server-side adapters.
+This foundation intentionally contains no AI proposal generation, proposal
+application engine, transcript structuring, voice mention extraction, matching
+algorithm, notifications, background jobs, billing, Microsoft Graph sync,
+LinkedIn enrichment, semantic search, embeddings, or provider calls outside
+approved server-side adapters.

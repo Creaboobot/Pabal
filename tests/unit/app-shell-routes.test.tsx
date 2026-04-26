@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
   getTenantCapabilityProfile: vi.fn(),
   getTenantIntroductionSuggestionProfile: vi.fn(),
   getTenantNeedProfile: vi.fn(),
+  getTenantNote: vi.fn(),
   getTenantNoteProfile: vi.fn(),
   getTenantOpportunityFormOptions: vi.fn(),
   getTenantOpportunityHub: vi.fn(),
@@ -29,6 +30,7 @@ const mocks = vi.hoisted(() => ({
   getTenantTaskBoard: vi.fn(),
   getTenantTaskFormOptions: vi.fn(),
   getTenantTaskProfile: vi.fn(),
+  getTenantVoiceNoteProfile: vi.fn(),
   getAppShellSummary: vi.fn(),
   getCurrentUserContext: vi.fn(),
   getTenantCompany: vi.fn(),
@@ -36,6 +38,7 @@ const mocks = vi.hoisted(() => ({
   listTenantCompaniesWithProfiles: vi.fn(),
   listTenantCompanies: vi.fn(),
   listTenantMeetings: vi.fn(),
+  listTenantNotes: vi.fn(),
   listTenantCapabilitiesWithContext: vi.fn(),
   listTenantIntroductionSuggestionsWithContext: vi.fn(),
   listTenantNeedsWithContext: vi.fn(),
@@ -100,7 +103,13 @@ vi.mock("@/server/services/meeting-prep", () => ({
 }));
 
 vi.mock("@/server/services/notes", () => ({
+  getTenantNote: mocks.getTenantNote,
   getTenantNoteProfile: mocks.getTenantNoteProfile,
+  listTenantNotes: mocks.listTenantNotes,
+}));
+
+vi.mock("@/server/services/voice-notes", () => ({
+  getTenantVoiceNoteProfile: mocks.getTenantVoiceNoteProfile,
 }));
 
 vi.mock("@/server/services/needs", () => ({
@@ -224,6 +233,18 @@ vi.mock("@/modules/notes/components/pasted-meeting-capture-form", () => ({
 
 vi.mock("@/modules/notes/components/note-action-button", () => ({
   NoteActionButton: () => <div>Note lifecycle control</div>,
+}));
+
+vi.mock("@/modules/voice-notes/components/voice-recorder", () => ({
+  VoiceRecorder: () => <section aria-label="Voice recorder" />,
+}));
+
+vi.mock("@/modules/voice-notes/components/voice-note-form", () => ({
+  VoiceNoteForm: () => <form aria-label="Voice note form" />,
+}));
+
+vi.mock("@/modules/voice-notes/components/voice-note-action-button", () => ({
+  VoiceNoteActionButton: () => <div>Voice note lifecycle control</div>,
 }));
 
 vi.mock("@/modules/tasks/components/task-form", () => ({
@@ -427,6 +448,31 @@ const noteProfile = {
   summary: "Short note summary.",
   targetReferences: [],
   updatedAt: new Date("2026-04-24T10:05:00.000Z"),
+};
+
+const voiceNoteProfile = {
+  audioDurationSeconds: 24,
+  audioMimeType: "audio/webm",
+  audioRetentionStatus: "NOT_STORED",
+  audioSizeBytes: 4096,
+  company: companyProfile,
+  companyId: companyProfile.id,
+  createdAt: new Date("2026-04-24T13:00:00.000Z"),
+  editedTranscriptText: "Reviewed voice transcript.",
+  id: "voice_note_test_1",
+  language: "en",
+  meeting: meetingProfile,
+  meetingId: meetingProfile.id,
+  note: noteProfile,
+  noteId: noteProfile.id,
+  person: personProfile,
+  personId: personProfile.id,
+  rawAudioDeletedAt: new Date("2026-04-24T13:01:00.000Z"),
+  status: "TRANSCRIBED",
+  title: "Voice follow-up",
+  transcriptConfidence: 0.9,
+  transcriptText: "Original voice transcript.",
+  updatedAt: new Date("2026-04-24T13:05:00.000Z"),
 };
 
 const needProfile = {
@@ -902,7 +948,9 @@ describe("protected app routes", () => {
     mocks.getTenantMeeting.mockResolvedValue(meetingProfile);
     mocks.getTenantMeetingPrepBrief.mockResolvedValue(meetingPrepBrief);
     mocks.getTenantMeetingProfile.mockResolvedValue(meetingProfile);
+    mocks.getTenantNote.mockResolvedValue(noteProfile);
     mocks.getTenantNoteProfile.mockResolvedValue(noteProfile);
+    mocks.getTenantVoiceNoteProfile.mockResolvedValue(voiceNoteProfile);
     mocks.getTenantNeedProfile.mockResolvedValue(needProfile);
     mocks.getTenantCapabilityProfile.mockResolvedValue(capabilityProfile);
     mocks.getTenantOpportunityHub.mockResolvedValue({
@@ -961,6 +1009,7 @@ describe("protected app routes", () => {
     mocks.listTenantPeople.mockResolvedValue([personProfile]);
     mocks.listTenantCompanies.mockResolvedValue([companyProfile]);
     mocks.listTenantMeetings.mockResolvedValue([meetingProfile]);
+    mocks.listTenantNotes.mockResolvedValue([noteProfile]);
     mocks.listTenantNeedsWithContext.mockResolvedValue([needProfile]);
     mocks.listTenantCapabilitiesWithContext.mockResolvedValue([
       capabilityProfile,
@@ -989,6 +1038,16 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: heading }),
     ).toBeInTheDocument();
+  });
+
+  it("links Capture to voice recording", async () => {
+    const Page = (await import("@/app/(app)/capture/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("link", { name: "Record voice note" }),
+    ).toHaveAttribute("href", "/capture/voice");
   });
 
   it("redirects the protected app shell when no session context exists", async () => {
@@ -1106,6 +1165,26 @@ describe("protected app routes", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders the voice capture route", async () => {
+    const Page = (await import("@/app/(app)/capture/voice/page")).default;
+
+    render(
+      await Page({
+        searchParams: Promise.resolve({
+          companyId: companyProfile.id,
+          meetingId: meetingProfile.id,
+          noteId: noteProfile.id,
+          personId: personProfile.id,
+        }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Record voice note" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Voice recorder")).toBeInTheDocument();
+  });
+
   it("renders the meeting detail route", async () => {
     const Page = (await import("@/app/(app)/meetings/[meetingId]/page"))
       .default;
@@ -1218,6 +1297,39 @@ describe("protected app routes", () => {
       screen.getByRole("heading", { level: 1, name: "Meeting note" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Note form")).toBeInTheDocument();
+  });
+
+  it("renders the voice note detail route", async () => {
+    const Page = (await import("@/app/(app)/voice-notes/[voiceNoteId]/page"))
+      .default;
+
+    render(
+      await Page({
+        params: Promise.resolve({ voiceNoteId: "voice_note_test_1" }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Voice follow-up" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Original voice transcript.")).toBeInTheDocument();
+  });
+
+  it("renders the voice note edit route", async () => {
+    const Page = (
+      await import("@/app/(app)/voice-notes/[voiceNoteId]/edit/page")
+    ).default;
+
+    render(
+      await Page({
+        params: Promise.resolve({ voiceNoteId: "voice_note_test_1" }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Voice follow-up" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Voice note form")).toBeInTheDocument();
   });
 
   it("renders the task detail route", async () => {

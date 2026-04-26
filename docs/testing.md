@@ -151,6 +151,13 @@ text or provider payloads, API route error handling, and proof that
 transcription does not create `VoiceMention`, `AIProposal`, or
 `AIProposalItem` records.
 
+The Step 11A-2 tests cover the Capture voice link, voice capture/detail/edit
+route rendering, deterministic MediaRecorder component states, upload success
+and safe failure handling with a mocked API, transcript review/update,
+archiving, cross-tenant VoiceNote/source-context denial, safe audit metadata,
+and proof that review actions do not create `VoiceMention`, `AIProposal`, or
+`AIProposalItem` records.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

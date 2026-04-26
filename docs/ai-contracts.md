@@ -69,3 +69,13 @@ summarise, search, or run background jobs.
 
 Raw audio is not retained by default, and raw provider responses are not stored
 or written to audit logs.
+
+## Step 11A-2 Voice Review Boundary
+
+Voice capture and transcript review in Step 11A-2 remain transcription-only.
+The browser UI records audio with MediaRecorder and submits it to the existing
+transcription endpoint. VoiceNote detail/edit screens can review transcript
+text, save edited transcript text, update direct source links, and archive the
+VoiceNote. They do not structure transcripts, extract entities, create
+`VoiceMention`, `AIProposal`, or `AIProposalItem` records, mutate linked
+records, call chat/completion APIs, summarise, search, or run background jobs.

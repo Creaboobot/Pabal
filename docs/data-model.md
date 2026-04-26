@@ -16,8 +16,8 @@ relationship-intelligence workflows without changing the schema. Step 10A-2
 uses the existing `IntroductionSuggestion` model for manual introduction
 tracking without changing the schema. Step 10C uses existing meeting and
 relationship records for read-only prep briefs without changing the schema.
-Step 11A-1 uses the existing `VoiceNote` model for backend transcription
-without changing the schema.
+Step 11A uses the existing `VoiceNote` model for backend transcription and
+transcript review without changing the schema.
 
 ## Foundation tables
 
@@ -345,6 +345,12 @@ request/provider call path and is not retained by default.
 `VoiceMention` remains readiness-only in this step. Mention extraction,
 transcript structuring, AI proposals, and automatic record updates remain out of
 scope.
+
+Step 11A-2 also does not add a migration. The existing `VoiceNote` table backs
+the review UI: users may set `title`, `editedTranscriptText`, source context
+ids, `status=REVIEWED`, and `archivedAt` through tenant-aware services. Raw
+audio is still not stored, and the review workflow does not create
+`VoiceMention`, `AIProposal`, or `AIProposalItem` records.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.

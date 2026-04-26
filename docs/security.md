@@ -178,6 +178,14 @@ Audit logs must not include raw audio, transcript text, provider payloads,
 request payloads, headers, cookies, tokens, environment values, API keys, or
 secrets.
 
+Step 11A-2 voice capture UI keeps raw audio in browser memory only until upload
+or cancel. `/voice-notes/:path*` is protected by middleware for coarse auth,
+while tenant ownership for detail/edit/archive remains enforced in services.
+Transcript review and archive audit logs include safe ids, status, retention,
+lengths, and changed field names only; they must not include transcript text,
+edited transcript text, raw audio, provider payloads, headers, cookies, tokens,
+environment values, API keys, or secrets.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when
