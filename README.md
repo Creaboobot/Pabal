@@ -78,8 +78,10 @@ adds manual follow-up task workflows and Today task sections. Step 8B adds the
 manual commitment ledger and Today commitment sections. Step 9 adds the
 status-only AI proposal confirmation framework. Step 10A-1 adds manual needs
 and capabilities under Opportunities. Step 10A-2 adds manual introduction
-suggestion workflows. It does not implement LinkedIn URL storage, AI provider
-calls, proposal application, transcription, audio
+suggestion workflows. Step 10B-1 adds deterministic read-only relationship
+health and why-now signals for Today and person/company detail pages. It does
+not implement LinkedIn URL storage, AI provider calls, proposal application,
+transcription, audio
 recording/upload, billing, Microsoft Graph, LinkedIn enrichment, production
 search, matching, scoring, notifications, reminders, background jobs,
 automatic task creation, message drafting, outreach sending, or production
@@ -248,6 +250,14 @@ create links are convenience hints only, and server actions validate all linked
 records inside the active workspace. Step 10A does not add matching, scoring,
 AI generation, message drafting, outreach sending, semantic search, embeddings,
 notifications, jobs, or permanent deletion.
+
+Deterministic relationship health is visible on `/today`, person detail pages,
+and company detail pages. Signals are computed at read time from existing
+tenant-scoped records such as tasks, commitments, meetings, notes, needs,
+capabilities, introductions, and proposal review records. They are explainable,
+source-linked where possible, and are not persisted as scores. They do not call
+AI providers, create recommendations automatically, send notifications, or run
+background jobs.
 
 ### Useful commands
 

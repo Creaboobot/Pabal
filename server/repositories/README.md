@@ -16,7 +16,9 @@ Step 8A extends task repositories with context-aware task profiles, list
 queries, and update helpers for manual follow-up lifecycle workflows.
 Step 8B extends commitment repositories with context-aware commitment profiles,
 list queries, update helpers, and linked task display for the manual commitment
-ledger.
+ledger. Step 10B-1 adds read-only relationship-health fact queries. These
+helpers accept explicit tenant ids and return tenant-scoped records for
+deterministic service-layer signal computation only.
 
 Repositories for billing, integrations, search, actual voice capture,
 transcription, notifications, background jobs, embeddings, and provider-backed

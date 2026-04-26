@@ -20,8 +20,10 @@ import { archiveCompanyAction } from "@/modules/people/actions";
 import { AffiliationCard } from "@/modules/people/components/affiliation-card";
 import { ArchiveRecordButton } from "@/modules/people/components/archive-record-button";
 import { RelatedContextSummary } from "@/modules/people/components/related-context-summary";
+import { RelationshipHealthCard } from "@/modules/relationship-health/components/relationship-health-card";
 import { getTenantCompanyProfile } from "@/server/services/companies";
 import { getTenantCompanyRelatedContext } from "@/server/services/relationship-context";
+import { getTenantCompanyRelationshipHealth } from "@/server/services/relationship-health";
 import { getCurrentUserContext } from "@/server/services/session";
 
 export const dynamic = "force-dynamic";
@@ -50,10 +52,15 @@ export default async function CompanyDetailPage({
     notFound();
   }
 
-  const relatedContext = await getTenantCompanyRelatedContext(
-    context,
-    companyId,
-  );
+  const [relatedContext, relationshipHealth] = await Promise.all([
+    getTenantCompanyRelatedContext(context, companyId),
+    getTenantCompanyRelationshipHealth(context, companyId),
+  ]);
+
+  if (!relationshipHealth) {
+    notFound();
+  }
+
   const activeAffiliations = company.companyAffiliations.filter(
     (affiliation) => !affiliation.endsAt,
   );
@@ -158,6 +165,8 @@ export default async function CompanyDetailPage({
           </div>
         </CockpitCard>
       </section>
+
+      <RelationshipHealthCard health={relationshipHealth} />
 
       {primaryContacts.length > 0 ? (
         <CockpitCard title="Primary contacts" value={primaryContacts.length}>

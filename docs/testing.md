@@ -125,6 +125,15 @@ people, and companies, tenant-validated meeting/note provenance through
 tenant-scoped Opportunities hub introduction summaries, self-introduction
 validation, and audit safety without rationale text or source content.
 
+The Step 10B-1 tests cover deterministic relationship health computation,
+threshold boundaries for active/stale/dormant signals, needs-attention
+precedence, why-now reasons for tasks, commitments, needs, capabilities,
+introductions, proposals, meetings, and notes, tenant-scoped Today relationship
+attention summaries, cross-tenant person/company signal denial, proof that
+signal computation does not mutate records or write audit logs, and route smoke
+coverage for Today plus person/company detail pages through the app-shell
+tests.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

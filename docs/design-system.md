@@ -143,3 +143,14 @@ Need, capability, and introduction screens should keep brokerage readiness
 manual and avoid automated matching, scoring, AI generation, message drafting,
 outreach sending, semantic-search, embedding, notification, or background-job
 affordances.
+
+Step 10B-1 extends the same mobile-first card language for relationship health:
+
+- compact health cards on person and company detail pages;
+- deterministic reason rows with severity badges and safe source/context links;
+- a short relationship-attention board on Today;
+- explicit copy that signals are computed at read time and no score is stored.
+
+Relationship health UI should stay concise on mobile, avoid diagnostic tables,
+and must not imply AI reasoning, automatic matching, notifications, or
+background jobs.

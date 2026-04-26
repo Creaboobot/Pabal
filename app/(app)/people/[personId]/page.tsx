@@ -22,8 +22,10 @@ import { AffiliationCard } from "@/modules/people/components/affiliation-card";
 import { ArchiveRecordButton } from "@/modules/people/components/archive-record-button";
 import { RelationshipBadges } from "@/modules/people/components/relationship-badges";
 import { RelatedContextSummary } from "@/modules/people/components/related-context-summary";
+import { RelationshipHealthCard } from "@/modules/relationship-health/components/relationship-health-card";
 import { getTenantPersonProfile } from "@/server/services/people";
 import { getTenantPersonRelatedContext } from "@/server/services/relationship-context";
+import { getTenantPersonRelationshipHealth } from "@/server/services/relationship-health";
 import { getCurrentUserContext } from "@/server/services/session";
 
 export const dynamic = "force-dynamic";
@@ -52,7 +54,15 @@ export default async function PersonDetailPage({
     notFound();
   }
 
-  const relatedContext = await getTenantPersonRelatedContext(context, personId);
+  const [relatedContext, relationshipHealth] = await Promise.all([
+    getTenantPersonRelatedContext(context, personId),
+    getTenantPersonRelationshipHealth(context, personId),
+  ]);
+
+  if (!relationshipHealth) {
+    notFound();
+  }
+
   const activeAffiliations = person.companyAffiliations.filter(
     (affiliation) => !affiliation.endsAt,
   );
@@ -162,6 +172,8 @@ export default async function PersonDetailPage({
           </div>
         </CockpitCard>
       </section>
+
+      <RelationshipHealthCard health={relationshipHealth} />
 
       {primaryAffiliation ? (
         <CockpitCard title="Primary company">
