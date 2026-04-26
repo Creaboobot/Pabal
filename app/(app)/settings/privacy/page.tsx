@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
+  Archive,
   ArrowLeft,
   BadgeCheck,
   DatabaseZap,
@@ -43,8 +44,8 @@ const overviewCards = [
   },
   {
     description:
-      "Deletion, erasure, retention jobs, and automated GDPR workflows are planned for later steps.",
-    title: "Deletion controls later",
+      "Archive controls are available for owner/admin users. Permanent deletion and automated retention jobs remain future work.",
+    title: "Archive controls available",
   },
 ];
 
@@ -203,16 +204,40 @@ export default async function PrivacySettingsPage() {
         </CockpitCard>
       </div>
 
-      <CockpitCard title="Later privacy controls" value="Step 14C">
+      <CockpitCard title="Archive controls" value="Available">
+        <div className="flex gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
+            <Archive aria-hidden="true" className="size-5" />
+          </span>
+          <div className="grid gap-3 text-sm leading-6 text-muted-foreground">
+            <p>
+              Workspace owners and admins can review archived records and
+              restore supported records. Archive is reversible where supported
+              and is not permanent deletion.
+            </p>
+            <p>
+              Archived records may still appear in workspace exports when they
+              are in scope.
+            </p>
+            <div>
+              <Button asChild variant="outline">
+                <Link href="/settings/archive">Open archive controls</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </CockpitCard>
+
+      <CockpitCard title="Later privacy controls" value="Future work">
         <div className="flex gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
             <LockKeyhole aria-hidden="true" className="size-5" />
           </span>
           <div className="grid gap-2 text-sm leading-6 text-muted-foreground">
             <p>
-              This page is export and visibility only. Deletion, erasure,
-              retention automation, permanent deletion, and full data-subject
-              request workflows are not implemented in this step.
+              Deletion, erasure, retention automation, permanent deletion, and
+              full data-subject request workflows are not implemented in this
+              step.
             </p>
             <p>
               This is operational product guidance, not legal advice.

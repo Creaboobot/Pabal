@@ -215,6 +215,14 @@ safe export-request audit logs without exported content, and guardrails proving
 no deletion workflow, CSV/ZIP export, background job, or external storage route
 is added.
 
+The Step 14C tests cover `/settings/archive` rendering, settings hub and privacy
+links to archive controls, owner/admin archive access, non-admin denial,
+tenant-scoped archive lists, cross-tenant exclusion, record-type filtering,
+restore clearing `archivedAt`, person restore mapping `ARCHIVED` relationship
+status to `UNKNOWN`, safe restore audit metadata without bodies/transcripts, and
+guardrails proving no permanent deletion routes, retention jobs, purge jobs, or
+audit-log deletion/editing are added.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

@@ -416,6 +416,16 @@ Exports intentionally do not read Auth.js `Account`, `Session`, or
 `VerificationToken` token data. `VoiceNote.audioStorageKey` is excluded; only
 retention and audio metadata are exported.
 
+Step 14C does not add a migration. Archive management uses existing
+`archivedAt` fields on people, companies, company affiliations, meetings, notes,
+tasks, commitments, needs, capabilities, introduction suggestions, AI
+proposals, and voice notes. Restore clears `archivedAt` and updates
+`updatedByUserId` where the model has that field.
+
+Restoring a `Person` whose stored `relationshipStatus` is `ARCHIVED` maps the
+status to `UNKNOWN` because the previous relationship status is not stored. No
+previous-status field is added in Step 14C.
+
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
 

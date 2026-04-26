@@ -264,6 +264,22 @@ and AI proposal patches. Audit logs inside exports include sanitized metadata
 previews only. Auth.js tokens, raw provider payloads, raw audio files,
 `VoiceNote.audioStorageKey`, and raw audit metadata are excluded.
 
+Step 14C archive controls require active tenant context and owner/admin access.
+Archive reads filter by the active tenant, and restore validates that the target
+archived record belongs to that tenant. Archived-by actor lookup uses
+tenant-scoped audit logs only.
+
+Restore actions write type-specific audit logs such as `note.restored` and
+`voice_note.restored` with safe metadata: record type, record id, changed
+fields, restoring user id, previous archived timestamp, and the person
+relationship-status fallback where applicable. Restore audit metadata must not
+include note bodies, descriptions, transcripts, proposal patches, raw payloads,
+secrets, tokens, environment values, or sensitive content.
+
+Archive is not permanent deletion. Step 14C does not implement account deletion,
+tenant deletion, audit-log deletion/editing, purge jobs, retention jobs,
+irreversible business-record deletion, or raw-audio deletion jobs.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

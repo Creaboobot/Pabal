@@ -36,6 +36,7 @@ const mocks = vi.hoisted(() => ({
   getTenantWorkspaceSettingsProfile: vi.fn(),
   getTenantBillingReadiness: vi.fn(),
   getTenantAuditLogViewer: vi.fn(),
+  getTenantArchiveBrowser: vi.fn(),
   getAppShellSummary: vi.fn(),
   getCurrentUserContext: vi.fn(),
   listTenantFeatureReadiness: vi.fn(),
@@ -201,12 +202,21 @@ vi.mock("@/server/services/audit-log-viewer", () => ({
   getTenantAuditLogViewer: mocks.getTenantAuditLogViewer,
 }));
 
+vi.mock("@/server/services/archive-management", () => ({
+  ARCHIVE_BROWSER_DEFAULT_LIMIT: 25,
+  getTenantArchiveBrowser: mocks.getTenantArchiveBrowser,
+}));
+
 vi.mock("@/modules/settings/components/workspace-name-form", () => ({
   WorkspaceNameForm: () => <form aria-label="Workspace form" />,
 }));
 
 vi.mock("@/modules/settings/components/member-management-card", () => ({
   MemberManagementCard: () => <article>Member management card</article>,
+}));
+
+vi.mock("@/modules/settings/components/restore-record-button", () => ({
+  RestoreRecordButton: () => <button type="button">Restore</button>,
 }));
 
 vi.mock("@/modules/people/actions", () => ({
@@ -449,6 +459,53 @@ const auditLogViewer = {
     id: "tenant_test_1",
     name: "Demo Workspace",
   },
+};
+
+const archiveBrowser = {
+  filters: {
+    limit: 25,
+    recordType: "all",
+  },
+  options: [
+    {
+      label: "All archived records",
+      value: "all",
+    },
+    {
+      label: "Voice note",
+      value: "voiceNotes",
+    },
+  ],
+  records: [
+    {
+      archivedAt: new Date("2026-04-24T16:00:00.000Z"),
+      archivedBy: {
+        displayName: "Owner User",
+        email: "owner@example.com",
+        id: "user_test_1",
+      },
+      badges: ["en"],
+      description: null,
+      href: null,
+      id: "voice_note_test_1",
+      recordType: "voiceNotes",
+      sensitivity: null,
+      status: "TRANSCRIBED",
+      title: "Archived voice note",
+      voiceRetention: {
+        audioRetentionStatus: "NOT_STORED",
+        editedTranscriptPresent: true,
+        rawAudioDeletedAt: new Date("2026-04-24T16:01:00.000Z"),
+        retentionExpiresAt: null,
+        transcriptPresent: true,
+      },
+    },
+  ],
+  tenant: {
+    id: "tenant_test_1",
+    name: "Demo Workspace",
+  },
+  truncated: false,
 };
 
 
@@ -1186,6 +1243,7 @@ describe("protected app routes", () => {
     );
     mocks.getTenantBillingReadiness.mockResolvedValue(billingReadiness);
     mocks.getTenantAuditLogViewer.mockResolvedValue(auditLogViewer);
+    mocks.getTenantArchiveBrowser.mockResolvedValue(archiveBrowser);
     mocks.listTenantFeatureReadiness.mockResolvedValue(featureReadinessCards);
     mocks.getTenantPersonRelatedContext.mockResolvedValue(relatedContext);
     mocks.getTenantCompanyRelatedContext.mockResolvedValue(relatedContext);
@@ -1261,6 +1319,9 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("link", { name: "Open privacy & export" }),
     ).toHaveAttribute("href", "/settings/privacy");
+    expect(
+      screen.getByRole("link", { name: "Open archive & retention" }),
+    ).toHaveAttribute("href", "/settings/archive");
   });
 
   it("renders the workspace settings route", async () => {
@@ -1366,6 +1427,22 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("button", { name: "Download personal JSON" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Open archive controls" }),
+    ).toHaveAttribute("href", "/settings/archive");
+  });
+
+  it("renders the archive settings route", async () => {
+    const Page = (await import("@/app/(app)/settings/archive/page")).default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Archive & retention" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Archived voice note")).toBeInTheDocument();
+    expect(screen.getAllByText("Voice retention").length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "Restore" })).toBeInTheDocument();
   });
 
   it("fails governance settings safely for non-admin users", async () => {
@@ -1392,6 +1469,19 @@ describe("protected app routes", () => {
 
     expect(screen.getByText("Admin access required")).toBeInTheDocument();
     expect(mocks.getTenantBillingReadiness).not.toHaveBeenCalled();
+  });
+
+  it("fails archive settings safely for non-admin users", async () => {
+    mocks.getCurrentUserContext.mockResolvedValueOnce({
+      ...tenantContext,
+      roleKey: "MEMBER",
+    });
+    const Page = (await import("@/app/(app)/settings/archive/page")).default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByText("Admin access required")).toBeInTheDocument();
+    expect(mocks.getTenantArchiveBrowser).not.toHaveBeenCalled();
   });
 
   it("redirects the protected app shell when no session context exists", async () => {
