@@ -139,6 +139,19 @@ field names. It must not include full descriptions, note bodies, pasted
 meeting-note text, raw form payloads, sensitive values, cookies, tokens,
 environment values, or secrets.
 
+Step 10A-2 introduction suggestion mutations use the same boundary. Reads and
+writes filter by explicit tenant context. Need, capability, from/to person, and
+from/to company ids are validated server-side before persistence. Meeting and
+note provenance is only created through tenant-validated `SourceReference`
+records. Query parameters preselect fields only and are never trusted as tenant
+context.
+
+Introduction audit metadata may include suggestion id, status, linked need and
+capability ids, from/to person/company ids, confidence presence, and changed
+field names. It must not include full rationale text, full descriptions, note
+bodies, pasted meeting-note text, raw form payloads, sensitive values, cookies,
+tokens, environment values, or secrets.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

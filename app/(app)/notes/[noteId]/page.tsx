@@ -107,6 +107,14 @@ export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
                 Create capability
               </Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link
+                href={`/opportunities/introductions/new?sourceNoteId=${note.id}`}
+              >
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                Create introduction
+              </Link>
+            </Button>
           </div>
         }
         description={formatNoteDateTime(note.createdAt)}

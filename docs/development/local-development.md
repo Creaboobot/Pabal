@@ -203,7 +203,7 @@ records, create tasks or commitments, call AI providers, or run background jobs.
 
 ## Opportunities
 
-Step 10A-1 adds manual needs and capabilities:
+Step 10A adds manual needs, capabilities, and introduction suggestions:
 
 - `/opportunities`
 - `/opportunities/needs`
@@ -214,11 +214,16 @@ Step 10A-1 adds manual needs and capabilities:
 - `/opportunities/capabilities/new`
 - `/opportunities/capabilities/[capabilityId]`
 - `/opportunities/capabilities/[capabilityId]/edit`
+- `/opportunities/introductions`
+- `/opportunities/introductions/new`
+- `/opportunities/introductions/[introductionSuggestionId]`
+- `/opportunities/introductions/[introductionSuggestionId]/edit`
 
 People, company, meeting, and note detail pages include contextual links into
-need/capability creation. Query parameters only preselect fields; server
+need/capability/intro creation. Need and capability detail pages also link into
+manual introduction creation. Query parameters only preselect fields; server
 actions still validate every linked record inside the active tenant.
 
-This step does not add introduction routes, automated matching, scoring, AI
-generation, semantic search, embeddings, notifications, jobs, or permanent
-deletion.
+This step does not add automated matching, scoring, AI generation, message
+drafting, outreach sending, semantic search, embeddings, notifications, jobs,
+or permanent deletion.

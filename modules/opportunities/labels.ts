@@ -1,6 +1,7 @@
 import type {
   CapabilityStatus,
   CapabilityType,
+  IntroductionSuggestionStatus,
   NeedStatus,
   NeedType,
   Sensitivity,
@@ -59,6 +60,16 @@ export const editableSensitivities = [
   "DO_NOT_SHARE",
 ] as const satisfies readonly Sensitivity[];
 
+export const editableIntroductionStatuses = [
+  "PROPOSED",
+  "ACCEPTED",
+  "OPT_IN_REQUESTED",
+  "INTRO_SENT",
+  "COMPLETED",
+  "REJECTED",
+  "PARKED",
+] as const satisfies readonly IntroductionSuggestionStatus[];
+
 export function needTypeLabel(type: NeedType) {
   const labels: Record<NeedType, string> = {
     INTEREST: "Interest",
@@ -111,6 +122,20 @@ export function capabilityStatusLabel(status: CapabilityStatus) {
   return labels[status];
 }
 
+export function introductionStatusLabel(status: IntroductionSuggestionStatus) {
+  const labels: Record<IntroductionSuggestionStatus, string> = {
+    ACCEPTED: "Accepted",
+    COMPLETED: "Completed",
+    INTRO_SENT: "Intro sent",
+    OPT_IN_REQUESTED: "Opt-in requested",
+    PARKED: "Parked",
+    PROPOSED: "Proposed",
+    REJECTED: "Rejected",
+  };
+
+  return labels[status];
+}
+
 export function priorityLabel(priority: TaskPriority) {
   const labels: Record<TaskPriority, string> = {
     CRITICAL: "Critical",
@@ -141,4 +166,35 @@ export function confidenceLabel(confidence: number | null | undefined) {
   }
 
   return `${Math.round(confidence * 100)}% confidence`;
+}
+
+export function truncatedText(text: string, max = 80) {
+  return text.length > max ? `${text.slice(0, max - 3)}...` : text;
+}
+
+export function introductionDisplayTitle(suggestion: {
+  capability?: { title: string } | null;
+  fromCompany?: { name: string } | null;
+  fromPerson?: { displayName: string } | null;
+  need?: { title: string } | null;
+  rationale: string;
+  toCompany?: { name: string } | null;
+  toPerson?: { displayName: string } | null;
+}) {
+  if (suggestion.need && suggestion.capability) {
+    return `${suggestion.need.title} <> ${suggestion.capability.title}`;
+  }
+
+  const from = suggestion.fromPerson?.displayName ?? suggestion.fromCompany?.name;
+  const to = suggestion.toPerson?.displayName ?? suggestion.toCompany?.name;
+
+  if (from && to) {
+    return `${from} <> ${to}`;
+  }
+
+  if (suggestion.rationale.trim().length > 0) {
+    return truncatedText(suggestion.rationale.trim(), 80);
+  }
+
+  return "Introduction suggestion";
 }

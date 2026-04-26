@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Edit,
   FileText,
+  Handshake,
   UserRound,
 } from "lucide-react";
 
@@ -64,6 +65,12 @@ export default async function NeedDetailPage({ params }: NeedDetailPageProps) {
               <Link href={`/opportunities/needs/${need.id}/edit`}>
                 <Edit aria-hidden="true" className="mr-2 size-4" />
                 Edit
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href={`/opportunities/introductions/new?needId=${need.id}`}>
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                Create introduction
               </Link>
             </Button>
           </div>

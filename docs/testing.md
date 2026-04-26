@@ -114,6 +114,17 @@ meetings, and notes, cross-tenant read/write/link failures, tenant-scoped
 Opportunities hub summaries, and audit safety without full descriptions or
 sensitive payloads.
 
+The Step 10A-2 tests cover introduction suggestion validation, route smoke
+rendering for `/opportunities/introductions`,
+`/opportunities/introductions/new`,
+`/opportunities/introductions/[introductionSuggestionId]`, and
+`/opportunities/introductions/[introductionSuggestionId]/edit`, manual
+create/update/archive/dismiss service flows, links to needs, capabilities,
+people, and companies, tenant-validated meeting/note provenance through
+`SourceReference`, cross-tenant read/write/link/provenance failures,
+tenant-scoped Opportunities hub introduction summaries, self-introduction
+validation, and audit safety without rationale text or source content.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

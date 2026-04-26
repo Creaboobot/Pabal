@@ -101,6 +101,14 @@ export default async function MeetingDetailPage({
                 Create capability
               </Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link
+                href={`/opportunities/introductions/new?sourceMeetingId=${meeting.id}`}
+              >
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                Create introduction
+              </Link>
+            </Button>
           </div>
         }
         description={formatMeetingDateTime(meeting.occurredAt)}

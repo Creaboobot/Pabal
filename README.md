@@ -77,11 +77,13 @@ pasted Teams/Copilot meeting-note capture as user-provided text only. Step 8A
 adds manual follow-up task workflows and Today task sections. Step 8B adds the
 manual commitment ledger and Today commitment sections. Step 9 adds the
 status-only AI proposal confirmation framework. Step 10A-1 adds manual needs
-and capabilities under Opportunities. It does not implement LinkedIn URL
-storage, AI provider calls, proposal application, transcription, audio
+and capabilities under Opportunities. Step 10A-2 adds manual introduction
+suggestion workflows. It does not implement LinkedIn URL storage, AI provider
+calls, proposal application, transcription, audio
 recording/upload, billing, Microsoft Graph, LinkedIn enrichment, production
-search, matching, notifications, reminders, background jobs, automatic task
-creation, introduction workflows, or production deployment.
+search, matching, scoring, notifications, reminders, background jobs,
+automatic task creation, message drafting, outreach sending, or production
+deployment.
 
 ### Requirements
 
@@ -230,13 +232,22 @@ Manual relationship intelligence is available under `/opportunities`:
 - `/opportunities/capabilities/[capabilityId]` for capability detail and
   archive actions.
 - `/opportunities/capabilities/[capabilityId]/edit` for capability edits.
+- `/opportunities/introductions` for manual introduction suggestions.
+- `/opportunities/introductions/new` for manual introduction creation.
+- `/opportunities/introductions/[introductionSuggestionId]` for introduction
+  detail, archive, and dismissal actions.
+- `/opportunities/introductions/[introductionSuggestionId]/edit` for
+  introduction edits.
 
 Needs can link to people, companies, meetings, and notes. Capabilities can link
 to people, companies, and notes; the current schema has no direct meeting link
-for capabilities. Contextual create links are convenience hints only, and
-server actions validate all linked records inside the active workspace. Step
-10A-1 does not add introduction routes, matching, scoring, AI generation,
-semantic search, embeddings, notifications, jobs, or permanent deletion.
+for capabilities. Introduction suggestions can link to needs, capabilities,
+from/to people, and from/to companies. Meeting and note provenance is recorded
+through tenant-validated `SourceReference` rows where provided. Contextual
+create links are convenience hints only, and server actions validate all linked
+records inside the active workspace. Step 10A does not add matching, scoring,
+AI generation, message drafting, outreach sending, semantic search, embeddings,
+notifications, jobs, or permanent deletion.
 
 ### Useful commands
 

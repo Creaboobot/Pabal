@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   getTenantMeeting: vi.fn(),
   getTenantMeetingProfile: vi.fn(),
   getTenantCapabilityProfile: vi.fn(),
+  getTenantIntroductionSuggestionProfile: vi.fn(),
   getTenantNeedProfile: vi.fn(),
   getTenantNoteProfile: vi.fn(),
   getTenantOpportunityFormOptions: vi.fn(),
@@ -32,6 +33,7 @@ const mocks = vi.hoisted(() => ({
   listTenantCompanies: vi.fn(),
   listTenantMeetings: vi.fn(),
   listTenantCapabilitiesWithContext: vi.fn(),
+  listTenantIntroductionSuggestionsWithContext: vi.fn(),
   listTenantNeedsWithContext: vi.fn(),
   listTenantAIProposals: vi.fn(),
   listTenantPeopleWithProfiles: vi.fn(),
@@ -101,6 +103,13 @@ vi.mock("@/server/services/needs", () => ({
 vi.mock("@/server/services/capabilities", () => ({
   getTenantCapabilityProfile: mocks.getTenantCapabilityProfile,
   listTenantCapabilitiesWithContext: mocks.listTenantCapabilitiesWithContext,
+}));
+
+vi.mock("@/server/services/introduction-suggestions", () => ({
+  getTenantIntroductionSuggestionProfile:
+    mocks.getTenantIntroductionSuggestionProfile,
+  listTenantIntroductionSuggestionsWithContext:
+    mocks.listTenantIntroductionSuggestionsWithContext,
 }));
 
 vi.mock("@/server/services/opportunities", () => ({
@@ -229,6 +238,12 @@ vi.mock("@/modules/opportunities/components/need-form", () => ({
 
 vi.mock("@/modules/opportunities/components/capability-form", () => ({
   CapabilityForm: () => <form aria-label="Capability form" />,
+}));
+
+vi.mock("@/modules/opportunities/components/introduction-suggestion-form", () => ({
+  IntroductionSuggestionForm: () => (
+    <form aria-label="Introduction suggestion form" />
+  ),
 }));
 
 vi.mock("@/modules/opportunities/components/opportunity-action-button", () => ({
@@ -401,6 +416,27 @@ const capabilityProfile = {
   updatedAt: new Date("2026-04-24T11:30:00.000Z"),
 };
 
+const introductionSuggestionProfile = {
+  capability: capabilityProfile,
+  capabilityId: capabilityProfile.id,
+  confidence: 0.76,
+  createdAt: new Date("2026-04-24T11:45:00.000Z"),
+  fromCompany: companyProfile,
+  fromCompanyId: companyProfile.id,
+  fromPerson: personProfile,
+  fromPersonId: personProfile.id,
+  id: "introduction_test_1",
+  need: needProfile,
+  needId: needProfile.id,
+  rationale: "Introduce Anna to the SE-CERT capability owner.",
+  status: "PROPOSED",
+  toCompany: null,
+  toCompanyId: null,
+  toPerson: null,
+  toPersonId: null,
+  updatedAt: new Date("2026-04-24T11:45:00.000Z"),
+};
+
 const taskProfile = {
   commitment: {
     id: "commitment_test_1",
@@ -548,7 +584,7 @@ const taskFormOptions = {
     },
   ],
   companies: [companyProfile],
-  introductionSuggestions: [],
+  introductionSuggestions: [introductionSuggestionProfile],
   meetings: [meetingProfile],
   notes: [noteProfile],
   people: [personProfile],
@@ -557,6 +593,25 @@ const taskFormOptions = {
 const commitmentFormOptions = {
   companies: [companyProfile],
   meetings: [meetingProfile],
+  notes: [noteProfile],
+  people: [personProfile],
+};
+
+const opportunityFormOptions = {
+  capabilities: [
+    {
+      id: capabilityProfile.id,
+      title: capabilityProfile.title,
+    },
+  ],
+  companies: [companyProfile],
+  meetings: [meetingProfile],
+  needs: [
+    {
+      id: needProfile.id,
+      title: needProfile.title,
+    },
+  ],
   notes: [noteProfile],
   people: [personProfile],
 };
@@ -608,18 +663,19 @@ describe("protected app routes", () => {
         openNeeds: 1,
       },
       latestCapabilities: [capabilityProfile],
+      latestIntroductions: [introductionSuggestionProfile],
       latestNeeds: [needProfile],
     });
-    mocks.getTenantOpportunityFormOptions.mockResolvedValue({
-      companies: [companyProfile],
-      meetings: [meetingProfile],
-      notes: [noteProfile],
-      people: [personProfile],
-    });
+    mocks.getTenantOpportunityFormOptions.mockResolvedValue(
+      opportunityFormOptions,
+    );
     mocks.listTenantSourceReferencesForTarget.mockResolvedValue([]);
     mocks.getTenantTaskBoard.mockResolvedValue(taskBoard);
     mocks.getTenantTaskFormOptions.mockResolvedValue(taskFormOptions);
     mocks.getTenantTaskProfile.mockResolvedValue(taskProfile);
+    mocks.getTenantIntroductionSuggestionProfile.mockResolvedValue(
+      introductionSuggestionProfile,
+    );
     mocks.getTenantPerson.mockResolvedValue(personProfile);
     mocks.getTenantPersonProfile.mockResolvedValue(personProfile);
     mocks.getTenantCompanyProfile.mockResolvedValue(companyProfile);
@@ -645,6 +701,9 @@ describe("protected app routes", () => {
     mocks.listTenantNeedsWithContext.mockResolvedValue([needProfile]);
     mocks.listTenantCapabilitiesWithContext.mockResolvedValue([
       capabilityProfile,
+    ]);
+    mocks.listTenantIntroductionSuggestionsWithContext.mockResolvedValue([
+      introductionSuggestionProfile,
     ]);
     mocks.listTenantAIProposals.mockResolvedValue([proposalProfile]);
     mocks.listTenantPeopleWithProfiles.mockResolvedValue([
@@ -710,6 +769,10 @@ describe("protected app routes", () => {
       "Capabilities",
       () => import("@/app/(app)/opportunities/capabilities/page"),
     ],
+    [
+      "Introductions",
+      () => import("@/app/(app)/opportunities/introductions/page"),
+    ],
   ])("renders the %s protected route", async (heading, importPage) => {
     await renderRoute(importPage);
 
@@ -763,6 +826,21 @@ describe("protected app routes", () => {
       screen.getByRole("heading", { level: 1, name: "Create capability" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Capability form")).toBeInTheDocument();
+  });
+
+  it("renders the introduction suggestion create route", async () => {
+    const Page = (
+      await import("@/app/(app)/opportunities/introductions/new/page")
+    ).default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Create introduction" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Introduction suggestion form"),
+    ).toBeInTheDocument();
   });
 
   it("renders the meeting detail route", async () => {
@@ -1000,6 +1078,46 @@ describe("protected app routes", () => {
     );
 
     expect(screen.getByLabelText("Capability form")).toBeInTheDocument();
+  });
+
+  it("renders the introduction suggestion detail and edit routes", async () => {
+    const DetailPage = (
+      await import(
+        "@/app/(app)/opportunities/introductions/[introductionSuggestionId]/page"
+      )
+    ).default;
+    const EditPage = (
+      await import(
+        "@/app/(app)/opportunities/introductions/[introductionSuggestionId]/edit/page"
+      )
+    ).default;
+
+    render(
+      await DetailPage({
+        params: Promise.resolve({
+          introductionSuggestionId: "introduction_test_1",
+        }),
+      }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Practical MBSE training examples <> SE-CERT preparation experience",
+      }),
+    ).toBeInTheDocument();
+
+    render(
+      await EditPage({
+        params: Promise.resolve({
+          introductionSuggestionId: "introduction_test_1",
+        }),
+      }),
+    );
+
+    expect(
+      screen.getByLabelText("Introduction suggestion form"),
+    ).toBeInTheDocument();
   });
 
   it("renders the person detail route", async () => {
