@@ -362,6 +362,16 @@ only. No target business records are created or updated, `VoiceNote.status` is
 not changed just because a proposal exists, and `VoiceMention` remains
 uncreated in this step.
 
+Step 12A does not add a migration. Microsoft Graph readiness uses a disabled
+provider by default and does not store live tokens, connection rows, calendar
+events, email messages, or contacts. A future live integration should use a
+dedicated tenant- and user-scoped `IntegrationConnection` or
+`MicrosoftIntegrationAccount` model rather than reusing Auth.js `Account`
+tokens for sync semantics. That future model should store provider, external
+account id, approved scopes, connection status, timestamps, and encrypted token
+material only after a disconnect/revoke flow and token encryption strategy are
+implemented.
+
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
 

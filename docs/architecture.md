@@ -274,6 +274,16 @@ target records, create `VoiceMention` rows, perform external lookup, call
 LinkedIn/Microsoft/Teams/Outlook, run embeddings/search, send messages, or
 start background jobs.
 
+Step 12A adds Microsoft Graph readiness only. `/settings/integrations` is a
+protected settings route that shows a Microsoft integration card in a
+disconnected state and links future capabilities to calendar, selected email
+context, and contacts. The provider boundary under
+`server/providers/microsoft-graph` exposes normalized app-level DTOs and only
+ships disabled and mock providers. The default provider is disabled; the mock
+provider is for local/test use only and is rejected in production. No Step 12A
+code starts OAuth, stores tokens, calls live Microsoft Graph APIs, creates sync
+jobs, or ingests calendar, email, or contact data.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,

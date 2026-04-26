@@ -34,6 +34,13 @@ export const runtimeEnvSchema = z.object({
   SPEECH_TO_TEXT_PROVIDER: optionalString,
   TRANSCRIPT_STRUCTURING_PROVIDER: optionalString,
 
+  MICROSOFT_GRAPH_PROVIDER: optionalString,
+  MICROSOFT_GRAPH_CLIENT_ID: optionalString,
+  MICROSOFT_GRAPH_CLIENT_SECRET: optionalString,
+  MICROSOFT_GRAPH_TENANT_ID: optionalString,
+  MICROSOFT_GRAPH_AUTHORITY: optionalUrl,
+  MICROSOFT_GRAPH_REDIRECT_URI: optionalUrl,
+
   STORAGE_PROVIDER: optionalString,
   S3_ENDPOINT: optionalString,
   S3_REGION: optionalString,

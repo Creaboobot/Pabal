@@ -201,6 +201,14 @@ proposed patch JSON, provider payloads, headers, cookies, tokens, environment
 values, API keys, or secrets. Creating proposals from voice notes must not
 mutate target records or create `VoiceMention` records.
 
+Step 12A Microsoft Graph readiness has no mutations and does not write audit
+logs. `/settings/integrations` requires active tenant context before rendering,
+but no integration connection state is persisted yet. Future Microsoft Graph
+connections must be tenant- and user-scoped, use encrypted token storage, and
+include disconnect/revoke before requesting offline access. Step 12A does not
+start OAuth, store tokens, call Microsoft Graph, sync calendar data, ingest
+email/contact data, or create background jobs.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

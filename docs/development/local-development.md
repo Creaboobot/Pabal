@@ -301,3 +301,16 @@ aggregates existing tenant-scoped participant, company, note, task,
 commitment, need, capability, introduction, proposal, and relationship-health
 context. It does not generate summaries, call AI providers, sync from
 Outlook/Teams, create source references, write audit logs, or mutate records.
+
+## Microsoft Graph Readiness
+
+Step 12A adds `/settings/integrations` and a Microsoft Graph provider boundary
+for future work. Use `MICROSOFT_GRAPH_PROVIDER=disabled` for normal local
+development. `MICROSOFT_GRAPH_PROVIDER=mock` is available only for local/test
+provider checks and is rejected in production.
+
+The Microsoft Graph variables in `.env.example` are optional future OAuth
+configuration values. They are separate from Microsoft Entra/Auth.js sign-in
+variables and are not required for build or readiness. Step 12A does not start
+OAuth, store tokens, call live Graph APIs, sync calendar data, ingest email or
+contacts, or create background jobs.

@@ -33,12 +33,41 @@ describe("runtime environment validation", () => {
       FEATURE_LINKEDIN_MANUAL_ENRICHMENT: "true",
       FEATURE_MICROSOFT_GRAPH: "false",
       FEATURE_VOICE_CAPTURE: "true",
+      MICROSOFT_GRAPH_PROVIDER: "disabled",
       NEXT_TELEMETRY_DISABLED: "1",
       NODE_ENV: "production",
       OPENAI_TRANSCRIPTION_MODEL: "gpt-4o-mini-transcribe",
       OPENAI_STRUCTURING_MODEL: "gpt-4o-mini",
       SPEECH_TO_TEXT_PROVIDER: "openai",
       TRANSCRIPT_STRUCTURING_PROVIDER: "openai",
+    });
+
+    expect(parsed.success).toBe(true);
+  });
+
+  it("does not require Microsoft Graph configuration for readiness", () => {
+    const readiness = getReadinessStatus({
+      AUTH_SECRET: "test-auth-secret",
+      DATABASE_URL:
+        "postgresql://pobal:pobal@localhost:5432/pobal?schema=public",
+      FEATURE_MICROSOFT_GRAPH: "false",
+      NODE_ENV: "production",
+    });
+
+    expect(readiness.ready).toBe(true);
+    expect(readiness.checks).not.toContainEqual({
+      name: "microsoft-graph",
+      ok: false,
+    });
+  });
+
+  it("accepts optional Microsoft Graph readiness variables without requiring secrets", () => {
+    const parsed = readRuntimeEnv({
+      MICROSOFT_GRAPH_AUTHORITY: "https://login.microsoftonline.com/common",
+      MICROSOFT_GRAPH_PROVIDER: "disabled",
+      MICROSOFT_GRAPH_REDIRECT_URI:
+        "http://localhost:3000/api/integrations/microsoft/callback",
+      NODE_ENV: "development",
     });
 
     expect(parsed.success).toBe(true);

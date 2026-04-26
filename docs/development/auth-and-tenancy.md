@@ -31,6 +31,9 @@ Microsoft Entra OAuth variables are optional placeholders. The provider is
 registered only when the client id, secret, and issuer or tenant id are present.
 No Microsoft Graph sync is implemented in this stage.
 
+The Step 12A Microsoft Graph readiness variables are separate from these
+sign-in variables. They do not enable OAuth, token storage, sync, or ingestion.
+
 ## Tenant onboarding
 
 On first authenticated access, `ensureDefaultTenantForUser` creates exactly one

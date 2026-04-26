@@ -87,9 +87,11 @@ persistence. Step 11A-2 adds the mobile browser voice recorder, transcript
 review pages, edit/archive actions, and source-context chips while keeping raw
 audio out of storage. Step 11B adds review-only VoiceNote transcript
 structuring into `AIProposal` and `AIProposalItem` records through a provider
-adapter. It does not implement LinkedIn URL storage, AI proposal application,
-VoiceMention extraction, target record mutation, billing, Microsoft Graph,
-LinkedIn enrichment, production search,
+adapter. Step 12A adds Microsoft Graph readiness with a protected integrations
+settings page, disabled/mock provider boundary, and optional environment
+variable documentation. It does not implement LinkedIn URL storage, AI proposal
+application, VoiceMention extraction, target record mutation, billing, live
+Microsoft Graph, LinkedIn enrichment, production search,
 matching, scoring, notifications, reminders, background jobs, automatic task
 creation, message drafting, outreach sending, or production deployment.
 
@@ -123,6 +125,9 @@ Edit `.env.local` before starting the app:
 - use `TRANSCRIPT_STRUCTURING_PROVIDER=mock` only for explicit local/test
   transcript structuring;
 - keep Microsoft Entra variables blank until OAuth is intentionally configured.
+- keep `MICROSOFT_GRAPH_PROVIDER=disabled` unless explicitly running local/test
+  readiness checks; Microsoft Graph OAuth, tokens, sync, and ingestion are not
+  implemented.
 
 The app runs at `http://localhost:3000`. Development sign-in is available at
 `/sign-in` only when `ENABLE_DEV_AUTH=true` and `NODE_ENV` is not production.
@@ -241,6 +246,14 @@ resolution is tenant-local only. The flow creates `AIProposal` and
 `AIProposalItem` rows only; it does not apply patches, mutate targets, create
 voice mentions, perform external lookup, or access LinkedIn/Microsoft/Teams/
 Outlook services.
+
+Microsoft integration readiness is available under settings:
+
+- `/settings/integrations` for a readiness-only Microsoft Graph card.
+
+The page shows future calendar, selected email context, and contact
+capabilities, but it does not start OAuth, store tokens, call Microsoft Graph,
+run sync jobs, or import calendar, email, or contact data.
 
 Manual relationship intelligence is available under `/opportunities`:
 
