@@ -46,3 +46,13 @@ review records. They do not invoke AI providers, generate recommendations,
 apply proposal patches, mutate target records, run embeddings/search, or create
 background jobs. Future AI-assisted reasoning must remain proposal-based and
 human-confirmed before any state mutation exists.
+
+## Step 10C Meeting Prep Boundary
+
+Meeting prep briefs in Step 10C are deterministic and read-only. They aggregate
+existing tenant-scoped records and relationship-health signals for an existing
+meeting, but they do not invoke AI providers, generate summaries, perform
+semantic search, apply proposal patches, mutate target records, create tasks or
+commitments, sync Outlook/Teams, or save generated brief records. Future
+AI-generated meeting preparation must remain an explicit proposal-based,
+human-confirmed workflow.

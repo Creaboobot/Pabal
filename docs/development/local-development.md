@@ -240,3 +240,12 @@ The V1 thresholds are hardcoded internally: active within 14 days, warm within
 within 7 days. No admin configuration UI, AI reasoning, notifications,
 background jobs, persisted scores, or signal dismissal/snooze behaviour exists
 in this step.
+
+## Meeting Prep Briefs
+
+Step 10C adds `/meetings/[meetingId]/prep`, linked from meeting detail as
+`View prep brief`. The brief is deterministic, read-only, and source-linked. It
+aggregates existing tenant-scoped participant, company, note, task,
+commitment, need, capability, introduction, proposal, and relationship-health
+context. It does not generate summaries, call AI providers, sync from
+Outlook/Teams, create source references, write audit logs, or mutate records.

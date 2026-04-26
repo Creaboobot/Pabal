@@ -159,6 +159,14 @@ mutate data. It also does not persist scores, update stored relationship
 fields, call AI providers, generate recommendations, send notifications, run
 background jobs, or add dismissal/snooze preferences.
 
+Step 10C meeting prep briefs follow the same read-only boundary. Prep reads
+require explicit tenant context, the meeting lookup filters by `tenantId`, and
+all related notes, tasks, commitments, needs, capabilities, introductions,
+proposals, source references, people, and companies are tenant-scoped. Snapshot
+participants are displayed only from their meeting snapshot fields and are not
+resolved by name or email. No audit log is written because the service does not
+mutate data.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

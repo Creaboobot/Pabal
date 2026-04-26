@@ -154,3 +154,16 @@ Step 10B-1 extends the same mobile-first card language for relationship health:
 Relationship health UI should stay concise on mobile, avoid diagnostic tables,
 and must not imply AI reasoning, automatic matching, notifications, or
 background jobs.
+
+Step 10C extends those patterns for meeting prep briefs:
+
+- compact overview, participant, company, and record-list cards;
+- source, sensitivity, due/overdue, status, and health badges;
+- short source-linked previews instead of full pasted notes or raw proposal
+  patches;
+- explicit copy that the brief is deterministic, read-only, and not
+  AI-generated.
+
+Prep briefs should remain bounded on mobile, avoid wide tables, and must not
+suggest Outlook/Teams sync, generated summaries, recommendations, or
+background processing.

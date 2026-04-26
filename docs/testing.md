@@ -134,6 +134,14 @@ signal computation does not mutate records or write audit logs, and route smoke
 coverage for Today plus person/company detail pages through the app-shell
 tests.
 
+The Step 10C tests cover route smoke rendering for
+`/meetings/[meetingId]/prep`, the meeting-detail prep link, tenant-owned prep
+brief generation, cross-tenant meeting denial, known participant context,
+snapshot-only participant safety, company context limited to meeting-linked
+companies, related notes/tasks/commitments/needs/capabilities/introductions and
+review-only proposals, source-reference provenance, cross-tenant exclusion, and
+proof that prep generation does not mutate records or write audit logs.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

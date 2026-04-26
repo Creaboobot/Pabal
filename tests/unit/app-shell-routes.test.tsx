@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   getTenantAIProposalProfile: vi.fn(),
   getTenantAIProposalReviewSummary: vi.fn(),
   getTenantMeeting: vi.fn(),
+  getTenantMeetingPrepBrief: vi.fn(),
   getTenantMeetingProfile: vi.fn(),
   getTenantCapabilityProfile: vi.fn(),
   getTenantIntroductionSuggestionProfile: vi.fn(),
@@ -92,6 +93,10 @@ vi.mock("@/server/services/meetings", () => ({
   getTenantMeeting: mocks.getTenantMeeting,
   getTenantMeetingProfile: mocks.getTenantMeetingProfile,
   listTenantMeetings: mocks.listTenantMeetings,
+}));
+
+vi.mock("@/server/services/meeting-prep", () => ({
+  getTenantMeetingPrepBrief: mocks.getTenantMeetingPrepBrief,
 }));
 
 vi.mock("@/server/services/notes", () => ({
@@ -606,6 +611,202 @@ const proposalProfile = {
   updatedAt: new Date("2026-04-24T12:00:00.000Z"),
 };
 
+const meetingPrepBrief = {
+  companies: [
+    {
+      health: companyRelationshipHealth,
+      id: companyProfile.id,
+      isPrimary: true,
+      name: companyProfile.name,
+      recentNotes: [
+        {
+          createdAt: noteProfile.createdAt,
+          href: `/notes/${noteProfile.id}`,
+          id: noteProfile.id,
+          noteType: noteProfile.noteType,
+          preview: noteProfile.summary,
+          sensitivity: noteProfile.sensitivity,
+          sourceType: noteProfile.sourceType,
+          updatedAt: noteProfile.updatedAt,
+        },
+      ],
+    },
+  ],
+  meeting: {
+    createdAt: meetingProfile.createdAt,
+    endedAt: meetingProfile.endedAt,
+    id: meetingProfile.id,
+    location: meetingProfile.location,
+    occurredAt: meetingProfile.occurredAt,
+    primaryCompany: {
+      entityId: companyProfile.id,
+      entityType: "COMPANY",
+      href: `/people/companies/${companyProfile.id}`,
+      label: companyProfile.name,
+    },
+    sourceType: meetingProfile.sourceType,
+    summary: meetingProfile.summary,
+    title: meetingProfile.title,
+    updatedAt: meetingProfile.updatedAt,
+  },
+  participants: [
+    {
+      company: {
+        entityId: companyProfile.id,
+        entityType: "COMPANY",
+        href: `/people/companies/${companyProfile.id}`,
+        label: companyProfile.name,
+      },
+      emailSnapshot: "anna@example.com",
+      health: relationshipHealth,
+      id: "participant_test_1",
+      isKnownPerson: true,
+      name: personProfile.displayName,
+      participantRole: "HOST",
+      person: {
+        entityId: personProfile.id,
+        entityType: "PERSON",
+        href: `/people/${personProfile.id}`,
+        label: personProfile.displayName,
+      },
+      recentNotes: [
+        {
+          createdAt: noteProfile.createdAt,
+          href: `/notes/${noteProfile.id}`,
+          id: noteProfile.id,
+          noteType: noteProfile.noteType,
+          preview: noteProfile.summary,
+          sensitivity: noteProfile.sensitivity,
+          sourceType: noteProfile.sourceType,
+          updatedAt: noteProfile.updatedAt,
+        },
+      ],
+    },
+    {
+      company: null,
+      emailSnapshot: "snapshot@example.com",
+      health: null,
+      id: "participant_snapshot_1",
+      isKnownPerson: false,
+      name: "Snapshot Guest",
+      participantRole: "ATTENDEE",
+      person: null,
+      recentNotes: [],
+    },
+  ],
+  records: {
+    capabilities: [
+      {
+        capabilityType: capabilityProfile.capabilityType,
+        confidence: capabilityProfile.confidence,
+        href: `/opportunities/capabilities/${capabilityProfile.id}`,
+        id: capabilityProfile.id,
+        sensitivity: capabilityProfile.sensitivity,
+        status: capabilityProfile.status,
+        title: capabilityProfile.title,
+      },
+    ],
+    commitments: [
+      {
+        dueAt: commitmentProfile.dueAt,
+        dueWindowEnd: commitmentProfile.dueWindowEnd,
+        dueWindowStart: commitmentProfile.dueWindowStart,
+        href: `/commitments/${commitmentProfile.id}`,
+        id: commitmentProfile.id,
+        ownerType: commitmentProfile.ownerType,
+        sensitivity: commitmentProfile.sensitivity,
+        status: commitmentProfile.status,
+        title: commitmentProfile.title,
+      },
+    ],
+    introductions: [
+      {
+        confidence: introductionSuggestionProfile.confidence,
+        href: `/opportunities/introductions/${introductionSuggestionProfile.id}`,
+        id: introductionSuggestionProfile.id,
+        rationalePreview: introductionSuggestionProfile.rationale,
+        status: introductionSuggestionProfile.status,
+      },
+    ],
+    needs: [
+      {
+        confidence: needProfile.confidence,
+        href: `/opportunities/needs/${needProfile.id}`,
+        id: needProfile.id,
+        needType: needProfile.needType,
+        priority: needProfile.priority,
+        sensitivity: needProfile.sensitivity,
+        status: needProfile.status,
+        title: needProfile.title,
+      },
+    ],
+    notes: [
+      {
+        createdAt: noteProfile.createdAt,
+        href: `/notes/${noteProfile.id}`,
+        id: noteProfile.id,
+        noteType: noteProfile.noteType,
+        preview: noteProfile.summary,
+        sensitivity: noteProfile.sensitivity,
+        sourceType: noteProfile.sourceType,
+        updatedAt: noteProfile.updatedAt,
+      },
+    ],
+    proposals: [
+      {
+        confidence: proposalProfile.confidence,
+        href: `/proposals/${proposalProfile.id}`,
+        id: proposalProfile.id,
+        proposalType: proposalProfile.proposalType,
+        reviewOnly: true,
+        status: proposalProfile.status,
+        title: proposalProfile.title,
+      },
+    ],
+    recentMeetings: [
+      {
+        href: `/meetings/${meetingProfile.id}`,
+        id: "meeting_recent_1",
+        occurredAt: new Date("2026-04-20T10:00:00.000Z"),
+        primaryCompanyName: companyProfile.name,
+        title: "Earlier relationship check-in",
+      },
+    ],
+    sourceReferences: [
+      {
+        confidence: 0.9,
+        createdAt: new Date("2026-04-24T12:30:00.000Z"),
+        id: "source_reference_test_1",
+        label: "Meeting note provenance",
+        reason: null,
+        source: {
+          entityId: noteProfile.id,
+          entityType: "NOTE",
+          href: `/notes/${noteProfile.id}`,
+          label: "Note",
+        },
+        target: {
+          entityId: meetingProfile.id,
+          entityType: "MEETING",
+          href: `/meetings/${meetingProfile.id}`,
+          label: "Meeting",
+        },
+      },
+    ],
+    tasks: [
+      {
+        dueAt: taskProfile.dueAt,
+        href: `/tasks/${taskProfile.id}`,
+        id: taskProfile.id,
+        priority: taskProfile.priority,
+        status: taskProfile.status,
+        taskType: taskProfile.taskType,
+        title: taskProfile.title,
+      },
+    ],
+  },
+};
+
 const taskBoard = {
   dueToday: [taskProfile],
   openWithoutDue: [],
@@ -699,6 +900,7 @@ describe("protected app routes", () => {
     mocks.getAppShellSummary.mockResolvedValue(appSummary);
     mocks.getTenantCompany.mockResolvedValue(companyProfile);
     mocks.getTenantMeeting.mockResolvedValue(meetingProfile);
+    mocks.getTenantMeetingPrepBrief.mockResolvedValue(meetingPrepBrief);
     mocks.getTenantMeetingProfile.mockResolvedValue(meetingProfile);
     mocks.getTenantNoteProfile.mockResolvedValue(noteProfile);
     mocks.getTenantNeedProfile.mockResolvedValue(needProfile);
@@ -917,6 +1119,27 @@ describe("protected app routes", () => {
         level: 1,
         name: "MBSE readiness discussion",
       }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("View prep brief")).toBeInTheDocument();
+  });
+
+  it("renders the meeting prep brief route", async () => {
+    const Page = (
+      await import("@/app/(app)/meetings/[meetingId]/prep/page")
+    ).default;
+
+    render(
+      await Page({ params: Promise.resolve({ meetingId: "meeting_test_1" }) }),
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Prepare: MBSE readiness discussion",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("No AI generation, sync, or record mutation."),
     ).toBeInTheDocument();
   });
 

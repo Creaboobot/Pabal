@@ -14,7 +14,8 @@ ledger without changing the schema. Step 9 uses the existing `AIProposal` and
 schema. Step 10A-1 uses the existing `Need` and `Capability` models for manual
 relationship-intelligence workflows without changing the schema. Step 10A-2
 uses the existing `IntroductionSuggestion` model for manual introduction
-tracking without changing the schema.
+tracking without changing the schema. Step 10C uses existing meeting and
+relationship records for read-only prep briefs without changing the schema.
 
 ## Foundation tables
 
@@ -307,6 +308,22 @@ Existing stored `Person.relationshipStatus` and
 `Person.relationshipTemperature` remain unchanged. Step 10B-1 does not add AI
 reasoning, embeddings, search, matching, notifications, background jobs,
 dismissal preferences, or persisted relationship scores.
+
+## Step 10C meeting prep briefs
+
+Step 10C does not add a migration. Meeting prep briefs are computed at read
+time from existing tenant-scoped records:
+
+- `Meeting`, `MeetingParticipant`, `Person`, and `Company` for meeting and
+  participant context;
+- `Note`, `Task`, `Commitment`, `Need`, `Capability`,
+  `IntroductionSuggestion`, and `AIProposal` for explicitly linked context;
+- `SourceReference` for provenance;
+- deterministic relationship-health DTOs for participant and company signals.
+
+No prep brief rows are persisted. The service does not create source
+references, mutate statuses, write audit logs, call AI providers, or sync from
+Outlook/Teams.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
