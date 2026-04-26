@@ -43,6 +43,68 @@ const nullableUrl = (label: string) =>
     return trimmed.length > 0 ? trimmed : null;
   }, z.string().url(`Enter a valid ${label} URL`).max(2048).nullable());
 
+function isLinkedInHostname(hostname: string) {
+  const normalizedHostname = hostname.toLowerCase();
+
+  return (
+    normalizedHostname === "linkedin.com" ||
+    normalizedHostname.endsWith(".linkedin.com")
+  );
+}
+
+const nullableLinkedInUrl = (
+  label: string,
+  pathPredicate: (pathname: string) => boolean,
+) =>
+  z.preprocess((value) => {
+    if (typeof value !== "string") {
+      return null;
+    }
+
+    const trimmed = value.trim();
+
+    return trimmed.length > 0 ? trimmed : null;
+  },
+  z
+    .string()
+    .max(2048, `${label} is too long`)
+    .nullable()
+    .superRefine((value, context) => {
+      if (!value) {
+        return;
+      }
+
+      let parsed: URL;
+
+      try {
+        parsed = new URL(value);
+      } catch {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Enter a valid ${label} URL`,
+        });
+        return;
+      }
+
+      if (parsed.protocol !== "https:") {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `${label} must use HTTPS`,
+        });
+        return;
+      }
+
+      if (
+        !isLinkedInHostname(parsed.hostname) ||
+        !pathPredicate(parsed.pathname)
+      ) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Enter a valid ${label} URL`,
+        });
+      }
+    }));
+
 export const personFormSchema = z.object({
   displayName: requiredText("Display name", 160),
   firstName: nullableText("First name", 80),
@@ -50,8 +112,14 @@ export const personFormSchema = z.object({
   email: nullableEmail,
   phone: nullableText("Phone", 64),
   jobTitle: nullableText("Title or role", 120),
+  linkedinUrl: nullableLinkedInUrl("LinkedIn profile", (pathname) =>
+    pathname.toLowerCase().startsWith("/in/"),
+  ),
   relationshipStatus: z.enum(editableRelationshipStatuses),
   relationshipTemperature: z.enum(editableRelationshipTemperatures),
+  salesNavigatorUrl: nullableLinkedInUrl("Sales Navigator", (pathname) =>
+    pathname.toLowerCase().startsWith("/sales/"),
+  ),
 });
 
 export const companyFormSchema = z.object({

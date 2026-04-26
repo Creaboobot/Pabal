@@ -19,7 +19,8 @@ relationship records for read-only prep briefs without changing the schema.
 Step 11A uses the existing `VoiceNote` model for backend transcription and
 transcript review without changing the schema. Step 11B uses existing
 `AIProposal` and `AIProposalItem` source VoiceNote links for review-only voice
-structuring without changing the schema.
+structuring without changing the schema. Step 12B adds small manual LinkedIn
+enrichment fields and one source enum value.
 
 ## Foundation tables
 
@@ -34,8 +35,9 @@ structuring without changing the schema.
 
 ## Step 4A relationship backbone
 
-- `Person`: tenant-owned relationship record. Email is optional and indexed by
-  tenant, not globally unique.
+- `Person`: tenant-owned relationship record. Email, LinkedIn profile URL, and
+  Sales Navigator URL are optional and owned/indexed within the tenant, not
+  globally unique.
 - `Company`: tenant-owned organisation record. Company name is indexed by
   tenant, not unique, because duplicates, subsidiaries, spelling variants, and
   legal suffixes are expected.
@@ -107,8 +109,8 @@ created, edited, and archived with name, website, industry, and description.
 Archived people and companies are hidden from active lists and detail reads by
 repository filters. Historical relationship context remains intact.
 
-The current schema does not include a LinkedIn URL field, so Step 6A does not
-store LinkedIn URLs.
+Step 12B later adds optional manual LinkedIn URL fields to `Person`; Step 6A
+itself did not fetch, validate, or enrich from LinkedIn.
 
 ## Step 6B affiliation management and related context
 
@@ -134,6 +136,7 @@ Step 7A adds a focused `RecordSourceType` enum with:
 
 - `MANUAL`
 - `TEAMS_COPILOT_PASTE`
+- `LINKEDIN_USER_PROVIDED` added later in Step 12B for notes only
 
 `Meeting.sourceType` and `Note.sourceType` default to `MANUAL`. This is source
 metadata only. It does not add Teams import, Microsoft Graph, Copilot import,
@@ -371,6 +374,19 @@ tokens for sync semantics. That future model should store provider, external
 account id, approved scopes, connection status, timestamps, and encrypted token
 material only after a disconnect/revoke flow and token encryption strategy are
 implemented.
+
+Step 12B adds optional `Person.linkedinUrl` and
+`Person.salesNavigatorUrl` fields plus `RecordSourceType.LINKEDIN_USER_PROVIDED`
+for notes. URL validation is pure parsing: HTTPS LinkedIn profile URLs must use
+person-profile-like `/in/...` paths, and Sales Navigator URLs must use
+LinkedIn `/sales/...` paths. Validation does not fetch URLs, confirm ownership,
+scrape metadata, or call LinkedIn.
+
+Manual LinkedIn notes are ordinary tenant-owned `Note` records with
+`sourceType = LINKEDIN_USER_PROVIDED` and optional person/company links.
+LinkedIn URL values are not represented as `SourceReference` rows in this step.
+No company LinkedIn fields, LinkedIn provider models, OAuth tokens, scraping
+state, browser automation state, sync jobs, or enrichment records are added.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.

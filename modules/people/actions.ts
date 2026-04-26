@@ -49,12 +49,14 @@ function personFormData(formData: FormData) {
     firstName: formDataValue(formData, "firstName"),
     jobTitle: formDataValue(formData, "jobTitle"),
     lastName: formDataValue(formData, "lastName"),
+    linkedinUrl: formDataValue(formData, "linkedinUrl"),
     phone: formDataValue(formData, "phone"),
     relationshipStatus: formDataValue(formData, "relationshipStatus"),
     relationshipTemperature: formDataValue(
       formData,
       "relationshipTemperature",
     ),
+    salesNavigatorUrl: formDataValue(formData, "salesNavigatorUrl"),
   };
 }
 

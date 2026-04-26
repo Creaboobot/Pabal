@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   companyAffiliationFormSchema,
@@ -63,6 +63,76 @@ describe("people and company form validation", () => {
 
     expect(result.success).toBe(false);
     expect(result.error?.flatten().fieldErrors.phone).toBeDefined();
+  });
+
+  it("accepts valid LinkedIn and Sales Navigator URLs", () => {
+    const result = personFormSchema.safeParse({
+      displayName: "Anna Keller",
+      email: "",
+      firstName: "",
+      jobTitle: "",
+      lastName: "",
+      linkedinUrl: "https://www.linkedin.com/in/anna-keller/",
+      phone: "",
+      relationshipStatus: "ACTIVE",
+      relationshipTemperature: "WARM",
+      salesNavigatorUrl: "https://www.linkedin.com/sales/lead/123",
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data).toMatchObject({
+      linkedinUrl: "https://www.linkedin.com/in/anna-keller/",
+      salesNavigatorUrl: "https://www.linkedin.com/sales/lead/123",
+    });
+  });
+
+  it("rejects invalid LinkedIn and Sales Navigator URLs", () => {
+    const nonLinkedIn = personFormSchema.safeParse({
+      displayName: "Anna Keller",
+      linkedinUrl: "https://example.com/in/anna-keller",
+      relationshipStatus: "ACTIVE",
+      relationshipTemperature: "WARM",
+      salesNavigatorUrl: "https://www.linkedin.com/company/example",
+    });
+    const nonHttps = personFormSchema.safeParse({
+      displayName: "Anna Keller",
+      linkedinUrl: "http://www.linkedin.com/in/anna-keller",
+      relationshipStatus: "ACTIVE",
+      relationshipTemperature: "WARM",
+      salesNavigatorUrl: "http://www.linkedin.com/sales/lead/123",
+    });
+
+    expect(nonLinkedIn.success).toBe(false);
+    expect(nonLinkedIn.error?.flatten().fieldErrors.linkedinUrl).toBeDefined();
+    expect(
+      nonLinkedIn.error?.flatten().fieldErrors.salesNavigatorUrl,
+    ).toBeDefined();
+    expect(nonHttps.success).toBe(false);
+    expect(nonHttps.error?.flatten().fieldErrors.linkedinUrl?.[0]).toContain(
+      "HTTPS",
+    );
+    expect(
+      nonHttps.error?.flatten().fieldErrors.salesNavigatorUrl?.[0],
+    ).toContain("HTTPS");
+  });
+
+  it("validates LinkedIn URLs without network calls", () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockRejectedValue(new Error("should not be called"));
+
+    const result = personFormSchema.safeParse({
+      displayName: "Anna Keller",
+      linkedinUrl: "https://www.linkedin.com/in/anna-keller/",
+      relationshipStatus: "ACTIVE",
+      relationshipTemperature: "WARM",
+      salesNavigatorUrl: "https://www.linkedin.com/sales/people/123",
+    });
+
+    expect(result.success).toBe(true);
+    expect(fetchSpy).not.toHaveBeenCalled();
+
+    fetchSpy.mockRestore();
   });
 
   it("requires company name and validates website", () => {

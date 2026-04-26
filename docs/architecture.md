@@ -284,6 +284,14 @@ provider is for local/test use only and is rejected in production. No Step 12A
 code starts OAuth, stores tokens, calls live Microsoft Graph APIs, creates sync
 jobs, or ingests calendar, email, or contact data.
 
+Step 12B adds manual LinkedIn enrichment only. Person create/edit forms store
+optional LinkedIn profile and Sales Navigator URLs after pure URL parsing, and
+note forms can label pasted user-provided context as
+`LINKEDIN_USER_PROVIDED`. The `/settings/integrations` page shows a manual
+LinkedIn card. No code fetches LinkedIn pages, previews profile content,
+scrapes, runs browser automation, monitors accounts, uses cookies/sessions,
+calls LinkedIn APIs, syncs Sales Navigator, or creates background jobs.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,
@@ -302,8 +310,7 @@ voice note readiness. Direct source/context links use composite tenant-aware
 relations where practical. Polymorphic proposal targets and voice mention
 resolutions are validated in services before persistence.
 
-This foundation intentionally contains no AI proposal generation, proposal
-application engine, transcript structuring, voice mention extraction, matching
-algorithm, notifications, background jobs, billing, Microsoft Graph sync,
-LinkedIn enrichment, semantic search, embeddings, or provider calls outside
-approved server-side adapters.
+This foundation intentionally contains no proposal application engine, voice
+mention extraction, matching algorithm, notifications, background jobs, billing,
+Microsoft Graph sync, LinkedIn automation/sync, semantic search, embeddings, or
+provider calls outside approved server-side adapters.

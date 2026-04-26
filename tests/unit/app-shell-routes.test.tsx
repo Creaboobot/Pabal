@@ -23,6 +23,7 @@ const mocks = vi.hoisted(() => ({
   getTenantNeedProfile: vi.fn(),
   getTenantNote: vi.fn(),
   getTenantNoteProfile: vi.fn(),
+  listTenantLinkedInNotesForPerson: vi.fn(),
   getTenantOpportunityFormOptions: vi.fn(),
   getTenantOpportunityHub: vi.fn(),
   getTenantPersonRelationshipHealth: vi.fn(),
@@ -105,6 +106,7 @@ vi.mock("@/server/services/meeting-prep", () => ({
 vi.mock("@/server/services/notes", () => ({
   getTenantNote: mocks.getTenantNote,
   getTenantNoteProfile: mocks.getTenantNoteProfile,
+  listTenantLinkedInNotesForPerson: mocks.listTenantLinkedInNotesForPerson,
   listTenantNotes: mocks.listTenantNotes,
 }));
 
@@ -327,9 +329,11 @@ const personProfile = {
   id: "person_test_1",
   jobTitle: "Partner",
   lastName: "Keller",
+  linkedinUrl: "https://www.linkedin.com/in/anna-keller/",
   phone: "+4512345678",
   relationshipStatus: "ACTIVE",
   relationshipTemperature: "WARM",
+  salesNavigatorUrl: "https://www.linkedin.com/sales/lead/123",
 };
 
 const companyProfile = {
@@ -448,6 +452,17 @@ const noteProfile = {
   summary: "Short note summary.",
   targetReferences: [],
   updatedAt: new Date("2026-04-24T10:05:00.000Z"),
+};
+
+const linkedInNote = {
+  body: "Manually pasted LinkedIn context.",
+  createdAt: new Date("2026-04-24T14:00:00.000Z"),
+  id: "linkedin_note_test_1",
+  noteType: "SOURCE_EXCERPT",
+  sensitivity: "SENSITIVE_BUSINESS",
+  sourceType: "LINKEDIN_USER_PROVIDED",
+  summary: "Manual LinkedIn context summary.",
+  updatedAt: new Date("2026-04-24T14:00:00.000Z"),
 };
 
 const voiceNoteProfile = {
@@ -950,6 +965,7 @@ describe("protected app routes", () => {
     mocks.getTenantMeetingProfile.mockResolvedValue(meetingProfile);
     mocks.getTenantNote.mockResolvedValue(noteProfile);
     mocks.getTenantNoteProfile.mockResolvedValue(noteProfile);
+    mocks.listTenantLinkedInNotesForPerson.mockResolvedValue([linkedInNote]);
     mocks.getTenantVoiceNoteProfile.mockResolvedValue(voiceNoteProfile);
     mocks.getTenantNeedProfile.mockResolvedValue(needProfile);
     mocks.getTenantCapabilityProfile.mockResolvedValue(capabilityProfile);
@@ -1073,6 +1089,10 @@ describe("protected app routes", () => {
     expect(
       screen.getByText("Readiness only. No Microsoft data is synced yet."),
     ).toBeInTheDocument();
+    expect(screen.getByText("Manual only")).toBeInTheDocument();
+    expect(
+      screen.getByText("No connection required. LinkedIn context is manual only."),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Connection coming later" }),
     ).toBeDisabled();
@@ -1109,7 +1129,6 @@ describe("protected app routes", () => {
   it.each([
     ["Meetings", () => import("@/app/(app)/meetings/page")],
     ["Create meeting", () => import("@/app/(app)/meetings/new/page")],
-    ["Create note", () => import("@/app/(app)/notes/new/page")],
     ["Paste meeting notes", () => import("@/app/(app)/capture/meeting/page")],
     ["Tasks", () => import("@/app/(app)/tasks/page")],
     ["Commitments", () => import("@/app/(app)/commitments/page")],
@@ -1151,6 +1170,17 @@ describe("protected app routes", () => {
       screen.getByRole("heading", { level: 1, name: "Create commitment" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Commitment form")).toBeInTheDocument();
+  });
+
+  it("renders the note create route", async () => {
+    const Page = (await import("@/app/(app)/notes/new/page")).default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Create note" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Note form")).toBeInTheDocument();
   });
 
   it("renders the need create route", async () => {
@@ -1552,6 +1582,13 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Anna Keller" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Add LinkedIn context" }),
+    ).toHaveAttribute(
+      "href",
+      "/notes/new?personId=person_test_1&sourceType=LINKEDIN_USER_PROVIDED",
+    );
+    expect(screen.getByText("Manual LinkedIn context summary.")).toBeInTheDocument();
   });
 
   it("renders the person edit route", async () => {
@@ -1577,6 +1614,12 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Nordic Industrials" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Add LinkedIn context" }),
+    ).toHaveAttribute(
+      "href",
+      "/notes/new?companyId=company_test_1&sourceType=LINKEDIN_USER_PROVIDED",
+    );
   });
 
   it("renders the company edit route", async () => {

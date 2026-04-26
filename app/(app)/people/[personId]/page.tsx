@@ -5,6 +5,7 @@ import {
   BadgeCheck,
   Edit,
   Handshake,
+  Link2,
   Lightbulb,
   Mail,
   Phone,
@@ -23,6 +24,12 @@ import { ArchiveRecordButton } from "@/modules/people/components/archive-record-
 import { RelationshipBadges } from "@/modules/people/components/relationship-badges";
 import { RelatedContextSummary } from "@/modules/people/components/related-context-summary";
 import { RelationshipHealthCard } from "@/modules/relationship-health/components/relationship-health-card";
+import {
+  NoteSourceBadge,
+  SensitivityBadge,
+} from "@/modules/notes/components/note-badges";
+import { formatNoteDateTime, notePreview } from "@/modules/notes/labels";
+import { listTenantLinkedInNotesForPerson } from "@/server/services/notes";
 import { getTenantPersonProfile } from "@/server/services/people";
 import { getTenantPersonRelatedContext } from "@/server/services/relationship-context";
 import { getTenantPersonRelationshipHealth } from "@/server/services/relationship-health";
@@ -54,9 +61,10 @@ export default async function PersonDetailPage({
     notFound();
   }
 
-  const [relatedContext, relationshipHealth] = await Promise.all([
+  const [relatedContext, relationshipHealth, linkedInNotes] = await Promise.all([
     getTenantPersonRelatedContext(context, personId),
     getTenantPersonRelationshipHealth(context, personId),
+    listTenantLinkedInNotesForPerson(context, personId),
   ]);
 
   if (!relationshipHealth) {
@@ -124,6 +132,14 @@ export default async function PersonDetailPage({
                 Create introduction
               </Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link
+                href={`/notes/new?personId=${person.id}&sourceType=LINKEDIN_USER_PROVIDED`}
+              >
+                <Link2 aria-hidden="true" className="mr-2 size-4" />
+                Add LinkedIn context
+              </Link>
+            </Button>
           </div>
         }
         description={person.jobTitle ?? "Relationship record"}
@@ -174,6 +190,69 @@ export default async function PersonDetailPage({
       </section>
 
       <RelationshipHealthCard health={relationshipHealth} />
+
+      <CockpitCard title="LinkedIn context" value="Manual only">
+        <div className="grid gap-4">
+          <div className="grid gap-2 text-sm text-muted-foreground">
+            {person.linkedinUrl ? (
+              <a
+                className="flex items-center gap-2 rounded-sm outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+                href={person.linkedinUrl}
+                rel="noreferrer noopener"
+                target="_blank"
+              >
+                <Link2 aria-hidden="true" className="size-4" />
+                LinkedIn profile
+              </a>
+            ) : null}
+            {person.salesNavigatorUrl ? (
+              <a
+                className="flex items-center gap-2 rounded-sm outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+                href={person.salesNavigatorUrl}
+                rel="noreferrer noopener"
+                target="_blank"
+              >
+                <Link2 aria-hidden="true" className="size-4" />
+                Sales Navigator
+              </a>
+            ) : null}
+            {!person.linkedinUrl && !person.salesNavigatorUrl ? (
+              <p>No LinkedIn URLs stored yet.</p>
+            ) : null}
+            <p>
+              User-provided only. Pabal does not fetch, embed, preview, scrape,
+              monitor, or sync LinkedIn content.
+            </p>
+          </div>
+
+          <div className="grid gap-3">
+            {linkedInNotes.length > 0 ? (
+              linkedInNotes.map((note) => (
+                <Link
+                  className="rounded-md border border-border bg-background p-3 outline-none hover:border-primary focus-visible:ring-2 focus-visible:ring-ring"
+                  href={`/notes/${note.id}`}
+                  key={note.id}
+                >
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    <NoteSourceBadge sourceType={note.sourceType} />
+                    <SensitivityBadge sensitivity={note.sensitivity} />
+                  </div>
+                  <p className="text-sm leading-6 text-muted-foreground">
+                    {notePreview(note)}
+                  </p>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {formatNoteDateTime(note.createdAt)}
+                  </p>
+                </Link>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No manually pasted LinkedIn context notes yet.
+              </p>
+            )}
+          </div>
+        </div>
+      </CockpitCard>
 
       {primaryAffiliation ? (
         <CockpitCard title="Primary company">

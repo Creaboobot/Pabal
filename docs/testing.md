@@ -175,6 +175,15 @@ environment validation without Microsoft Graph secrets, and proof by provider
 boundary that no live Graph calls, sync jobs, or calendar/email/contact
 ingestion paths are implemented.
 
+The Step 12B tests cover LinkedIn/Sales Navigator URL validation, rejection of
+non-LinkedIn and non-HTTPS URLs, proof that URL validation performs no network
+call, person create/edit persistence for manual URL fields, LinkedIn
+user-provided note creation, note source validation and badge labels,
+meeting-form rejection of the LinkedIn source, cross-tenant LinkedIn note link
+failures, settings-card rendering, safe audit metadata without full URLs or
+pasted content, and proof that no LinkedIn provider/API/scraper/job surface is
+added.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

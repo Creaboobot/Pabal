@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { RecordSourceType } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +33,7 @@ export type MeetingFormInitialValues = {
   location?: string | null;
   occurredAt?: Date | null;
   primaryCompanyId?: string | null;
-  sourceType?: (typeof editableRecordSourceTypes)[number];
+  sourceType?: RecordSourceType;
   summary?: string | null;
   title?: string;
 };
@@ -61,6 +62,11 @@ export function MeetingForm({
   const [pending, startTransition] = useTransition();
   const cancelHref = meetingId ? `/meetings/${meetingId}` : "/meetings";
   const defaultOccurredAt = initialValues?.occurredAt ?? new Date();
+  const defaultSourceType = editableRecordSourceTypes.some(
+    (sourceType) => sourceType === initialValues?.sourceType,
+  )
+    ? initialValues?.sourceType
+    : "MANUAL";
 
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -163,7 +169,7 @@ export function MeetingForm({
           <span className="text-sm font-medium text-foreground">Source</span>
           <select
             className="min-h-11 rounded-md border border-input bg-card px-3 py-2 text-base text-foreground shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring md:text-sm"
-            defaultValue={initialValues?.sourceType ?? "MANUAL"}
+            defaultValue={defaultSourceType}
             name="sourceType"
           >
             {editableRecordSourceTypes.map((sourceType) => (

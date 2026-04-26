@@ -18,13 +18,13 @@ import {
 } from "@/modules/notes/actions";
 import { FieldError } from "@/modules/notes/components/field-error";
 import {
+  editableNoteSourceTypes,
   editableNoteTypes,
   editableSensitivityTypes,
   noteTypeLabel,
   recordSourceTypeLabel,
   sensitivityLabel,
 } from "@/modules/notes/labels";
-import { editableRecordSourceTypes } from "@/modules/meetings/labels";
 
 export type NoteFormPerson = {
   id: string;
@@ -212,12 +212,18 @@ export function NoteForm({
             defaultValue={initialValues?.sourceType ?? "MANUAL"}
             name="sourceType"
           >
-            {editableRecordSourceTypes.map((sourceType) => (
+            {editableNoteSourceTypes.map((sourceType) => (
               <option key={sourceType} value={sourceType}>
                 {recordSourceTypeLabel(sourceType)}
               </option>
             ))}
           </select>
+          {initialValues?.sourceType === "LINKEDIN_USER_PROVIDED" ? (
+            <p className="text-xs leading-5 text-muted-foreground">
+              LinkedIn context is stored only from user-provided pasted text.
+              Pabal does not fetch, preview, or monitor LinkedIn content.
+            </p>
+          ) : null}
           <FieldError
             id="sourceType-error"
             message={firstError(state, "sourceType")}

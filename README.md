@@ -89,9 +89,10 @@ audio out of storage. Step 11B adds review-only VoiceNote transcript
 structuring into `AIProposal` and `AIProposalItem` records through a provider
 adapter. Step 12A adds Microsoft Graph readiness with a protected integrations
 settings page, disabled/mock provider boundary, and optional environment
-variable documentation. It does not implement LinkedIn URL storage, AI proposal
+variable documentation. Step 12B adds manual LinkedIn URL fields and
+user-provided LinkedIn-context notes. It does not implement AI proposal
 application, VoiceMention extraction, target record mutation, billing, live
-Microsoft Graph, LinkedIn enrichment, production search,
+Microsoft Graph, LinkedIn automation, production search,
 matching, scoring, notifications, reminders, background jobs, automatic task
 creation, message drafting, outreach sending, or production deployment.
 
@@ -164,7 +165,8 @@ People and company records are available under `/people`:
 
 Affiliation mutations are tenant-aware, audit-logged, and use transaction-safe
 primary affiliation handling. Related meetings and notes are read-only
-summaries only. The current schema does not include LinkedIn URL fields.
+summaries only. Person records can store optional LinkedIn profile and Sales
+Navigator URLs, validated locally without fetching LinkedIn content.
 
 Manual meeting records are available under `/meetings`:
 
@@ -177,10 +179,9 @@ Manual meeting records are available under `/meetings`:
   participant.
 
 Participant removal deletes only the `MeetingParticipant` association. It does
-not delete people, companies, meetings, notes, or source references. The source
-metadata enum currently supports `MANUAL` and `TEAMS_COPILOT_PASTE`, but Step
-7A itself did not add Teams import, note creation, AI extraction, or
-summarisation.
+not delete people, companies, meetings, notes, or source references. Meeting
+source options stay limited to `MANUAL` and `TEAMS_COPILOT_PASTE`; LinkedIn is
+available only as a note source for user-provided context.
 
 Manual notes are available through contextual routes:
 
@@ -254,6 +255,12 @@ Microsoft integration readiness is available under settings:
 The page shows future calendar, selected email context, and contact
 capabilities, but it does not start OAuth, store tokens, call Microsoft Graph,
 run sync jobs, or import calendar, email, or contact data.
+
+Manual LinkedIn enrichment is also visible on `/settings/integrations` and
+person detail pages. Users may store LinkedIn/Sales Navigator URLs and create
+`LINKEDIN_USER_PROVIDED` notes from manually pasted context. Pabal does not
+scrape, preview, fetch, monitor, automate, sync, call LinkedIn APIs, or use
+LinkedIn cookies/sessions.
 
 Manual relationship intelligence is available under `/opportunities`:
 

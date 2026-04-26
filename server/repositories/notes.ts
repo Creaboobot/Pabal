@@ -1,4 +1,8 @@
-import { type Prisma, type PrismaClient } from "@prisma/client";
+import {
+  type Prisma,
+  type PrismaClient,
+  type RecordSourceType,
+} from "@prisma/client";
 
 import { prisma } from "@/server/db/prisma";
 
@@ -68,6 +72,42 @@ export function listNotesForMeeting(
     where: {
       tenantId: input.tenantId,
       meetingId: input.meetingId,
+      archivedAt: null,
+    },
+    orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+    select: {
+      body: true,
+      createdAt: true,
+      id: true,
+      noteType: true,
+      sensitivity: true,
+      sourceType: true,
+      summary: true,
+      updatedAt: true,
+    },
+  };
+
+  if (input.take !== undefined) {
+    query.take = input.take;
+  }
+
+  return db.note.findMany(query);
+}
+
+export function listNotesForPersonBySource(
+  input: {
+    tenantId: string;
+    personId: string;
+    sourceType: RecordSourceType;
+    take?: number;
+  },
+  db: NotesClient = prisma,
+) {
+  const query: Prisma.NoteFindManyArgs = {
+    where: {
+      tenantId: input.tenantId,
+      personId: input.personId,
+      sourceType: input.sourceType,
       archivedAt: null,
     },
     orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],

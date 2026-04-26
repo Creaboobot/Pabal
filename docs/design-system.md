@@ -42,9 +42,10 @@ This design-system step does not add CRUD screens, capture workflows, AI
 proposal review, voice recording, transcription, semantic search, matching,
 notifications, analytics, or provider integrations.
 
-Step 6A extends the primitives for people/company record management only. It
-does not add LinkedIn URL fields, AI enrichment, voice capture, semantic search,
-or matching flows.
+Step 6A extends the primitives for people/company record management only. Step
+12B later adds simple manual LinkedIn URL fields to the existing person form;
+these are still plain mobile-first inputs with validation messages, not an
+embedded or automated LinkedIn experience.
 
 Step 6B extends the same mobile-first patterns for affiliations:
 
@@ -63,7 +64,7 @@ Step 7A extends the patterns for meetings:
 - meeting list cards instead of tables;
 - full-page mobile forms for create/edit and participant add;
 - compact participant cards/chips with inline remove confirmation;
-- source badges for `MANUAL` and `TEAMS_COPILOT_PASTE`;
+- meeting source badges for `MANUAL` and `TEAMS_COPILOT_PASTE`;
 - short note-count displays without note creation UI.
 
 Meeting screens should preserve bottom-nav spacing, keep archive/remove
@@ -82,6 +83,11 @@ Step 7B extends the same mobile-first patterns for notes and pasted capture:
 Note and pasted-capture screens should make source and sensitivity visible while
 avoiding wide tables, AI-processing affordances, voice controls, import
 controls, or autonomous extraction language.
+
+Step 12B extends note source badges with `LINKEDIN_USER_PROVIDED`. The person
+detail LinkedIn card is compact, text-first, and uses safe external links plus
+latest user-provided note previews. It must not embed LinkedIn, render automatic
+previews, or suggest that pasted LinkedIn context is verified by Pabal.
 
 Step 8A extends the same patterns for manual follow-up tasks:
 

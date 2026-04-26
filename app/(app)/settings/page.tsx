@@ -57,7 +57,7 @@ export default async function SettingsPage() {
       <CockpitCard
         eyebrow="Readiness"
         title="Integrations"
-        value="1"
+        value="2"
       >
         <div className="flex gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
@@ -65,8 +65,8 @@ export default async function SettingsPage() {
           </span>
           <div className="grid gap-3 text-sm">
             <p className="text-muted-foreground">
-              Review future Microsoft Graph integration readiness for calendar,
-              selected email context, and contacts.
+              Review readiness and manual boundaries for Microsoft Graph and
+              LinkedIn context.
             </p>
             <div>
               <Button asChild variant="outline">
