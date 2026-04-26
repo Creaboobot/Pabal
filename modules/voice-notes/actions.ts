@@ -15,6 +15,11 @@ import {
   archiveTenantVoiceNote,
   updateTenantVoiceNoteReview,
 } from "@/server/services/voice-notes";
+import {
+  structureTenantVoiceNoteIntoAIProposal,
+  VoiceProposalStructuringError,
+} from "@/server/services/voice-proposals";
+import { TranscriptStructuringProviderError } from "@/server/providers/transcript-structuring";
 
 async function requireActionContext(callbackUrl: string) {
   const context = await getCurrentUserContext();
@@ -73,6 +78,20 @@ function mutationError(error: unknown): VoiceNotesActionState {
     };
   }
 
+  if (error instanceof VoiceProposalStructuringError) {
+    return {
+      message: error.safeMessage,
+      status: "error",
+    };
+  }
+
+  if (error instanceof TranscriptStructuringProviderError) {
+    return {
+      message: error.safeMessage,
+      status: "error",
+    };
+  }
+
   return {
     message: "The voice note could not be saved. Please try again.",
     status: "error",
@@ -127,6 +146,31 @@ export async function archiveVoiceNoteAction(
 
     return {
       redirectTo: "/capture",
+      status: "success",
+    };
+  } catch (error) {
+    return mutationError(error);
+  }
+}
+
+export async function createProposalFromVoiceNoteAction(
+  voiceNoteId: string,
+): Promise<VoiceNotesActionState> {
+  const context = await requireActionContext(`/voice-notes/${voiceNoteId}`);
+
+  try {
+    const result = await structureTenantVoiceNoteIntoAIProposal(
+      context,
+      voiceNoteId,
+    );
+
+    revalidatePath("/today");
+    revalidatePath("/proposals");
+    revalidatePath(`/proposals/${result.proposal.id}`);
+    revalidatePath(`/voice-notes/${voiceNoteId}`);
+
+    return {
+      redirectTo: `/proposals/${result.proposal.id}`,
       status: "success",
     };
   } catch (error) {

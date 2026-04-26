@@ -158,6 +158,15 @@ archiving, cross-tenant VoiceNote/source-context denial, safe audit metadata,
 and proof that review actions do not create `VoiceMention`, `AIProposal`, or
 `AIProposalItem` records.
 
+The Step 11B tests cover transcript-structuring provider factory selection,
+mock provider output, OpenAI adapter missing-key failure, strict structured
+output validation, VoiceNote-to-proposal creation with mock output, preference
+for edited transcript text, duplicate active proposal prevention, ambiguous
+entity resolution into `NEEDS_CLARIFICATION`, cross-tenant VoiceNote and target
+resolution safety, safe audit metadata without transcript/raw AI/proposedPatch,
+and proof that structuring does not mutate people, companies, tasks,
+commitments, needs, capabilities, introduction suggestions, or voice mentions.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

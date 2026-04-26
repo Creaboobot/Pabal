@@ -6,6 +6,7 @@ import {
   HardDrive,
   Languages,
   Mic,
+  Sparkles,
   Timer,
 } from "lucide-react";
 
@@ -13,7 +14,10 @@ import { PageHeader } from "@/components/app/page-header";
 import { CockpitCard } from "@/components/cards/cockpit-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { archiveVoiceNoteAction } from "@/modules/voice-notes/actions";
+import {
+  archiveVoiceNoteAction,
+  createProposalFromVoiceNoteAction,
+} from "@/modules/voice-notes/actions";
 import { PrivacyRetentionNotice } from "@/modules/voice-notes/components/privacy-retention-notice";
 import {
   SourceContextChips,
@@ -102,6 +106,10 @@ export default async function VoiceNoteDetailPage({
   }
 
   const sourceChips = sourceChipsForVoiceNote(voiceNote);
+  const linkedProposals = voiceNote.aiProposals ?? [];
+  const hasUsableTranscript = Boolean(
+    voiceNote.editedTranscriptText?.trim() || voiceNote.transcriptText?.trim(),
+  );
 
   return (
     <div className="space-y-6">
@@ -186,10 +194,64 @@ export default async function VoiceNoteDetailPage({
         </CockpitCard>
       ) : null}
 
+      <CockpitCard title="Proposal from transcript">
+        <div className="grid gap-3 text-sm leading-6 text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-2">
+            <Sparkles aria-hidden="true" className="size-4 text-foreground" />
+            <span>
+              Structure this transcript into review-only proposal items.
+            </span>
+          </div>
+          <p>
+            The transcript is sent to the configured AI provider for
+            structuring. Proposed changes are review-only: no records are
+            updated automatically, and approving proposal items still does not
+            apply them.
+          </p>
+          {linkedProposals.length > 0 ? (
+            <div className="grid gap-2">
+              <p className="font-medium text-foreground">Linked proposals</p>
+              <div className="flex flex-wrap gap-2">
+                {linkedProposals.map((proposal) => (
+                  <Button
+                    asChild
+                    key={proposal.id}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Link href={`/proposals/${proposal.id}`}>
+                      {proposal.title}
+                    </Link>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+          {hasUsableTranscript ? (
+            <VoiceNoteActionButton
+              action={createProposalFromVoiceNoteAction.bind(
+                null,
+                voiceNote.id,
+              )}
+              confirmLabel="Send transcript"
+              description="This sends the transcript to the configured AI provider for structuring. It creates AIProposal review records only. It will not update people, companies, tasks, commitments, opportunities, or any other target record."
+              label="Create proposal from transcript"
+              pendingLabel="Structuring"
+              title="Create a review-only proposal?"
+            />
+          ) : (
+            <p>No transcript is available to structure yet.</p>
+          )}
+        </div>
+      </CockpitCard>
+
       <CockpitCard title="Review boundaries">
         <div className="grid gap-2 text-sm leading-6 text-muted-foreground">
           <p>No automatic record updates were created.</p>
-          <p>No AI proposal or voice mention extraction was created.</p>
+          <p>
+            Any AI proposal created from this transcript remains review-only.
+          </p>
+          <p>No voice mention extraction was created.</p>
           <p>Updated {formatVoiceDateTime(voiceNote.updatedAt)}</p>
         </div>
       </CockpitCard>

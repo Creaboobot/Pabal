@@ -17,7 +17,9 @@ uses the existing `IntroductionSuggestion` model for manual introduction
 tracking without changing the schema. Step 10C uses existing meeting and
 relationship records for read-only prep briefs without changing the schema.
 Step 11A uses the existing `VoiceNote` model for backend transcription and
-transcript review without changing the schema.
+transcript review without changing the schema. Step 11B uses existing
+`AIProposal` and `AIProposalItem` source VoiceNote links for review-only voice
+structuring without changing the schema.
 
 ## Foundation tables
 
@@ -351,6 +353,14 @@ the review UI: users may set `title`, `editedTranscriptText`, source context
 ids, `status=REVIEWED`, and `archivedAt` through tenant-aware services. Raw
 audio is still not stored, and the review workflow does not create
 `VoiceMention`, `AIProposal`, or `AIProposalItem` records.
+
+Step 11B also does not add a migration. Voice transcript structuring creates
+`AIProposal` rows with `proposalType=VOICE_NOTE_EXTRACTION` and
+`sourceVoiceNoteId`, plus one or more review-only `AIProposalItem` rows. The
+stored `proposedPatch` values are strict schema-validated proposal payloads
+only. No target business records are created or updated, `VoiceNote.status` is
+not changed just because a proposal exists, and `VoiceMention` remains
+uncreated in this step.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.

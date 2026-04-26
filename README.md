@@ -85,9 +85,11 @@ adds deterministic read-only meeting prep briefs from existing records. Step
 `POST /api/voice-notes/transcribe` for tenant-validated VoiceNote transcript
 persistence. Step 11A-2 adds the mobile browser voice recorder, transcript
 review pages, edit/archive actions, and source-context chips while keeping raw
-audio out of storage. It does not implement LinkedIn URL storage, AI proposal
-application, VoiceMention extraction, AIProposal creation, transcript
-structuring, billing, Microsoft Graph, LinkedIn enrichment, production search,
+audio out of storage. Step 11B adds review-only VoiceNote transcript
+structuring into `AIProposal` and `AIProposalItem` records through a provider
+adapter. It does not implement LinkedIn URL storage, AI proposal application,
+VoiceMention extraction, target record mutation, billing, Microsoft Graph,
+LinkedIn enrichment, production search,
 matching, scoring, notifications, reminders, background jobs, automatic task
 creation, message drafting, outreach sending, or production deployment.
 
@@ -118,6 +120,8 @@ Edit `.env.local` before starting the app:
 - set `OPENAI_API_KEY` only when testing runtime OpenAI transcription;
 - use `SPEECH_TO_TEXT_PROVIDER=mock` only for explicit local/test mock
   transcription;
+- use `TRANSCRIPT_STRUCTURING_PROVIDER=mock` only for explicit local/test
+  transcript structuring;
 - keep Microsoft Entra variables blank until OAuth is intentionally configured.
 
 The app runs at `http://localhost:3000`. Development sign-in is available at
@@ -228,6 +232,15 @@ Proposal review is status-only in Step 9. Approving a proposal item means the
 user accepted it as conceptually valid. It does not apply patches, create
 records, call AI providers, mutate target records, send messages, or start
 background jobs.
+
+VoiceNote detail can create a review-only proposal from a stored or reviewed
+transcript. The action asks for confirmation before sending transcript text to
+the configured transcript-structuring provider, then redirects to
+`/proposals/[proposalId]`. Provider output is strict-schema validated and entity
+resolution is tenant-local only. The flow creates `AIProposal` and
+`AIProposalItem` rows only; it does not apply patches, mutate targets, create
+voice mentions, perform external lookup, or access LinkedIn/Microsoft/Teams/
+Outlook services.
 
 Manual relationship intelligence is available under `/opportunities`:
 

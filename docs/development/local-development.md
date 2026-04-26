@@ -101,6 +101,27 @@ redirects to the VoiceNote detail page after transcription. Reviewing a
 transcript can save edited transcript text and source links; it does not
 structure the transcript or update linked records automatically.
 
+Step 11B adds a `Create proposal from transcript` action on VoiceNote detail.
+For local/mock testing, set:
+
+```bash
+TRANSCRIPT_STRUCTURING_PROVIDER=mock
+```
+
+For runtime OpenAI structuring, set:
+
+```bash
+TRANSCRIPT_STRUCTURING_PROVIDER=openai
+OPENAI_API_KEY=sk-...
+OPENAI_STRUCTURING_MODEL=gpt-4o-mini
+```
+
+`OPENAI_API_KEY` is still not required for build or readiness checks. The
+structuring action creates review-only `AIProposal` and `AIProposalItem`
+records linked to the VoiceNote. It does not apply proposal patches, mutate
+target records, create `VoiceMention` records, perform external lookup, or call
+LinkedIn/Microsoft/Teams/Outlook services.
+
 ## App Shell
 
 Run the development server:

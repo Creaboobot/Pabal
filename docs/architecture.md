@@ -261,6 +261,19 @@ source links; archiving sets `archivedAt`. This step does not store raw audio,
 re-transcribe, create `VoiceMention`, `AIProposal`, or `AIProposalItem` records,
 structure transcripts, or mutate linked records.
 
+Step 11B adds voice-to-proposal structuring from the VoiceNote detail page.
+The UI action calls a server action that validates tenant context, chooses the
+reviewed transcript before the original transcript, and delegates to a
+server-side transcript-structuring provider adapter. The service validates the
+strict normalized provider output, resolves people/companies only through
+tenant-local deterministic exact matches, and transactionally creates one
+`AIProposal` plus `AIProposalItem` rows linked to the source VoiceNote.
+
+These proposal rows are review-only. Step 11B does not apply patches, mutate
+target records, create `VoiceMention` rows, perform external lookup, call
+LinkedIn/Microsoft/Teams/Outlook, run embeddings/search, send messages, or
+start background jobs.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,
