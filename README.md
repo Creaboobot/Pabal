@@ -95,11 +95,12 @@ member role/status controls, and read-only feature readiness cards using the
 existing tenant, membership, and role models. Step 13B adds billing readiness
 with a disabled/mock provider boundary and a read-only billing settings page.
 Step 14A adds a tenant-scoped, read-only governance and audit log viewer for
-workspace admins. It does not implement AI proposal application, VoiceMention
+workspace admins. Step 14B adds tenant-scoped JSON data exports and a privacy
+settings overview. It does not implement AI proposal application, VoiceMention
 extraction, target record mutation, live billing, live
 Microsoft Graph, LinkedIn automation, production search,
 matching, scoring, notifications, reminders, background jobs, automatic task
-creation, export/deletion workflows, retention jobs, message drafting,
+creation, deletion workflows, retention jobs, CSV/ZIP exports, message drafting,
 outreach sending, or production deployment.
 
 ### Requirements
@@ -277,6 +278,8 @@ Workspace administration is available under settings:
 - `/settings/billing` for read-only billing readiness.
 - `/settings/governance` for owner/admin audit log review and governance
   overview cards.
+- `/settings/privacy` for tenant-scoped JSON exports and privacy-control
+  visibility.
 
 Billing readiness uses a disabled provider by default and a mock provider for
 local/test verification only. It does not add a Stripe provider, Stripe SDK,
@@ -288,6 +291,16 @@ Governance uses tenant-scoped audit reads with sanitized metadata previews. It
 does not mutate audit rows, write audit logs for viewing, expose raw metadata,
 export data, delete records, enforce retention, send alerts, or integrate with
 SIEM tools.
+
+Privacy exports are available under `/settings/privacy`. Personal export means
+the current user's contribution inside the active workspace. Workspace export
+requires owner/admin access and includes tenant-owned records. Exports are
+single JSON downloads with no-store headers; raw audio, Auth.js tokens,
+provider payloads, environment values, and raw audit metadata are excluded.
+Exports may contain sensitive relationship intelligence such as note bodies,
+voice transcripts, and AI proposal patches. Deletion and retention controls are
+deferred to later steps, and the privacy copy is product guidance rather than
+legal advice.
 
 Manual relationship intelligence is available under `/opportunities`:
 
@@ -394,3 +407,4 @@ docker compose run --rm seed
 - [Quality gates](docs/development/quality-gates.md)
 - [Auth and tenancy](docs/development/auth-and-tenancy.md)
 - [Design system](docs/design-system.md)
+- [Privacy](docs/privacy.md)

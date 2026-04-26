@@ -374,5 +374,29 @@ as safe previews.
 
 The viewer is read-only. It does not write audit logs for page views, mutate
 audit rows, export raw metadata, delete records, enforce retention, send alerts,
-or integrate with SIEM tools. Data export is deferred to Step 14B; deletion and
-retention controls are deferred to Step 14C.
+or integrate with SIEM tools. Privacy exports are available under
+`/settings/privacy`; deletion and retention controls are deferred to Step 14C.
+
+## Privacy Exports
+
+Step 14B adds `/settings/privacy`.
+
+- Personal export downloads a JSON file for the current user's contribution
+  inside the active workspace.
+- Workspace export downloads a JSON file for tenant-owned records and requires
+  owner/admin access.
+- Both export routes are synchronous `POST` downloads under
+  `/api/privacy/exports/*` and write safe export-request audit events before
+  returning data.
+- Exported audit logs contain sanitized metadata previews only.
+
+Exports may contain sensitive relationship intelligence, including note bodies,
+Teams/Copilot pasted notes, user-provided LinkedIn notes, voice transcripts,
+and AI proposal patches when those records are in scope. Raw audio is not
+retained/exported, `VoiceNote.audioStorageKey` is excluded, and Auth.js tokens,
+provider payloads, environment values, cookies, headers, secrets, raw audit
+metadata, and payment/card data are not exported.
+
+Step 14B does not implement deletion, erasure, retention jobs, CSV/ZIP export,
+background export jobs, email delivery, external storage, SIEM export, or legal
+advice. Deletion and retention controls remain deferred to Step 14C.

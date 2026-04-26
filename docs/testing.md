@@ -205,6 +205,16 @@ filters, cursor/limit pagination, metadata display sanitization, long-value
 truncation, nested/array summaries, and proof that audit viewing does not mutate
 or create audit rows.
 
+The Step 14B tests cover `/settings/privacy` rendering, settings hub privacy
+links, personal export for the authenticated user's active-workspace
+contribution, workspace export for owner/admin users, non-admin workspace export
+denial, tenant-scoped export queries, cross-tenant exclusion, stable versioned
+JSON metadata/counts, business content inclusion only when in scope, raw audio
+and audio storage-key exclusion, sanitized audit-log metadata inside exports,
+safe export-request audit logs without exported content, and guardrails proving
+no deletion workflow, CSV/ZIP export, background job, or external storage route
+is added.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

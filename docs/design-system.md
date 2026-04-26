@@ -208,6 +208,20 @@ metadata previews. Filters use compact mobile form controls. Do not use wide
 tables, raw JSON walls, raw metadata downloads, analytics dashboards, or alert
 surfaces for governance in this step.
 
+Step 14B adds privacy and export cards under settings:
+
+- privacy overview cards for tenant scope, personal scope, raw-audio handling,
+  and future deletion controls;
+- personal and workspace export cards with confirmation before generating a
+  JSON download;
+- compact included/excluded data cards with badges;
+- clear copy that exports may contain sensitive relationship intelligence and
+  that deletion/retention controls come later.
+
+Privacy/export UI must stay mobile-first, avoid tables, avoid CSV/ZIP or
+external-storage affordances, and avoid presenting product guidance as legal
+advice.
+
 Admin UI should make authorization boundaries visible without exposing
 cross-tenant data. Invite flows, SCIM/SSO provisioning, entitlement
 matrices, quota controls, and analytics dashboards are not represented as

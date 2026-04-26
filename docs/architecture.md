@@ -334,6 +334,25 @@ The viewer excludes tenant-null and cross-tenant logs, never mutates audit rows,
 and never writes audit logs for viewing. Export, deletion, retention jobs, SIEM,
 analytics, alerts, and raw metadata download remain out of scope.
 
+Step 14B adds data export and privacy visibility:
+
+- `/settings/privacy` is a protected settings route with privacy overview,
+  personal export, workspace export, inclusion/exclusion, and future
+  deletion/retention cards.
+- `POST /api/privacy/exports/personal` returns a synchronous JSON download for
+  the current user's contribution inside the active workspace.
+- `POST /api/privacy/exports/workspace` returns a synchronous JSON download for
+  owner/admin users with tenant-owned workspace records.
+- `server/repositories/data-export.ts` performs explicit tenant-scoped export
+  queries with per-section limits.
+- `server/services/data-export.ts` assembles the stable versioned JSON payload,
+  sanitizes exported audit metadata, and writes safe export-request audit logs
+  before returning the payload.
+
+Step 14B does not add CSV/ZIP export, background jobs, scheduled exports,
+external export storage, deletion workflows, retention automation, or legal
+advice generation.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,

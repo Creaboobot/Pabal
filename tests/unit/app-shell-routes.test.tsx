@@ -1258,6 +1258,9 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("link", { name: "Open governance" }),
     ).toHaveAttribute("href", "/settings/governance");
+    expect(
+      screen.getByRole("link", { name: "Open privacy & export" }),
+    ).toHaveAttribute("href", "/settings/privacy");
   });
 
   it("renders the workspace settings route", async () => {
@@ -1348,6 +1351,21 @@ describe("protected app routes", () => {
     expect(screen.getByText("Audit logging active")).toBeInTheDocument();
     expect(screen.getByText("workspace.updated")).toBeInTheDocument();
     expect(screen.getByText("Sanitized metadata")).toBeInTheDocument();
+  });
+
+  it("renders the privacy settings route", async () => {
+    const Page = (await import("@/app/(app)/settings/privacy/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Privacy & export" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Personal export")).toBeInTheDocument();
+    expect(screen.getByText("Workspace export")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Download personal JSON" }),
+    ).toBeInTheDocument();
   });
 
   it("fails governance settings safely for non-admin users", async () => {

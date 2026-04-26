@@ -405,6 +405,17 @@ customer/subscription IDs, and period metadata. Future billing models must not
 store card data, payment method details, invoice payloads, tax payloads, or raw
 Stripe/provider payloads.
 
+Step 14B does not add a migration. Data exports are computed at request time
+from existing tenant-scoped records. Personal export is defined as the current
+user's contribution inside the active workspace and relies on existing
+`createdByUserId` / audit actor fields where available. Workspace export uses
+existing tenant-owned tables. Export request audit events are written to the
+existing `AuditLog` table with safe counts and truncation metadata only.
+
+Exports intentionally do not read Auth.js `Account`, `Session`, or
+`VerificationToken` token data. `VoiceNote.audioStorageKey` is excluded; only
+retention and audio metadata are exported.
+
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
 
