@@ -36,7 +36,7 @@ middleware.
 
 ## Mobile app shell
 
-Step 5 adds the protected `(app)` route group for the authenticated app shell.
+The protected `(app)` route group is the authenticated product shell.
 Signed-in users are sent from `/` to `/today`; unauthenticated users are sent to
 `/sign-in`. The shell uses a mobile bottom navigation as the primary UX and a
 desktop sidebar fallback on larger screens.
@@ -49,10 +49,10 @@ Primary navigation:
 - Opportunities
 - Search
 
-The current screens are read-only placeholders that surface tenant-scoped
-counts and design patterns. They do not implement CRUD, capture workflows,
-proposal approval, voice recording, semantic search, matching, notifications,
-or external provider calls.
+These routes are now backed by tenant-scoped product workflows. Search is a
+basic structured keyword lookup across active tenant records; it does not use
+semantic ranking, pgvector, embeddings, AI, external search, or background
+indexing. Matching, notifications, and external sync remain out of scope.
 
 Step 6A turns `/people` into the first real product workflow. People and company
 screens live under the existing protected app shell:
@@ -104,6 +104,7 @@ active tenant. Participant removal hard-deletes only the
 
 Step 7B adds manual note workflows and pasted meeting-note capture:
 
+- `/notes`
 - `/notes/new`
 - `/notes/[noteId]`
 - `/notes/[noteId]/edit`
@@ -249,6 +250,7 @@ Step 11A-2 adds the protected mobile voice capture and transcript-review
 surface:
 
 - `/capture/voice`
+- `/voice-notes`
 - `/voice-notes/[voiceNoteId]`
 - `/voice-notes/[voiceNoteId]/edit`
 

@@ -67,14 +67,14 @@ $env:SEED_DEMO_DATA = "true"
 pnpm prisma:seed
 ```
 
-Step 4B-2 seed data stores only placeholder transcript/proposal metadata. It
-does not store real audio, provider responses, or external integration data.
+Demo seed data creates deterministic local review records only. It does not
+store real audio, provider responses, or external integration data.
 
 ## Voice Transcription And Review
 
 Step 11A-1 adds backend transcription. Step 11A-2 adds the browser recording UI
-at `/capture/voice` and transcript review pages at `/voice-notes/[voiceNoteId]`
-and `/voice-notes/[voiceNoteId]/edit`.
+at `/capture/voice`, the `/voice-notes` index, and transcript review pages at
+`/voice-notes/[voiceNoteId]` and `/voice-notes/[voiceNoteId]/edit`.
 
 For local/mock testing, set:
 
@@ -135,10 +135,10 @@ Unauthenticated requests to `/today`, `/capture`, `/commitments`, `/meetings`,
 `/notes`, `/tasks`, `/people`, `/proposals`, `/opportunities`,
 `/voice-notes`, `/search`, `/account`, and `/settings` redirect to `/sign-in`.
 
-The Step 5 screens are mobile-first shell placeholders. They show read-only
-tenant-scoped summaries and design patterns only; they do not create records,
-record audio, transcribe, apply AI proposals, run semantic search, or match
-relationships.
+The app shell now links to real tenant-scoped workflows for capture, people,
+opportunities, structured keyword search, and settings. Search is intentionally
+basic keyword lookup; it does not use semantic search, pgvector, embeddings,
+AI, external lookup, or background indexing.
 
 ## People And Companies
 
@@ -185,6 +185,7 @@ the client. Participant removal deletes only the meeting-participant link.
 
 Step 7B adds manual notes and pasted meeting-note capture:
 
+- `/notes`
 - `/notes/new`
 - `/notes/[noteId]`
 - `/notes/[noteId]/edit`
@@ -375,7 +376,9 @@ as safe previews.
 The viewer is read-only. It does not write audit logs for page views, mutate
 audit rows, export raw metadata, delete records, enforce retention, send alerts,
 or integrate with SIEM tools. Privacy exports are available under
-`/settings/privacy`; deletion and retention controls are deferred to Step 14C.
+`/settings/privacy`, and archive controls are available under
+`/settings/archive`. Permanent deletion and automated retention jobs remain out
+of scope.
 
 ## Privacy Exports
 
@@ -399,7 +402,8 @@ metadata, and payment/card data are not exported.
 
 Step 14B does not implement deletion, erasure, retention jobs, CSV/ZIP export,
 background export jobs, email delivery, external storage, SIEM export, or legal
-advice. Deletion and retention controls remain deferred to Step 14C.
+advice. Archive and restore controls are available under `/settings/archive`,
+but permanent deletion and automated retention remain future work.
 
 ## Archive And Retention Controls
 

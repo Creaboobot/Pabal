@@ -22,6 +22,12 @@ Foundation rules:
 - Sensitive operations must be audit-logged.
 - Health and readiness endpoints must return status only, never secret values.
 
+The audit writer performs write-time metadata sanitization before inserting
+`AuditLog` rows. It removes content-bearing or credential-bearing keys,
+redacts suspicious secret-looking values, truncates long strings, and bounds
+nested object/array previews. The governance viewer and export service still
+sanitize audit metadata defensively again before display or export.
+
 ## Relationship data
 
 Step 4A relationship backbone records all include `tenantId`. Person email is
@@ -257,6 +263,12 @@ truncation flags. Exported content, note bodies, transcripts, AI proposal
 patches, raw payloads, provider responses, secrets, tokens, cookies, headers,
 environment values, and payment/card data must not be written to audit
 metadata.
+
+Step 15B-1 structured search requires active tenant context and filters every
+query by the active tenant id plus `archivedAt = null`. Search result cards link
+only to existing tenant-scoped detail routes. The search service does not call
+AI providers, use embeddings or pgvector, perform external lookup, or create
+background indexes.
 
 Workspace exports may contain sensitive tenant business content such as note
 bodies, pasted Teams/Copilot notes, user-provided LinkedIn notes, transcripts,

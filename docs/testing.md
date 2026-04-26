@@ -223,6 +223,14 @@ status to `UNKNOWN`, safe restore audit metadata without bodies/transcripts, and
 guardrails proving no permanent deletion routes, retention jobs, purge jobs, or
 audit-log deletion/editing are added.
 
+The Step 15B-1 tests cover sign-in page states for development auth, configured
+Microsoft Entra auth, and missing-provider review guidance; basic structured
+search results and tenant isolation; `/notes` and `/voice-notes` index route
+smoke coverage; stale governance copy removal; and stronger audit write-time
+sanitization for sensitive keys, suspicious values, long strings, arrays, and
+nested objects. Search tests assert the boundary remains structured keyword
+lookup only, with no AI, embeddings, semantic ranking, or external search.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

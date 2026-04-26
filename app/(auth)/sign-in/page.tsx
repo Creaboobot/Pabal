@@ -2,6 +2,10 @@ import { ShieldCheck } from "lucide-react";
 
 import { signIn } from "@/auth";
 import { Button } from "@/components/ui/button";
+import {
+  hasMicrosoftEntraProviderConfig,
+  MICROSOFT_ENTRA_PROVIDER_ID,
+} from "@/server/services/auth-provider-config";
 import { isDevelopmentAuthEnabled } from "@/server/services/development-auth";
 
 export const dynamic = "force-dynamic";
@@ -31,9 +35,22 @@ async function developmentSignIn(formData: FormData) {
   await signIn("development", formData);
 }
 
+async function microsoftEntraSignIn(formData: FormData) {
+  "use server";
+
+  if (!hasMicrosoftEntraProviderConfig()) {
+    return;
+  }
+
+  await signIn(MICROSOFT_ENTRA_PROVIDER_ID, {
+    redirectTo: safeCallbackUrl(formData.get("redirectTo")?.toString()),
+  });
+}
+
 export default async function SignInPage({ searchParams }: SignInPageProps) {
   const params = await searchParams;
   const devAuthEnabled = isDevelopmentAuthEnabled();
+  const microsoftEntraConfigured = hasMicrosoftEntraProviderConfig();
   const callbackUrl = safeCallbackUrl(params?.callbackUrl);
 
   return (
@@ -53,48 +70,89 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           </div>
         </div>
 
-        {devAuthEnabled ? (
-          <form action={developmentSignIn} className="space-y-4">
-            <input name="redirectTo" type="hidden" value={callbackUrl} />
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-foreground">
-                Email
-              </span>
-              <input
-                autoComplete="email"
-                className="h-11 w-full rounded-md border border-input bg-white px-3 text-base text-foreground shadow-sm outline-none transition focus:ring-2 focus:ring-ring"
-                name="email"
-                placeholder="you@example.com"
-                required
-                type="email"
-              />
-            </label>
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-foreground">
-                Name
-              </span>
-              <input
-                autoComplete="name"
-                className="h-11 w-full rounded-md border border-input bg-white px-3 text-base text-foreground shadow-sm outline-none transition focus:ring-2 focus:ring-ring"
-                name="name"
-                placeholder="Your name"
-                type="text"
-              />
-            </label>
-            <Button className="w-full" type="submit">
-              Continue
-            </Button>
-            <p className="text-sm leading-6 text-muted-foreground">
-              Local development access only. Production sign-in will use a
-              configured OAuth provider.
-            </p>
-          </form>
-        ) : (
-          <div className="rounded-lg border border-border bg-white p-4 text-sm leading-6 text-muted-foreground shadow-sm">
-            Development sign-in is disabled. Production OAuth is Microsoft
-            Entra-ready when provider credentials are intentionally configured.
-          </div>
-        )}
+        <div className="space-y-4">
+          {devAuthEnabled ? (
+            <form
+              action={developmentSignIn}
+              className="space-y-4 rounded-lg border border-border bg-white p-4 shadow-sm"
+            >
+              <input name="redirectTo" type="hidden" value={callbackUrl} />
+              <div className="space-y-1">
+                <h2 className="text-base font-semibold text-foreground">
+                  Development sign-in
+                </h2>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  Local review access is enabled for this environment.
+                </p>
+              </div>
+              <label className="block space-y-2">
+                <span className="text-sm font-medium text-foreground">
+                  Email
+                </span>
+                <input
+                  autoComplete="email"
+                  className="h-11 w-full rounded-md border border-input bg-white px-3 text-base text-foreground shadow-sm outline-none transition focus:ring-2 focus:ring-ring"
+                  name="email"
+                  placeholder="you@example.com"
+                  required
+                  type="email"
+                />
+              </label>
+              <label className="block space-y-2">
+                <span className="text-sm font-medium text-foreground">
+                  Name
+                </span>
+                <input
+                  autoComplete="name"
+                  className="h-11 w-full rounded-md border border-input bg-white px-3 text-base text-foreground shadow-sm outline-none transition focus:ring-2 focus:ring-ring"
+                  name="name"
+                  placeholder="Your name"
+                  type="text"
+                />
+              </label>
+              <Button className="w-full" type="submit">
+                Continue with development access
+              </Button>
+              <p className="text-sm leading-6 text-muted-foreground">
+                Development sign-in is disabled automatically in production.
+              </p>
+            </form>
+          ) : null}
+
+          {microsoftEntraConfigured ? (
+            <form
+              action={microsoftEntraSignIn}
+              className="space-y-4 rounded-lg border border-border bg-white p-4 shadow-sm"
+            >
+              <input name="redirectTo" type="hidden" value={callbackUrl} />
+              <div className="space-y-1">
+                <h2 className="text-base font-semibold text-foreground">
+                  Microsoft Entra sign-in
+                </h2>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  OAuth credentials are configured for this environment.
+                </p>
+              </div>
+              <Button className="w-full" type="submit">
+                Continue with Microsoft Entra
+              </Button>
+            </form>
+          ) : null}
+
+          {!devAuthEnabled && !microsoftEntraConfigured ? (
+            <div className="rounded-lg border border-border bg-white p-4 text-sm leading-6 text-muted-foreground shadow-sm">
+              <h2 className="mb-2 text-base font-semibold text-foreground">
+                No sign-in provider is configured
+              </h2>
+              <p>
+                For local review, set `ENABLE_DEV_AUTH=true` outside
+                production. For hosted review, configure Microsoft Entra OAuth
+                credentials. This page does not expose secret values and does
+                not enable development auth in production.
+              </p>
+            </div>
+          ) : null}
+        </div>
       </section>
     </main>
   );

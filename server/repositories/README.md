@@ -24,6 +24,7 @@ Step 11A-1 reuses the existing voice-note repository to persist backend
 transcription results as `VoiceNote` records. Raw audio and provider responses
 are not stored by repositories.
 
-Repositories for billing, integrations, search, browser voice capture UI,
-notifications, background jobs, embeddings, and provider-backed AI execution
-are intentionally not implemented yet.
+Step 15B-1 keeps search as a service-level structured keyword read over
+existing tenant-scoped repositories/models. There is still no semantic search,
+embedding index, background search job, live integration sync, or provider call
+inside repository code.

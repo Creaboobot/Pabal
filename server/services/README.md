@@ -7,7 +7,7 @@ This stage includes foundational auth, tenant, role, session, audit, Step 4A
 relationship backbone services, and Step 4B-1 action/intelligence-readiness
 services, plus Step 4B-2 AI proposal and voice-note-readiness services. Step 5
 adds a read-only app-shell summary service for tenant-scoped counts used by the
-authenticated shell placeholders. Step 6B adds affiliation services for
+authenticated shell. Step 6B adds affiliation services for
 create/edit/end/archive flows and read-only related-context services for latest
 tenant-scoped meetings and notes. Step 7A promotes meetings into manual
 create/edit/archive and participant add/remove services.
@@ -19,11 +19,18 @@ decisions.
 
 Step 4B-2 services validate direct and polymorphic links, but they do not call
 AI providers, transcribe audio, upload audio, apply proposal patches, mutate
-targets, or implement review UI. Product workflows, matching algorithms, AI
-execution, and voice processing are intentionally not implemented yet.
+targets, or implement review UI. Current V1 services now include manual
+workflows, voice processing, proposal review, governance, exports,
+archive/restore, and structured keyword search while still excluding automatic
+matching, semantic search, background jobs, and proposal application.
 
 The app-shell summary service is read-only. It must not create records, apply
 AI proposals, start capture workflows, or run search/matching logic.
+
+The structured-search service is read-only. It requires explicit tenant
+context, filters active records by tenant, and returns keyword result DTOs. It
+does not call AI providers, use embeddings or pgvector, perform external
+lookup, create background indexes, or mutate records.
 
 Affiliation services own the transaction that keeps a person's primary company
 link deterministic: setting one active affiliation as primary unsets other
