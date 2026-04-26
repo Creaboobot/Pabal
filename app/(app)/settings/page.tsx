@@ -165,7 +165,7 @@ export default async function SettingsPage() {
                 ) : (
                   <div className="inline-flex min-h-10 items-center gap-2 rounded-md border border-border bg-muted px-3 py-2 text-sm text-muted-foreground">
                     <BadgeCheck aria-hidden="true" className="size-4" />
-                    Planned for a later step
+                    Owner/admin access required
                   </div>
                 )}
               </div>

@@ -178,9 +178,9 @@ export default async function ArchiveSettingsPage({
                   No permanent deletion
                 </h2>
                 <p className="text-sm leading-6 text-muted-foreground">
-                  Step 14C does not implement tenant deletion, account deletion,
-                  purge jobs, audit deletion, or irreversible business-record
-                  deletion.
+                  V1 archive controls do not implement tenant deletion, account
+                  deletion, purge jobs, audit deletion, or irreversible
+                  business-record deletion.
                 </p>
               </div>
             </div>
@@ -200,8 +200,8 @@ export default async function ArchiveSettingsPage({
               expiry, and whether transcript text still exists.
             </p>
             <p>
-              This step does not clear transcripts, delete raw audio, create
-              raw-audio deletion jobs, or permanently delete VoiceNotes.
+              V1 archive controls do not clear transcripts, delete raw audio,
+              create raw-audio deletion jobs, or permanently delete VoiceNotes.
             </p>
           </div>
         </div>
