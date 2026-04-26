@@ -167,3 +167,17 @@ Step 10C extends those patterns for meeting prep briefs:
 Prep briefs should remain bounded on mobile, avoid wide tables, and must not
 suggest Outlook/Teams sync, generated summaries, recommendations, or
 background processing.
+
+Step 11A-2 extends the same patterns for voice capture and transcript review:
+
+- a large mobile record button with stop, cancel, retry, and progress states;
+- clear unsupported-browser and permission-denied messages;
+- compact source-context chips;
+- transcript review/detail cards with status and retention badges;
+- full-page mobile edit form for title, reviewed transcript, and source links;
+- explicit privacy copy that raw audio is not retained and no records are
+  updated automatically.
+
+Voice UI must avoid tables, re-transcription controls, audio storage controls,
+AI extraction affordances, proposal-creation affordances, and generated-summary
+language.

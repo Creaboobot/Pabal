@@ -35,6 +35,28 @@ export function findVoiceNoteById(
   });
 }
 
+export function findVoiceNoteProfileById(
+  input: {
+    tenantId: string;
+    voiceNoteId: string;
+  },
+  db: VoiceNotesClient = prisma,
+) {
+  return db.voiceNote.findFirst({
+    where: {
+      id: input.voiceNoteId,
+      tenantId: input.tenantId,
+      archivedAt: null,
+    },
+    include: {
+      company: true,
+      meeting: true,
+      note: true,
+      person: true,
+    },
+  });
+}
+
 export function listVoiceNotesForTenant(
   tenantId: string,
   db: VoiceNotesClient = prisma,
@@ -47,5 +69,24 @@ export function listVoiceNotesForTenant(
     orderBy: {
       createdAt: "desc",
     },
+  });
+}
+
+export function updateVoiceNote(
+  input: {
+    tenantId: string;
+    voiceNoteId: string;
+    data: Prisma.VoiceNoteUncheckedUpdateInput;
+  },
+  db: VoiceNotesClient = prisma,
+) {
+  return db.voiceNote.update({
+    where: {
+      id_tenantId: {
+        id: input.voiceNoteId,
+        tenantId: input.tenantId,
+      },
+    },
+    data: input.data,
   });
 }

@@ -33,5 +33,6 @@ export const config = {
     "/account/:path*",
     "/settings/:path*",
     "/tasks/:path*",
+    "/voice-notes/:path*",
   ],
 };

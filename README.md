@@ -83,12 +83,13 @@ health and why-now signals for Today and person/company detail pages. Step 10C
 adds deterministic read-only meeting prep briefs from existing records. Step
 11A-1 adds the backend speech-to-text provider boundary and
 `POST /api/voice-notes/transcribe` for tenant-validated VoiceNote transcript
-persistence. It does not implement LinkedIn URL storage, AI proposal
-application, browser voice recording UI, transcript review UI, VoiceMention
-extraction, AIProposal creation, billing, Microsoft Graph, LinkedIn enrichment,
-production search, matching, scoring, notifications, reminders, background
-jobs, automatic task creation, message drafting, outreach sending, or
-production deployment.
+persistence. Step 11A-2 adds the mobile browser voice recorder, transcript
+review pages, edit/archive actions, and source-context chips while keeping raw
+audio out of storage. It does not implement LinkedIn URL storage, AI proposal
+application, VoiceMention extraction, AIProposal creation, transcript
+structuring, billing, Microsoft Graph, LinkedIn enrichment, production search,
+matching, scoring, notifications, reminders, background jobs, automatic task
+creation, message drafting, outreach sending, or production deployment.
 
 ### Requirements
 
@@ -123,8 +124,8 @@ The app runs at `http://localhost:3000`. Development sign-in is available at
 `/sign-in` only when `ENABLE_DEV_AUTH=true` and `NODE_ENV` is not production.
 Signed-in users land on `/today`; unauthenticated access to `/today`,
 `/capture`, `/commitments`, `/meetings`, `/notes`, `/tasks`, `/people`,
-`/proposals`, `/opportunities`, `/search`, `/account`, and `/settings`
-redirects to `/sign-in`.
+`/proposals`, `/opportunities`, `/voice-notes`, `/search`, `/account`, and
+`/settings` redirects to `/sign-in`.
 
 ### App shell routes
 

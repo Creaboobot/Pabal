@@ -70,10 +70,11 @@ pnpm prisma:seed
 Step 4B-2 seed data stores only placeholder transcript/proposal metadata. It
 does not store real audio, provider responses, or external integration data.
 
-## Voice Transcription Backend
+## Voice Transcription And Review
 
-Step 11A-1 adds backend transcription only. There is no browser recording UI or
-voice-note detail screen yet.
+Step 11A-1 adds backend transcription. Step 11A-2 adds the browser recording UI
+at `/capture/voice` and transcript review pages at `/voice-notes/[voiceNoteId]`
+and `/voice-notes/[voiceNoteId]/edit`.
 
 For local/mock testing, set:
 
@@ -94,6 +95,12 @@ not retained; the stored record is a `VoiceNote` transcript with safe audio
 metadata. Transcription does not create mentions, AI proposals, tasks,
 commitments, needs, capabilities, or introduction suggestions.
 
+In supported browsers, `/capture/voice` uses MediaRecorder and submits audio to
+`POST /api/voice-notes/transcribe`. The UI keeps audio in memory only, then
+redirects to the VoiceNote detail page after transcription. Reviewing a
+transcript can save edited transcript text and source links; it does not
+structure the transcript or update linked records automatically.
+
 ## App Shell
 
 Run the development server:
@@ -104,8 +111,8 @@ pnpm dev
 
 Then open `http://localhost:3000`. Signed-in users are redirected to `/today`.
 Unauthenticated requests to `/today`, `/capture`, `/commitments`, `/meetings`,
-`/notes`, `/tasks`, `/people`, `/proposals`, `/opportunities`, `/search`,
-`/account`, and `/settings` redirect to `/sign-in`.
+`/notes`, `/tasks`, `/people`, `/proposals`, `/opportunities`,
+`/voice-notes`, `/search`, `/account`, and `/settings` redirect to `/sign-in`.
 
 The Step 5 screens are mobile-first shell placeholders. They show read-only
 tenant-scoped summaries and design patterns only; they do not create records,

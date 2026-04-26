@@ -61,9 +61,10 @@ require explicit tenant context, and do not persist scores, mutate records,
 write audit logs, call AI providers, send notifications, or run background
 jobs.
 
-Voice transcription services in Step 11A-1 are backend-only. They validate
-tenant-owned source context and audio metadata, call the speech-to-text provider
-interface, persist a transcribed `VoiceNote`, and write safe audit metadata.
-They do not store raw audio, persist provider responses, create `VoiceMention`
-or `AIProposal` records, structure transcripts, mutate relationship records, or
-add browser recording UI.
+Voice transcription services validate tenant-owned source context and audio
+metadata, call the speech-to-text provider interface, persist a transcribed
+`VoiceNote`, and write safe audit metadata. Voice-note review services update
+only tenant-owned title, reviewed transcript text, source links, status, and
+archive metadata. They do not store raw audio, persist provider responses,
+create `VoiceMention` or `AIProposal` records, structure transcripts, mutate
+relationship records, or re-transcribe audio.
