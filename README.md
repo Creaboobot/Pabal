@@ -442,3 +442,4 @@ docker compose run --rm seed
 - [Design system](docs/design-system.md)
 - [Privacy](docs/privacy.md)
 - [V1 review walkthrough](docs/review/v1-review-walkthrough.md)
+- [V1 release readiness](docs/review/v1-release-readiness.md)
