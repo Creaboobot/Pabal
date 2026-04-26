@@ -167,6 +167,17 @@ participants are displayed only from their meeting snapshot fields and are not
 resolved by name or email. No audit log is written because the service does not
 mutate data.
 
+Step 11A-1 voice transcription uses a server-side provider adapter. The API
+route requires authenticated tenant context, never accepts trusted `tenantId`
+from the client, validates optional source context ids against the active
+tenant before transcription, and validates audio MIME type, size, and optional
+duration metadata. Raw audio is not stored, provider raw responses are not
+stored, and audit logs include only safe metadata such as voice-note id, status,
+audio MIME type/size/duration, transcript length, source ids, and provider name.
+Audit logs must not include raw audio, transcript text, provider payloads,
+request payloads, headers, cookies, tokens, environment values, API keys, or
+secrets.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

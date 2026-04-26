@@ -29,3 +29,18 @@ secrets into the image. The image includes a container health check against
 Runtime environments must provide `DATABASE_URL` and `AUTH_SECRET` for
 readiness. Missing values make `/api/ready` return `503` without exposing the
 values.
+
+## Voice Transcription
+
+Step 11A-1 introduces optional runtime transcription configuration:
+
+- `SPEECH_TO_TEXT_PROVIDER`: `openai` by default; `mock` is for local/test only
+  and is rejected in production.
+- `OPENAI_API_KEY`: required only at runtime when using the OpenAI
+  speech-to-text provider.
+- `OPENAI_TRANSCRIPTION_MODEL`: optional, defaults to
+  `gpt-4o-mini-transcribe`.
+
+Builds and readiness checks must not require `OPENAI_API_KEY`. Missing runtime
+provider configuration fails the transcription request safely without exposing
+secret values.

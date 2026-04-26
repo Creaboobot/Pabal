@@ -70,6 +70,30 @@ pnpm prisma:seed
 Step 4B-2 seed data stores only placeholder transcript/proposal metadata. It
 does not store real audio, provider responses, or external integration data.
 
+## Voice Transcription Backend
+
+Step 11A-1 adds backend transcription only. There is no browser recording UI or
+voice-note detail screen yet.
+
+For local/mock testing, set:
+
+```bash
+SPEECH_TO_TEXT_PROVIDER=mock
+```
+
+For runtime OpenAI transcription, set:
+
+```bash
+SPEECH_TO_TEXT_PROVIDER=openai
+OPENAI_API_KEY=sk-...
+OPENAI_TRANSCRIPTION_MODEL=gpt-4o-mini-transcribe
+```
+
+`OPENAI_API_KEY` is not required for build or readiness checks. Raw audio is
+not retained; the stored record is a `VoiceNote` transcript with safe audio
+metadata. Transcription does not create mentions, AI proposals, tasks,
+commitments, needs, capabilities, or introduction suggestions.
+
 ## App Shell
 
 Run the development server:

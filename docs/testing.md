@@ -142,6 +142,15 @@ companies, related notes/tasks/commitments/needs/capabilities/introductions and
 review-only proposals, source-reference provenance, cross-tenant exclusion, and
 proof that prep generation does not mutate records or write audit logs.
 
+The Step 11A-1 tests cover speech-to-text provider factory selection, mock
+provider output, OpenAI adapter missing-key failure, build/runtime environment
+shape without `OPENAI_API_KEY`, audio MIME/size/duration validation, mocked
+VoiceNote transcript persistence with `audioRetentionStatus=NOT_STORED`,
+tenant-safe source-context validation, safe audit metadata without transcript
+text or provider payloads, API route error handling, and proof that
+transcription does not create `VoiceMention`, `AIProposal`, or
+`AIProposalItem` records.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

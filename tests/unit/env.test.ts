@@ -35,6 +35,8 @@ describe("runtime environment validation", () => {
       FEATURE_VOICE_CAPTURE: "true",
       NEXT_TELEMETRY_DISABLED: "1",
       NODE_ENV: "production",
+      OPENAI_TRANSCRIPTION_MODEL: "gpt-4o-mini-transcribe",
+      SPEECH_TO_TEXT_PROVIDER: "openai",
     });
 
     expect(parsed.success).toBe(true);
