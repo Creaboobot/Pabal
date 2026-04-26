@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { ArrowLeft, PlugZap, ShieldCheck } from "lucide-react";
 
 import { PageHeader } from "@/components/app/page-header";
 import { CockpitCard } from "@/components/cards/cockpit-card";
@@ -51,6 +51,29 @@ export default async function SettingsPage() {
               </dd>
             </div>
           </dl>
+        </div>
+      </CockpitCard>
+
+      <CockpitCard
+        eyebrow="Readiness"
+        title="Integrations"
+        value="1"
+      >
+        <div className="flex gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
+            <PlugZap aria-hidden="true" className="size-5" />
+          </span>
+          <div className="grid gap-3 text-sm">
+            <p className="text-muted-foreground">
+              Review future Microsoft Graph integration readiness for calendar,
+              selected email context, and contacts.
+            </p>
+            <div>
+              <Button asChild variant="outline">
+                <Link href="/settings/integrations">Open integrations</Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </CockpitCard>
     </div>

@@ -63,3 +63,18 @@ secret values. The structuring path creates review-only `AIProposal` and
 `AIProposalItem` records linked to a VoiceNote; it does not apply proposal
 patches, mutate target records, create voice mentions, or call external lookup
 services.
+
+## Microsoft Graph Readiness
+
+Step 12A introduces readiness-only Microsoft Graph configuration:
+
+- `MICROSOFT_GRAPH_PROVIDER`: `disabled` by default. `mock` is for local/test
+  only and is rejected in production.
+- `MICROSOFT_GRAPH_CLIENT_ID`, `MICROSOFT_GRAPH_CLIENT_SECRET`,
+  `MICROSOFT_GRAPH_TENANT_ID`, `MICROSOFT_GRAPH_AUTHORITY`, and
+  `MICROSOFT_GRAPH_REDIRECT_URI`: optional future OAuth configuration values.
+
+Builds and readiness checks must not require these variables. They are separate
+from the existing Microsoft Entra/Auth.js sign-in variables. Step 12A does not
+start OAuth, acquire or refresh tokens, store tokens, call live Microsoft Graph
+services, create sync jobs, or ingest calendar, email, or contact data.

@@ -167,6 +167,14 @@ resolution safety, safe audit metadata without transcript/raw AI/proposedPatch,
 and proof that structuring does not mutate people, companies, tasks,
 commitments, needs, capabilities, introduction suggestions, or voice mentions.
 
+The Step 12A tests cover the Microsoft Graph readiness settings route, the
+settings link to `/settings/integrations`, provider factory selection, disabled
+provider behaviour, mock-provider local/test behaviour, production rejection of
+the mock provider, normalized DTO shape without raw Graph response fields,
+environment validation without Microsoft Graph secrets, and proof by provider
+boundary that no live Graph calls, sync jobs, or calendar/email/contact
+ingestion paths are implemented.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

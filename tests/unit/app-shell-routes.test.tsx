@@ -1050,6 +1050,34 @@ describe("protected app routes", () => {
     ).toHaveAttribute("href", "/capture/voice");
   });
 
+  it("links Settings to integrations readiness", async () => {
+    const Page = (await import("@/app/(app)/settings/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("link", { name: "Open integrations" }),
+    ).toHaveAttribute("href", "/settings/integrations");
+  });
+
+  it("renders the integrations settings route", async () => {
+    const Page = (await import("@/app/(app)/settings/integrations/page"))
+      .default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Integrations" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Not connected")).toBeInTheDocument();
+    expect(
+      screen.getByText("Readiness only. No Microsoft data is synced yet."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Connection coming later" }),
+    ).toBeDisabled();
+  });
+
   it("redirects the protected app shell when no session context exists", async () => {
     mocks.getCurrentUserContext.mockResolvedValueOnce(null);
     const Layout = (await import("@/app/(app)/layout")).default;
