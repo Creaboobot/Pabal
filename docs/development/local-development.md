@@ -360,3 +360,19 @@ Step 13B adds `/settings/billing` and `server/providers/billing`.
 No live Stripe provider, checkout, billing portal, webhook endpoint, billing
 schema, payment collection, card storage, plan enforcement, quota, or lockout is
 implemented.
+
+## Governance Audit Viewer
+
+Step 14A adds `/settings/governance` for workspace owners/admins.
+
+The page reads tenant-scoped audit logs through `server/services/audit-log-viewer`
+and `server/repositories/audit-logs`. Filters are query-string based and include
+action, actor user id, target entity type, and date range. Results are bounded
+and cursor-paginated. Metadata is sanitized again before display, so sensitive
+keys, suspicious values, long strings, arrays, and nested objects are shown only
+as safe previews.
+
+The viewer is read-only. It does not write audit logs for page views, mutate
+audit rows, export raw metadata, delete records, enforce retention, send alerts,
+or integrate with SIEM tools. Data export is deferred to Step 14B; deletion and
+retention controls are deferred to Step 14C.

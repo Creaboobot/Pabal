@@ -94,11 +94,13 @@ user-provided LinkedIn-context notes. Step 13A adds workspace admin settings,
 member role/status controls, and read-only feature readiness cards using the
 existing tenant, membership, and role models. Step 13B adds billing readiness
 with a disabled/mock provider boundary and a read-only billing settings page.
-It does not implement AI proposal application, VoiceMention extraction, target
-record mutation, live billing, live
+Step 14A adds a tenant-scoped, read-only governance and audit log viewer for
+workspace admins. It does not implement AI proposal application, VoiceMention
+extraction, target record mutation, live billing, live
 Microsoft Graph, LinkedIn automation, production search,
 matching, scoring, notifications, reminders, background jobs, automatic task
-creation, message drafting, outreach sending, or production deployment.
+creation, export/deletion workflows, retention jobs, message drafting,
+outreach sending, or production deployment.
 
 ### Requirements
 
@@ -273,12 +275,19 @@ Workspace administration is available under settings:
   role updates, and membership activation/deactivation.
 - `/settings/features` for read-only feature readiness cards.
 - `/settings/billing` for read-only billing readiness.
+- `/settings/governance` for owner/admin audit log review and governance
+  overview cards.
 
 Billing readiness uses a disabled provider by default and a mock provider for
 local/test verification only. It does not add a Stripe provider, Stripe SDK,
 billing schema, checkout, billing portal, webhooks, payment collection, card
 storage, plan gates, lockouts, quotas, entitlements, email invitations, invite
 tokens, or complex RBAC.
+
+Governance uses tenant-scoped audit reads with sanitized metadata previews. It
+does not mutate audit rows, write audit logs for viewing, expose raw metadata,
+export data, delete records, enforce retention, send alerts, or integrate with
+SIEM tools.
 
 Manual relationship intelligence is available under `/opportunities`:
 

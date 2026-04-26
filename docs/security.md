@@ -236,6 +236,14 @@ written, no audit logs are written for page views, no payment method/card data
 is collected or stored, and no Stripe raw payloads, secrets, tokens, headers,
 or environment values are logged.
 
+Step 14A governance is read-only. `/settings/governance` requires active tenant
+context and owner/admin access. The audit viewer service enforces
+`requireWorkspaceAdmin`, filters all audit reads by the active tenant id,
+excludes tenant-null logs, and sanitizes metadata again before display. Viewer
+sanitization redacts sensitive keys and suspicious values, truncates long
+strings, bounds arrays/nested objects, and avoids raw JSON display. Viewing the
+audit log must not mutate audit rows or write additional audit logs.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when
