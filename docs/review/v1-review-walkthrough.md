@@ -4,6 +4,10 @@ This walkthrough uses the deterministic demo workspace created with
 `SEED_DEMO_DATA=true pnpm prisma:seed`. The data is synthetic and idempotent.
 It does not call external providers or include real personal/customer data.
 
+CI also runs a signed-in mobile Playwright smoke suite against this demo shape.
+For local browser smoke checks, seed the demo workspace and run `pnpm test:e2e`;
+the suite uses development auth only in non-production test environments.
+
 ## 1. Sign In
 
 Open `/sign-in`.

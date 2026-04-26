@@ -397,6 +397,13 @@ and idempotent, uses only synthetic `.example`-style data, does not store raw
 audio, and does not call AI, transcription, Microsoft, LinkedIn, billing, or
 other external providers.
 
+`pnpm test:e2e` runs the signed-in mobile Playwright smoke suite. It starts the
+app with development auth enabled for the test server only, signs in as the
+seeded `demo@pobal.local` reviewer, and checks the V1 review-critical routes
+against deterministic demo data. Development auth remains disabled in
+production, and the e2e suite uses mock/disabled provider settings so no real
+OpenAI, Microsoft, LinkedIn, Stripe, or other external calls are made.
+
 ### Docker Compose
 
 Verify the Compose file and PostgreSQL health path:

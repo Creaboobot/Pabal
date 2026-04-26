@@ -240,15 +240,25 @@ or proposed patch dumps. Lightweight documentation guard tests verify the V1
 review walkthrough exists and that README search copy keeps semantic search,
 pgvector, and embeddings out of the implemented capability set.
 
-The Playwright smoke tests currently verify unauthenticated redirect behaviour
-and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
-stable test-auth setup is introduced for browser tests.
+The Playwright smoke tests cover unauthenticated redirect behaviour, the health
+endpoint, and a signed-in mobile V1 review path. The signed-in setup uses the
+existing development auth provider with `ENABLE_DEV_AUTH=true` inside the
+Playwright web server environment. That provider remains unavailable in
+production. CI reseeds deterministic V1 review demo data immediately before
+the browser suite, then verifies the app shell and headings for review-critical
+routes including Today, Capture, Search, people/companies, meetings, notes,
+voice notes, tasks, commitments, opportunities, proposals, settings/admin,
+integrations, billing, governance, privacy, archive, plus a few seeded deep
+links.
+
+The browser suite does not call real OpenAI, Microsoft, LinkedIn, Stripe, or
+other external providers. Playwright runs in a mobile viewport to match the
+primary product surface.
 
 Vitest runs test files serially because the integration suite uses a shared
 test database and resets tables between cases.
 
 CI runs Prisma generation, validation, migrations, seed, lint, typecheck,
-Vitest, production build, Docker build, Docker Compose config, and Docker
-Compose PostgreSQL health verification. Playwright is configured but not run in
-CI until browser installation and app startup requirements are expanded
-deliberately.
+Vitest, production build, Playwright browser installation, deterministic V1
+demo seed, signed-in Playwright smoke tests, Docker build, Docker Compose
+config, and Docker Compose PostgreSQL health verification.
