@@ -191,6 +191,13 @@ mutations, cross-tenant membership mutation rejection, last-active-owner
 demotion/deactivation protection, membership deactivation without hard delete,
 reactivation, read-only feature registry states, and safe audit metadata.
 
+The Step 13B tests cover `/settings/billing` rendering, settings hub billing
+links, non-admin billing access failure, disabled/mock billing provider factory
+behaviour, production rejection of the mock provider, unsupported-provider
+failure, optional billing/Stripe environment parsing, normalized DTOs, and
+guards proving no checkout, portal, webhook, pricing routes, billing schema, or
+payment-data fields are added.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

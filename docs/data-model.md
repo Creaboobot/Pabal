@@ -397,6 +397,14 @@ hard-deletes the membership row. Billing, Stripe customer/subscription fields,
 feature-flag tables, invite models, and entitlement models are not added in
 Step 13A.
 
+Step 13B does not add a billing migration. Billing readiness is represented by
+non-persisted provider DTOs only. A future live billing step should use a
+dedicated tenant-scoped billing profile model, for example a
+`TenantBillingProfile` linked to `Tenant` with provider, status, external
+customer/subscription IDs, and period metadata. Future billing models must not
+store card data, payment method details, invoice payloads, tax payloads, or raw
+Stripe/provider payloads.
+
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
 

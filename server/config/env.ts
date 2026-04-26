@@ -52,6 +52,7 @@ export const runtimeEnvSchema = z.object({
   INNGEST_EVENT_KEY: optionalString,
   INNGEST_SIGNING_KEY: optionalString,
 
+  BILLING_PROVIDER: optionalString,
   STRIPE_SECRET_KEY: optionalString,
   STRIPE_WEBHOOK_SECRET: optionalString,
   STRIPE_PRICE_ID_PRO: optionalString,
