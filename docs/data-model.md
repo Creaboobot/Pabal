@@ -431,6 +431,14 @@ structured keyword queries over existing tenant-owned records. It does not add
 pgvector, embeddings, semantic documents, background indexing, AI search, or
 external lookup tables.
 
+Step 15B-2 does not add a migration. The V1 review demo seed is data-only and
+uses existing models. It creates deterministic synthetic records across the
+implemented product surfaces, including archived examples and safe audit events,
+so reviewers can exercise export, governance, archive, proposal, voice, and
+relationship workflows locally. It does not introduce new tables, indexes,
+provider payload fields, semantic-search tables, billing tables, token storage,
+or permanent-deletion state.
+
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
 

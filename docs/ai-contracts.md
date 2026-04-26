@@ -1,9 +1,14 @@
 # AI Contracts
 
-AI execution remains out of scope for the current implementation. Step 9 adds a
-status-only proposal confirmation framework for existing stored
-`AIProposal`/`AIProposalItem` records, but it does not call AI providers,
-generate proposals, or apply proposed patches.
+V1 has two approved provider-backed AI-adjacent paths: speech-to-text
+transcription for VoiceNotes and transcript-to-proposal structuring for
+review-only AIProposal records. All provider calls stay behind server-side
+adapters, are optional at runtime, and are not required for build or demo seed
+data.
+
+The proposal application boundary remains unchanged: AI may create
+review-only proposal records, but V1 does not apply proposed patches or mutate
+target business records automatically.
 
 Future AI work must follow the build brief and ADR-003:
 
@@ -24,9 +29,9 @@ Future AI work must follow the build brief and ADR-003:
   editable in this step and is never written to audit metadata.
 - Audit logs record status transitions and safe ids only.
 
-The proposal application engine, provider adapters, prompt contracts, schema
-versioning, extraction jobs, and generated proposal creation belong to later
-explicit steps.
+The proposal application engine, extraction jobs beyond explicit
+VoiceNote-to-proposal structuring, and generated direct record mutations belong
+to later explicit steps.
 
 ## Step 10A Boundary
 

@@ -292,6 +292,15 @@ Archive is not permanent deletion. Step 14C does not implement account deletion,
 tenant deletion, audit-log deletion/editing, purge jobs, retention jobs,
 irreversible business-record deletion, or raw-audio deletion jobs.
 
+## Demo Data Safety
+
+The V1 review seed is deterministic local demo data only. It uses synthetic
+people, companies, emails, URLs, relationship notes, transcripts, proposal
+patches, and audit events. It must not include real customer data, provider
+secrets, raw audio, raw provider responses, Auth.js tokens, payment data, or
+external integration data. The seed remains tenant-scoped and idempotent so it
+can be rerun safely in local development and CI-style checks.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

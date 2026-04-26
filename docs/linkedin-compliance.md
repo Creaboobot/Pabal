@@ -20,3 +20,8 @@ ADR-004 remains the boundary:
   LinkedIn activity are prohibited.
 - LinkedIn-derived notes must be source-labeled as user-provided.
 - Users are responsible for only pasting content they are allowed to use.
+
+The V1 review demo seed includes synthetic LinkedIn profile/Sales Navigator
+URLs and one `LINKEDIN_USER_PROVIDED` note so reviewers can see the manual
+workflow. The seed does not visit LinkedIn, fetch pages, preview content, use
+cookies/sessions, call LinkedIn APIs, or sync Sales Navigator.
