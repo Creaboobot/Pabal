@@ -8,7 +8,7 @@ The application helps users:
 - capture meeting notes and voice updates;
 - structure relationship intelligence with AI;
 - track follow-ups and commitments;
-- identify network matches and introduction opportunities;
+- track manual needs, capabilities, and introduction opportunities;
 - prepare for meetings using relationship memory;
 - maintain a migration-ready SaaS foundation.
 
@@ -31,7 +31,7 @@ Initial V1 target:
 
 ```text
 Next.js App Router + TypeScript
-PostgreSQL + Prisma + pgvector
+PostgreSQL + Prisma
 OpenAI provider adapter for AI and transcription
 Hosted initially on Vercel + Neon
 Migration-ready for Azure Container Apps + Azure Database for PostgreSQL
@@ -67,8 +67,8 @@ includes the Step 4A relationship backbone models and the Step 4B-1
 action/intelligence-readiness models for tasks, commitments, needs,
 capabilities, and introduction suggestions. It also includes Step 4B-2
 schema/readiness models for AI proposals and voice notes. Step 5 adds the
-mobile-first authenticated app shell and read-only route placeholders for
-Today, Capture, People, Opportunities, and Search. Step 6A adds the first real
+mobile-first authenticated app shell for Today, Capture, People,
+Opportunities, and Search. Step 6A adds the first real
 product workflow: mobile-first people and company record management. Step 6B
 adds basic affiliation management and read-only related meeting/note summaries.
 Step 7A adds manual meeting records, meeting participants, source metadata, and
@@ -99,11 +99,10 @@ workspace admins. Step 14B adds tenant-scoped JSON data exports and a privacy
 settings overview. Step 14C adds owner/admin archive browsing, restore controls,
 and read-only retention visibility without permanent deletion. It does not
 implement AI proposal application, VoiceMention extraction, target record
-mutation, live billing, live
-Microsoft Graph, LinkedIn automation, production search,
-matching, scoring, notifications, reminders, background jobs, automatic task
-creation, deletion workflows, retention jobs, CSV/ZIP exports, message drafting,
-outreach sending, or production deployment.
+mutation, live billing, live Microsoft Graph, LinkedIn automation, semantic
+search, embeddings, matching, scoring, notifications, reminders, background
+jobs, automatic task creation, deletion workflows, retention jobs, CSV/ZIP
+exports, message drafting, outreach sending, or production deployment.
 
 ### Requirements
 
@@ -156,9 +155,9 @@ The primary mobile navigation is:
 - `/opportunities`
 - `/search`
 
-These screens are shell/design-system placeholders with read-only summaries
-from existing tenant-scoped records. They do not create, update, approve,
-record, transcribe, search semantically, or match records.
+These screens are mobile-first product surfaces backed by tenant-scoped
+services. Search is structured keyword search only; it does not use semantic
+ranking, pgvector, embeddings, AI, external lookup, or background indexing.
 
 People and company records are available under `/people`:
 
@@ -192,8 +191,9 @@ not delete people, companies, meetings, notes, or source references. Meeting
 source options stay limited to `MANUAL` and `TEAMS_COPILOT_PASTE`; LinkedIn is
 available only as a note source for user-provided context.
 
-Manual notes are available through contextual routes:
+Manual notes are available through a lightweight index and contextual routes:
 
+- `/notes` for recent tenant-scoped notes.
 - `/notes/new` for a general manual note.
 - `/notes/[noteId]` for note detail.
 - `/notes/[noteId]/edit` for note edits and archive actions.
@@ -257,6 +257,14 @@ resolution is tenant-local only. The flow creates `AIProposal` and
 voice mentions, perform external lookup, or access LinkedIn/Microsoft/Teams/
 Outlook services.
 
+Voice notes are available through a lightweight transcript-review index and
+detail/edit routes:
+
+- `/voice-notes` for recent tenant-scoped voice notes.
+- `/voice-notes/[voiceNoteId]` for voice note detail and proposal creation.
+- `/voice-notes/[voiceNoteId]/edit` for title, reviewed transcript, and context
+  edits.
+
 Microsoft integration readiness is available under settings:
 
 - `/settings/integrations` for a readiness-only Microsoft Graph card.
@@ -302,9 +310,10 @@ requires owner/admin access and includes tenant-owned records. Exports are
 single JSON downloads with no-store headers; raw audio, Auth.js tokens,
 provider payloads, environment values, and raw audit metadata are excluded.
 Exports may contain sensitive relationship intelligence such as note bodies,
-voice transcripts, and AI proposal patches. Deletion and retention controls are
-deferred to later steps, and the privacy copy is product guidance rather than
-legal advice.
+voice transcripts, and AI proposal patches. Archive controls are available
+under `/settings/archive`; permanent deletion, erasure automation, and
+retention jobs are not implemented. The privacy copy is product guidance rather
+than legal advice.
 
 Archive controls are available under `/settings/archive` for workspace
 owners/admins. Archive is reversible for supported `archivedAt` records and is
@@ -376,11 +385,9 @@ pnpm prisma:deploy
 pnpm prisma:seed
 ```
 
-Optional deterministic demo relationship, Step 4B-1 action/intelligence, and
-Step 4B-2 AI/voice-readiness data can be seeded by setting
-`SEED_DEMO_DATA=true` before `pnpm prisma:seed`. The Step 4B-2 seed stores only
-placeholder transcript/proposal metadata; it does not store real audio or call
-AI/transcription providers.
+Optional deterministic demo data can be seeded by setting
+`SEED_DEMO_DATA=true` before `pnpm prisma:seed`. The seed creates local review
+records only; it does not store raw audio or call AI/transcription providers.
 
 ### Docker Compose
 

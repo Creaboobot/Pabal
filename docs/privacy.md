@@ -58,6 +58,10 @@ keys, suspicious credential-looking values, note bodies, pasted text,
 transcripts, raw AI output, provider payloads, and proposed patches are redacted
 from audit metadata.
 
+Audit metadata is also sanitized at write time before storage as defense in
+depth. Viewer/export sanitization remains in place so older or unexpected
+metadata is still redacted before display or export.
+
 ## Auditability
 
 Generating an export writes one safe audit event before the export is returned:

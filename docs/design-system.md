@@ -38,9 +38,11 @@ state the current condition without implying that a workflow exists.
 
 ## Current Limits
 
-This design-system step does not add CRUD screens, capture workflows, AI
-proposal review, voice recording, transcription, semantic search, matching,
-notifications, analytics, or provider integrations.
+V1 screens now include CRUD, capture, proposal review, voice recording,
+transcription, structured keyword search, settings, governance, privacy export,
+and archive controls. They still must not imply semantic search, embeddings,
+automatic matching, notifications, analytics, live Microsoft/LinkedIn/Stripe
+integrations, proposal application, or permanent deletion.
 
 Step 6A extends the primitives for people/company record management only. Step
 12B later adds simple manual LinkedIn URL fields to the existing person form;
@@ -56,8 +58,7 @@ Step 6B extends the same mobile-first patterns for affiliations:
 - badges for primary, ended, and sensitivity states.
 
 The related context sections should stay brief on mobile and must not imply
-that meeting capture, note creation, AI summarisation, or semantic search exists
-yet.
+AI summarisation, semantic search, or automatic matching.
 
 Step 7A extends the patterns for meetings:
 

@@ -426,6 +426,11 @@ Restoring a `Person` whose stored `relationshipStatus` is `ARCHIVED` maps the
 status to `UNKNOWN` because the previous relationship status is not stored. No
 previous-status field is added in Step 14C.
 
+Step 15B-1 does not add a migration. The `/search` page uses read-time
+structured keyword queries over existing tenant-owned records. It does not add
+pgvector, embeddings, semantic documents, background indexing, AI search, or
+external lookup tables.
+
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
 

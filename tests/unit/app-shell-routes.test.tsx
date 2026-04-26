@@ -46,6 +46,8 @@ const mocks = vi.hoisted(() => ({
   listTenantCompanies: vi.fn(),
   listTenantMeetings: vi.fn(),
   listTenantNotes: vi.fn(),
+  listTenantVoiceNotes: vi.fn(),
+  getTenantStructuredSearch: vi.fn(),
   listTenantCapabilitiesWithContext: vi.fn(),
   listTenantIntroductionSuggestionsWithContext: vi.fn(),
   listTenantNeedsWithContext: vi.fn(),
@@ -118,6 +120,11 @@ vi.mock("@/server/services/notes", () => ({
 
 vi.mock("@/server/services/voice-notes", () => ({
   getTenantVoiceNoteProfile: mocks.getTenantVoiceNoteProfile,
+  listTenantVoiceNotes: mocks.listTenantVoiceNotes,
+}));
+
+vi.mock("@/server/services/structured-search", () => ({
+  getTenantStructuredSearch: mocks.getTenantStructuredSearch,
 }));
 
 vi.mock("@/server/services/needs", () => ({
@@ -1160,7 +1167,6 @@ const routes: Array<[string, () => Promise<{ default: AsyncPage }>]> = [
   ["Capture", () => import("@/app/(app)/capture/page")],
   ["People", () => import("@/app/(app)/people/page")],
   ["Opportunities", () => import("@/app/(app)/opportunities/page")],
-  ["Search", () => import("@/app/(app)/search/page")],
 ];
 
 async function renderRoute(importPage: () => Promise<{ default: AsyncPage }>) {
@@ -1251,6 +1257,18 @@ describe("protected app routes", () => {
     mocks.listTenantCompanies.mockResolvedValue([companyProfile]);
     mocks.listTenantMeetings.mockResolvedValue([meetingProfile]);
     mocks.listTenantNotes.mockResolvedValue([noteProfile]);
+    mocks.listTenantVoiceNotes.mockResolvedValue([voiceNoteProfile]);
+    mocks.getTenantStructuredSearch.mockResolvedValue({
+      boundary: {
+        usesAI: false,
+        usesEmbeddings: false,
+        usesExternalSearch: false,
+        usesSemanticRanking: false,
+      },
+      groups: [],
+      query: "",
+      resultCount: 0,
+    });
     mocks.listTenantNeedsWithContext.mockResolvedValue([needProfile]);
     mocks.listTenantCapabilitiesWithContext.mockResolvedValue([
       capabilityProfile,
@@ -1279,6 +1297,59 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: heading }),
     ).toBeInTheDocument();
+  });
+
+  it("renders structured search results without semantic or AI copy", async () => {
+    mocks.getTenantStructuredSearch.mockResolvedValueOnce({
+      boundary: {
+        usesAI: false,
+        usesEmbeddings: false,
+        usesExternalSearch: false,
+        usesSemanticRanking: false,
+      },
+      groups: [
+        {
+          kind: "people",
+          label: "People",
+          results: [
+            {
+              badges: ["ACTIVE", "WARM"],
+              description: "Partner",
+              href: "/people/person_test_1",
+              id: "person_test_1",
+              kind: "people",
+              title: "Anna Keller",
+              updatedAt: new Date("2026-04-24T10:00:00.000Z"),
+            },
+          ],
+        },
+      ],
+      query: "Anna",
+      resultCount: 1,
+    });
+    const Page = (await import("@/app/(app)/search/page")).default;
+
+    render(await Page({ searchParams: Promise.resolve({ q: "Anna" }) }));
+
+    expect(screen.getByText("Results for Anna")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Anna Keller/ })).toHaveAttribute(
+      "href",
+      "/people/person_test_1",
+    );
+    expect(
+      screen.getByText(/uses no AI, embeddings, pgvector, semantic ranking/),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the Search route empty state", async () => {
+    const Page = (await import("@/app/(app)/search/page")).default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Search" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Search your workspace")).toBeInTheDocument();
   });
 
   it("links Capture to voice recording", async () => {
@@ -1412,6 +1483,7 @@ describe("protected app routes", () => {
     expect(screen.getByText("Audit logging active")).toBeInTheDocument();
     expect(screen.getByText("workspace.updated")).toBeInTheDocument();
     expect(screen.getByText("Sanitized metadata")).toBeInTheDocument();
+    expect(screen.queryByText(/planned for Step 14C/i)).not.toBeInTheDocument();
   });
 
   it("renders the privacy settings route", async () => {
@@ -1567,6 +1639,37 @@ describe("protected app routes", () => {
       screen.getByRole("heading", { level: 1, name: "Create note" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Note form")).toBeInTheDocument();
+  });
+
+  it("renders the notes index route", async () => {
+    const Page = (await import("@/app/(app)/notes/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Notes" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Create note" })).toHaveAttribute(
+      "href",
+      "/notes/new",
+    );
+    expect(screen.getAllByText("Short note summary.").length).toBeGreaterThan(
+      0,
+    );
+  });
+
+  it("renders the voice notes index route", async () => {
+    const Page = (await import("@/app/(app)/voice-notes/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Voice notes" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Record voice note" }),
+    ).toHaveAttribute("href", "/capture/voice");
+    expect(screen.getByText("Voice follow-up")).toBeInTheDocument();
   });
 
   it("renders the need create route", async () => {
