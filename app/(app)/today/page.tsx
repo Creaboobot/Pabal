@@ -18,12 +18,14 @@ import {
   type CommitmentCardCommitment,
 } from "@/modules/commitments/components/commitment-card";
 import { getTenantAIProposalReviewSummary } from "@/server/services/ai-proposals";
+import { RelationshipAttentionBoard } from "@/modules/relationship-health/components/relationship-attention-board";
 import {
   TaskCard,
   type TaskCardTask,
 } from "@/modules/tasks/components/task-card";
 import { getAppShellSummary } from "@/server/services/app-shell-summary";
 import { getTenantCommitmentBoard } from "@/server/services/commitments";
+import { getTenantRelationshipAttentionBoard } from "@/server/services/relationship-health";
 import { getCurrentUserContext } from "@/server/services/session";
 import { getTenantTaskBoard } from "@/server/services/tasks";
 
@@ -94,12 +96,18 @@ export default async function TodayPage() {
     redirect("/sign-in?callbackUrl=/today");
   }
 
-  const [summary, taskBoard, commitmentBoard, proposalReviewSummary] =
-    await Promise.all([
+  const [
+    summary,
+    taskBoard,
+    commitmentBoard,
+    proposalReviewSummary,
+    relationshipAttention,
+  ] = await Promise.all([
       getAppShellSummary(context),
       getTenantTaskBoard(context),
       getTenantCommitmentBoard(context),
       getTenantAIProposalReviewSummary(context),
+      getTenantRelationshipAttentionBoard(context),
     ]);
   const hasDailySignals =
     summary.action.openTasks > 0 ||
@@ -254,6 +262,8 @@ export default async function TodayPage() {
           </div>
         </CockpitCard>
       ) : null}
+
+      <RelationshipAttentionBoard items={relationshipAttention.items} />
 
       {hasCommitmentSections ? (
         <section

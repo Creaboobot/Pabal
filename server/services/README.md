@@ -54,3 +54,9 @@ audit logs, and derive Today commitment sections from `dueAt` or due-window
 boundaries at read time. They do not create tasks automatically, send
 reminders, run background jobs, parse notes, extract commitments, or call AI
 providers.
+
+Relationship-health services are read-only. They compute deterministic
+relationship signals and why-now reasons from existing tenant-scoped records,
+require explicit tenant context, and do not persist scores, mutate records,
+write audit logs, call AI providers, send notifications, or run background
+jobs.

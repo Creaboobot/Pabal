@@ -206,6 +206,24 @@ introduction suggestion records. It does not run matching, scoring, AI
 generation, message drafting, outreach sending, semantic search, embeddings,
 notifications, or background jobs.
 
+Step 10B-1 adds deterministic relationship health and why-now reasoning to
+Today plus person/company detail pages. The relationship-health service is
+read-only: it requires `TenantContext`, calls `requireTenantAccess`, queries
+only tenant-scoped records, and returns computed signals such as active, warm,
+stale, dormant, or needs attention. It does not write scores, mutate existing
+`relationshipStatus` or `relationshipTemperature` fields, create
+recommendations, call AI providers, send notifications, or run background jobs.
+
+The thresholds are internal V1 constants:
+
+- active interaction: 14 days;
+- warm interaction: 45 days;
+- stale after: 60 days;
+- dormant after: 120 days;
+- upcoming due window: 7 days;
+- Today attention display: 8 records;
+- detail-page reason display: 5 reasons.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,

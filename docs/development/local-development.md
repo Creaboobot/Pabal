@@ -227,3 +227,16 @@ actions still validate every linked record inside the active tenant.
 This step does not add automated matching, scoring, AI generation, message
 drafting, outreach sending, semantic search, embeddings, notifications, jobs,
 or permanent deletion.
+
+## Relationship Health
+
+Step 10B-1 adds deterministic why-now signals on `/today`, person detail, and
+company detail pages. The signals are read-only and computed from existing
+tenant-scoped tasks, commitments, meetings, notes, needs, capabilities,
+introductions, and proposal review records.
+
+The V1 thresholds are hardcoded internally: active within 14 days, warm within
+45 days, stale after 60 days, dormant after 120 days, and upcoming due items
+within 7 days. No admin configuration UI, AI reasoning, notifications,
+background jobs, persisted scores, or signal dismissal/snooze behaviour exists
+in this step.

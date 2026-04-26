@@ -284,6 +284,30 @@ status. Archiving sets `archivedAt` and never hard-deletes the record.
 Step 10A does not add automated matching, scoring, AI generation, semantic
 search, embeddings, message drafting, outreach sending, or background jobs.
 
+## Step 10B-1 relationship health
+
+Step 10B-1 does not add a migration. Relationship health is computed at read
+time from existing tenant-scoped records and is not persisted as a score.
+
+Computed signals are:
+
+- `NEEDS_ATTENTION`
+- `ACTIVE`
+- `WARM`
+- `STALE`
+- `DORMANT`
+- `UNKNOWN`
+
+The service also returns explainable why-now reasons linked to source records
+where possible, including overdue/upcoming tasks, open commitments, active
+needs/capabilities, active introduction suggestions, pending proposal review,
+recent meetings/notes, and stale or dormant relationship context.
+
+Existing stored `Person.relationshipStatus` and
+`Person.relationshipTemperature` remain unchanged. Step 10B-1 does not add AI
+reasoning, embeddings, search, matching, notifications, background jobs,
+dismissal preferences, or persisted relationship scores.
+
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
 

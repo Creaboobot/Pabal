@@ -36,3 +36,13 @@ computes matches, generates recommendations, drafts messages, sends outreach,
 or mutates records from model output. Future AI-assisted brokerage must create
 reviewable, source-linked proposals before any user-approved application step
 exists.
+
+## Step 10B-1 Relationship Health Boundary
+
+Relationship health and why-now reasons in Step 10B-1 are deterministic and
+read-only. They are computed from existing tenant-scoped records such as tasks,
+commitments, meetings, notes, needs, capabilities, introductions, and proposal
+review records. They do not invoke AI providers, generate recommendations,
+apply proposal patches, mutate target records, run embeddings/search, or create
+background jobs. Future AI-assisted reasoning must remain proposal-based and
+human-confirmed before any state mutation exists.

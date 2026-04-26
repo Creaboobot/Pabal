@@ -152,6 +152,13 @@ field names. It must not include full rationale text, full descriptions, note
 bodies, pasted meeting-note text, raw form payloads, sensitive values, cookies,
 tokens, environment values, or secrets.
 
+Step 10B-1 relationship health is read-only. The service requires explicit
+tenant context, filters all queries by `tenantId`, and omits cross-tenant
+records from why-now output. It does not write audit logs because it does not
+mutate data. It also does not persist scores, update stored relationship
+fields, call AI providers, generate recommendations, send notifications, run
+background jobs, or add dismissal/snooze preferences.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   getTenantPersonProfile: vi.fn(),
   getTenantPersonRelatedContext: vi.fn(),
   getTenantCompanyRelatedContext: vi.fn(),
+  getTenantCompanyRelationshipHealth: vi.fn(),
   getTenantCompanyAffiliationForPerson: vi.fn(),
   getTenantCommitment: vi.fn(),
   getTenantCommitmentBoard: vi.fn(),
@@ -22,6 +23,8 @@ const mocks = vi.hoisted(() => ({
   getTenantNoteProfile: vi.fn(),
   getTenantOpportunityFormOptions: vi.fn(),
   getTenantOpportunityHub: vi.fn(),
+  getTenantPersonRelationshipHealth: vi.fn(),
+  getTenantRelationshipAttentionBoard: vi.fn(),
   getTenantTaskBoard: vi.fn(),
   getTenantTaskFormOptions: vi.fn(),
   getTenantTaskProfile: vi.fn(),
@@ -152,6 +155,12 @@ vi.mock("@/server/services/commitment-form-options", () => ({
 vi.mock("@/server/services/relationship-context", () => ({
   getTenantCompanyRelatedContext: mocks.getTenantCompanyRelatedContext,
   getTenantPersonRelatedContext: mocks.getTenantPersonRelatedContext,
+}));
+
+vi.mock("@/server/services/relationship-health", () => ({
+  getTenantCompanyRelationshipHealth: mocks.getTenantCompanyRelationshipHealth,
+  getTenantPersonRelationshipHealth: mocks.getTenantPersonRelationshipHealth,
+  getTenantRelationshipAttentionBoard: mocks.getTenantRelationshipAttentionBoard,
 }));
 
 vi.mock("@/modules/people/actions", () => ({
@@ -313,6 +322,44 @@ const companyProfile = {
 const relatedContext = {
   meetings: [],
   notes: [],
+};
+
+const relationshipHealth = {
+  counts: {
+    activeCapabilities: 1,
+    activeIntroductions: 1,
+    activeNeeds: 1,
+    openCommitments: 1,
+    openTasks: 1,
+    pendingProposals: 1,
+  },
+  entityId: personProfile.id,
+  entityLabel: personProfile.displayName,
+  entityType: "PERSON",
+  explanation:
+    "Needs attention because the linked task is due in the next 7 days.",
+  lastInteractionAt: new Date("2026-04-24T10:00:00.000Z"),
+  reasonCount: 1,
+  reasons: [
+    {
+      date: new Date("2026-04-25T10:00:00.000Z"),
+      explanation: "The linked task is due in the next 7 days.",
+      href: "/tasks/task_test_1",
+      label: "Upcoming task",
+      relatedEntityId: "task_test_1",
+      relatedEntityType: "TASK",
+      severity: "HIGH",
+      type: "UPCOMING_TASK",
+    },
+  ],
+  signal: "NEEDS_ATTENTION",
+};
+
+const companyRelationshipHealth = {
+  ...relationshipHealth,
+  entityId: companyProfile.id,
+  entityLabel: companyProfile.name,
+  entityType: "COMPANY",
 };
 
 const meetingProfile = {
@@ -693,6 +740,20 @@ describe("protected app routes", () => {
       itemsNeedingClarification: 0,
       pendingProposals: 1,
     });
+    mocks.getTenantRelationshipAttentionBoard.mockResolvedValue({
+      items: [relationshipHealth],
+      totals: {
+        companies: 1,
+        people: 1,
+        shown: 1,
+      },
+    });
+    mocks.getTenantPersonRelationshipHealth.mockResolvedValue(
+      relationshipHealth,
+    );
+    mocks.getTenantCompanyRelationshipHealth.mockResolvedValue(
+      companyRelationshipHealth,
+    );
     mocks.getTenantPersonRelatedContext.mockResolvedValue(relatedContext);
     mocks.getTenantCompanyRelatedContext.mockResolvedValue(relatedContext);
     mocks.listTenantPeople.mockResolvedValue([personProfile]);
