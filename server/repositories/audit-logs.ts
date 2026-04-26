@@ -94,7 +94,7 @@ export async function listTenantAuditLogs(
     where.entityType = input.entityType;
   }
 
-  const findManyArgs: Prisma.AuditLogFindManyArgs = {
+  const records = await db.auditLog.findMany({
     take: input.limit + 1,
     where,
     include: {
@@ -114,16 +114,15 @@ export async function listTenantAuditLogs(
         id: "desc",
       },
     ],
-  };
-
-  if (input.cursor) {
-    findManyArgs.cursor = {
-      id: input.cursor,
-    };
-    findManyArgs.skip = 1;
-  }
-
-  const records = await db.auditLog.findMany(findManyArgs);
+    ...(input.cursor
+      ? {
+          cursor: {
+            id: input.cursor,
+          },
+          skip: 1,
+        }
+      : {}),
+  });
   const hasNextPage = records.length > input.limit;
   const visibleRecords = records.slice(0, input.limit);
 
