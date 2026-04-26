@@ -1,6 +1,8 @@
 # Privacy And Export Controls
 
-Step 14B adds tenant-scoped JSON exports and privacy-control visibility.
+Step 14B adds tenant-scoped JSON exports and privacy-control visibility. Step
+14C adds owner/admin archive browsing, restore controls, and read-only retention
+visibility.
 
 ## Export Types
 
@@ -70,10 +72,32 @@ to audit metadata.
 If the audit event cannot be written, the export should fail rather than return
 sensitive data unaudited.
 
+## Archive And Retention Controls
+
+Archive controls are available under `/settings/archive` for workspace
+owners/admins. The archive browser is tenant-scoped, shows bounded archived
+records by type, and supports restore for straightforward records that use
+`archivedAt`.
+
+Archive is not permanent deletion. Restoring a record clears `archivedAt` and
+writes a safe restore audit log. Restoring a `Person` whose stored
+`relationshipStatus` is `ARCHIVED` maps the relationship status to `UNKNOWN`
+because the previous status is not stored.
+
+Archived records remain tenant data and may appear in personal or workspace
+exports when they are in scope.
+
+VoiceNote retention controls are read-only in Step 14C. Raw audio is not
+retained by default. The archive page shows `audioRetentionStatus`,
+`rawAudioDeletedAt`, `retentionExpiresAt`, and whether transcript text exists,
+but it does not clear transcripts, delete raw audio, create deletion jobs, or
+permanently delete VoiceNotes.
+
 ## Later Controls
 
-Step 14B is not a deletion, erasure, or retention workflow. Account deletion,
-tenant deletion, permanent deletion, automated retention enforcement, and full
-data-subject request workflows are deferred to later steps.
+Step 14C is not a deletion, erasure, or automated retention workflow. Account
+deletion, tenant deletion, permanent deletion, scheduled purge jobs, automated
+retention enforcement, and full data-subject request workflows are deferred to
+later steps and require separate approval.
 
 This document is product and engineering guidance, not legal advice.

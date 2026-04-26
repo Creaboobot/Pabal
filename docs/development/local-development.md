@@ -400,3 +400,19 @@ metadata, and payment/card data are not exported.
 Step 14B does not implement deletion, erasure, retention jobs, CSV/ZIP export,
 background export jobs, email delivery, external storage, SIEM export, or legal
 advice. Deletion and retention controls remain deferred to Step 14C.
+
+## Archive And Retention Controls
+
+Step 14C adds `/settings/archive` for workspace owners/admins.
+
+- The archive browser is tenant-scoped and filters by record type.
+- Restore clears `archivedAt` for supported business records and writes safe
+  type-specific restore audit logs.
+- Person restore maps `relationshipStatus = ARCHIVED` to `UNKNOWN` because the
+  previous status is not stored.
+- VoiceNote retention information is read-only; raw audio is not retained by
+  default, and transcripts may still exist and appear in exports when in scope.
+
+Step 14C does not implement permanent deletion, account deletion, tenant
+deletion, audit-log deletion/editing, purge jobs, automated retention jobs, raw
+audio deletion jobs, external storage cleanup, or legal workflows.

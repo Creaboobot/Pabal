@@ -222,6 +222,19 @@ Privacy/export UI must stay mobile-first, avoid tables, avoid CSV/ZIP or
 external-storage affordances, and avoid presenting product guidance as legal
 advice.
 
+Step 14C adds archive and retention controls:
+
+- mobile-first archive overview and voice-retention cards;
+- compact record-type filter controls;
+- archived record cards with type/status/sensitivity badges where available;
+- archived-on and archived-by rows;
+- restore confirmation before clearing `archivedAt`;
+- clear copy that archive is not permanent deletion and exports may include
+  archived records when in scope.
+
+Archive UI must avoid wide tables, permanent-delete affordances, retention-job
+controls, audit-log deletion/editing controls, and legal advice copy.
+
 Admin UI should make authorization boundaries visible without exposing
 cross-tenant data. Invite flows, SCIM/SSO provisioning, entitlement
 matrices, quota controls, and analytics dashboards are not represented as
