@@ -1,6 +1,6 @@
-# Pobal
+# Pabal
 
-Pobal is a mobile-web-first network companion for consultants and relationship-driven professionals.
+Pabal is a mobile-web-first network companion for consultants and relationship-driven professionals.
 
 The application helps users:
 
