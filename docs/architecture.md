@@ -224,6 +224,15 @@ The thresholds are internal V1 constants:
 - Today attention display: 8 records;
 - detail-page reason display: 5 reasons.
 
+Step 10C adds deterministic meeting prep briefs at
+`/meetings/[meetingId]/prep`. The prep service requires `TenantContext`, calls
+`requireTenantAccess`, verifies the meeting belongs to the tenant, and returns
+a structured read-only DTO assembled from explicit meeting, participant,
+company, note, task, commitment, need, capability, introduction suggestion,
+proposal, source-reference, and relationship-health records. It does not write
+audit logs, create source references, save generated briefs, mutate statuses,
+call AI providers, sync Outlook/Teams, or run background jobs.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,

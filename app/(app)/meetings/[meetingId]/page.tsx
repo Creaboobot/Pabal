@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
   BadgeCheck,
+  BookOpenCheck,
   Building2,
   CalendarDays,
   Edit,
@@ -63,6 +64,12 @@ export default async function MeetingDetailPage({
               <Link href="/meetings">
                 <ArrowLeft aria-hidden="true" className="mr-2 size-4" />
                 Meetings
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/meetings/${meeting.id}/prep`}>
+                <BookOpenCheck aria-hidden="true" className="mr-2 size-4" />
+                View prep brief
               </Link>
             </Button>
             <Button asChild variant="outline">

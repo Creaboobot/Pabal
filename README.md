@@ -79,7 +79,8 @@ manual commitment ledger and Today commitment sections. Step 9 adds the
 status-only AI proposal confirmation framework. Step 10A-1 adds manual needs
 and capabilities under Opportunities. Step 10A-2 adds manual introduction
 suggestion workflows. Step 10B-1 adds deterministic read-only relationship
-health and why-now signals for Today and person/company detail pages. It does
+health and why-now signals for Today and person/company detail pages. Step 10C
+adds deterministic read-only meeting prep briefs from existing records. It does
 not implement LinkedIn URL storage, AI provider calls, proposal application,
 transcription, audio
 recording/upload, billing, Microsoft Graph, LinkedIn enrichment, production
@@ -258,6 +259,12 @@ capabilities, introductions, and proposal review records. They are explainable,
 source-linked where possible, and are not persisted as scores. They do not call
 AI providers, create recommendations automatically, send notifications, or run
 background jobs.
+
+Meeting prep briefs are available at `/meetings/[meetingId]/prep` from meeting
+detail. Briefs aggregate existing tenant-scoped meeting, participant, company,
+note, task, commitment, need, capability, introduction, proposal, and
+relationship-health context. They are deterministic, source-linked, read-only,
+not AI-generated, and not synced from Outlook or Teams.
 
 ### Useful commands
 
