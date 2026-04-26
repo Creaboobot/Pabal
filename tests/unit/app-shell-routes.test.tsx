@@ -35,6 +35,7 @@ const mocks = vi.hoisted(() => ({
   getTenantWorkspaceAdminProfile: vi.fn(),
   getTenantWorkspaceSettingsProfile: vi.fn(),
   getTenantBillingReadiness: vi.fn(),
+  getTenantAuditLogViewer: vi.fn(),
   getAppShellSummary: vi.fn(),
   getCurrentUserContext: vi.fn(),
   listTenantFeatureReadiness: vi.fn(),
@@ -194,6 +195,10 @@ vi.mock("@/server/services/feature-registry", () => ({
 
 vi.mock("@/server/services/billing-readiness", () => ({
   getTenantBillingReadiness: mocks.getTenantBillingReadiness,
+}));
+
+vi.mock("@/server/services/audit-log-viewer", () => ({
+  getTenantAuditLogViewer: mocks.getTenantAuditLogViewer,
 }));
 
 vi.mock("@/modules/settings/components/workspace-name-form", () => ({
@@ -400,6 +405,46 @@ const billingReadiness = {
     subscription: null,
   },
   currentUserRole: "OWNER",
+  tenant: {
+    id: "tenant_test_1",
+    name: "Demo Workspace",
+  },
+};
+
+const auditLogViewer = {
+  events: [
+    {
+      action: "workspace.updated",
+      actor: {
+        displayName: "Owner User",
+        email: "owner@example.com",
+        id: "user_test_1",
+      },
+      createdAt: new Date("2026-04-24T15:00:00.000Z"),
+      entityId: "tenant_test_1",
+      entityType: "Tenant",
+      id: "audit_log_test_1",
+      metadataPreview: [
+        {
+          key: "changedFields",
+          redacted: false,
+          truncated: false,
+          value: "[name]",
+        },
+      ],
+    },
+  ],
+  filters: {
+    limit: 25,
+  },
+  governanceCards: [
+    {
+      description: "Sensitive mutations write audit events.",
+      key: "audit-logging",
+      title: "Audit logging active",
+    },
+  ],
+  nextCursor: null,
   tenant: {
     id: "tenant_test_1",
     name: "Demo Workspace",
@@ -1140,6 +1185,7 @@ describe("protected app routes", () => {
       workspaceAdminProfile,
     );
     mocks.getTenantBillingReadiness.mockResolvedValue(billingReadiness);
+    mocks.getTenantAuditLogViewer.mockResolvedValue(auditLogViewer);
     mocks.listTenantFeatureReadiness.mockResolvedValue(featureReadinessCards);
     mocks.getTenantPersonRelatedContext.mockResolvedValue(relatedContext);
     mocks.getTenantCompanyRelatedContext.mockResolvedValue(relatedContext);
@@ -1209,6 +1255,9 @@ describe("protected app routes", () => {
       "href",
       "/settings/billing",
     );
+    expect(
+      screen.getByRole("link", { name: "Open governance" }),
+    ).toHaveAttribute("href", "/settings/governance");
   });
 
   it("renders the workspace settings route", async () => {
@@ -1286,6 +1335,32 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("button", { name: "Billing portal coming later" }),
     ).toBeDisabled();
+  });
+
+  it("renders the governance settings route", async () => {
+    const Page = (await import("@/app/(app)/settings/governance/page")).default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Governance" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Audit logging active")).toBeInTheDocument();
+    expect(screen.getByText("workspace.updated")).toBeInTheDocument();
+    expect(screen.getByText("Sanitized metadata")).toBeInTheDocument();
+  });
+
+  it("fails governance settings safely for non-admin users", async () => {
+    mocks.getCurrentUserContext.mockResolvedValueOnce({
+      ...tenantContext,
+      roleKey: "MEMBER",
+    });
+    const Page = (await import("@/app/(app)/settings/governance/page")).default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByText("Admin access required")).toBeInTheDocument();
+    expect(mocks.getTenantAuditLogViewer).not.toHaveBeenCalled();
   });
 
   it("fails billing settings safely for non-admin users", async () => {

@@ -6,6 +6,7 @@ import {
   Building2,
   CreditCard,
   PlugZap,
+  ScrollText,
   ShieldCheck,
   SlidersHorizontal,
   UsersRound,
@@ -67,6 +68,14 @@ export default async function SettingsPage() {
       icon: CreditCard,
       title: "Billing",
       value: canOpenAdmin ? "Readiness" : "Owner/admin only",
+    },
+    {
+      description:
+        "Review tenant-scoped audit events and read-only privacy/security governance boundaries.",
+      href: canOpenAdmin ? "/settings/governance" : undefined,
+      icon: ScrollText,
+      title: "Governance",
+      value: canOpenAdmin ? "Audit viewer" : "Owner/admin only",
     },
   ];
 

@@ -202,6 +202,12 @@ future subscription, and privacy/payment boundary sections. Billing actions use
 disabled buttons with clear "coming later" copy. There are no tables, pricing
 pages, payment forms, card fields, checkout widgets, or portal controls.
 
+Step 14A adds governance cards and audit event cards. Audit events must show
+action/entity badges, actor fallback text, timestamps, and sanitized key/value
+metadata previews. Filters use compact mobile form controls. Do not use wide
+tables, raw JSON walls, raw metadata downloads, analytics dashboards, or alert
+surfaces for governance in this step.
+
 Admin UI should make authorization boundaries visible without exposing
 cross-tenant data. Invite flows, SCIM/SSO provisioning, entitlement
 matrices, quota controls, and analytics dashboards are not represented as

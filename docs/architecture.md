@@ -322,6 +322,18 @@ and is rejected in production. No Stripe SDK, live Stripe provider, checkout,
 portal, webhook, billing schema, payment data storage, plan enforcement, quota,
 or billing lockout is implemented.
 
+Step 14A adds a read-only governance surface:
+
+- `/settings/governance` is an owner/admin settings route.
+- `server/repositories/audit-logs.ts` performs tenant-filtered audit log reads.
+- `server/services/audit-log-viewer.ts` enforces workspace admin access,
+  normalizes filters, applies bounded pagination, and sanitizes metadata for UI
+  display.
+
+The viewer excludes tenant-null and cross-tenant logs, never mutates audit rows,
+and never writes audit logs for viewing. Export, deletion, retention jobs, SIEM,
+analytics, alerts, and raw metadata download remain out of scope.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,

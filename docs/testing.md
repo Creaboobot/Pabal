@@ -198,6 +198,13 @@ failure, optional billing/Stripe environment parsing, normalized DTOs, and
 guards proving no checkout, portal, webhook, pricing routes, billing schema, or
 payment-data fields are added.
 
+The Step 14A tests cover `/settings/governance` rendering, settings hub
+governance links, non-admin governance access failure, tenant-scoped audit log
+reads, cross-tenant and tenant-null log exclusion, action/entity/actor/date
+filters, cursor/limit pagination, metadata display sanitization, long-value
+truncation, nested/array summaries, and proof that audit viewing does not mutate
+or create audit rows.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.
