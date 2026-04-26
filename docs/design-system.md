@@ -187,3 +187,17 @@ Step 11A-2 extends the same patterns for voice capture and transcript review:
 Voice UI must avoid tables, re-transcription controls, audio storage controls,
 AI extraction affordances, proposal-creation affordances, and generated-summary
 language.
+
+Step 13A extends the settings area with mobile-first admin cards:
+
+- settings hub cards for workspace, members, features, integrations, and a
+  disabled future billing placeholder;
+- compact member cards instead of tables;
+- role and membership-status badges;
+- inline confirmation before role or membership-status changes;
+- read-only feature readiness cards.
+
+Admin UI should make authorization boundaries visible without exposing
+cross-tenant data. Billing, invite flows, SCIM/SSO provisioning, entitlement
+matrices, quota controls, and analytics dashboards are not represented as
+active workflows in this step.

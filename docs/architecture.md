@@ -292,6 +292,23 @@ LinkedIn card. No code fetches LinkedIn pages, previews profile content,
 scrapes, runs browser automation, monitors accounts, uses cookies/sessions,
 calls LinkedIn APIs, syncs Sales Navigator, or creates background jobs.
 
+Step 13A adds workspace admin and SaaS control foundations:
+
+- `/settings/workspace`
+- `/settings/members`
+- `/settings/features`
+
+Workspace and membership mutations remain in tenant-aware services. Workspace
+name updates require owner/admin access, while member role and status changes
+are owner-only in this foundation release. Memberships are never hard-deleted;
+deactivation sets `Membership.status = INACTIVE`, and service-level
+last-owner protection blocks demoting or deactivating the final active owner.
+
+The feature readiness page is read-only and computed from internal/runtime
+configuration. It does not add entitlements, quotas, plan enforcement, billing
+schema, checkout, Stripe providers, invite flows, email jobs, SCIM, SSO
+provisioning, or a complex RBAC matrix.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,

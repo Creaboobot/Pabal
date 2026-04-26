@@ -218,6 +218,17 @@ URL presence booleans, but it must not include full LinkedIn URLs, pasted
 LinkedIn content, cookies, tokens, headers, or raw form payloads. The app must
 not scrape, fetch, preview, monitor, automate, or call LinkedIn/Sales Navigator.
 
+Step 13A workspace admin settings keep middleware limited to coarse auth.
+Workspace admin reads and writes require active tenant context. Workspace name
+updates require owner/admin access. Member role and membership-status mutations
+are owner-only for V1, validate that the membership belongs to the active
+tenant, resolve roles by `RoleKey`, and enforce last-active-owner protection in
+the service layer. Memberships are deactivated/reactivated by status update and
+are never hard-deleted. Audit metadata for workspace/member mutations includes
+only ids, changed fields, role/status values, and tenant context; it must not
+include secrets, raw form payloads, sensitive personal details, payment/card
+data, provider payloads, or environment values.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when
