@@ -113,6 +113,46 @@ describeWithDatabase("notes and pasted capture tenant isolation", () => {
     });
   });
 
+  it("creates manual LinkedIn context notes with safe audit metadata", async () => {
+    const context = await createTenantContext("linkedin-note@example.com");
+    const person = await createTenantPerson(context, {
+      displayName: "Anna Keller",
+    });
+    const company = await createTenantCompany(context, {
+      name: "Nordic Industrials",
+    });
+
+    const note = await createTenantNote(context, {
+      body: "Pasted LinkedIn context that must never appear in audit logs.",
+      companyId: company.id,
+      noteType: "SOURCE_EXCERPT",
+      personId: person.id,
+      sensitivity: "SENSITIVE_BUSINESS",
+      sourceType: "LINKEDIN_USER_PROVIDED",
+      summary: "Manual summary that is still not audit metadata.",
+    });
+
+    expect(note).toMatchObject({
+      companyId: company.id,
+      noteType: "SOURCE_EXCERPT",
+      personId: person.id,
+      sourceType: "LINKEDIN_USER_PROVIDED",
+      tenantId: context.tenantId,
+    });
+
+    const auditLogs = await prisma.auditLog.findMany({
+      where: {
+        tenantId: context.tenantId,
+      },
+    });
+    const auditPayload = JSON.stringify(auditLogs);
+
+    expect(auditPayload).toContain("LINKEDIN_USER_PROVIDED");
+    expect(auditPayload).toContain("bodyLength");
+    expect(auditPayload).not.toContain("Pasted LinkedIn context");
+    expect(auditPayload).not.toContain("Manual summary");
+  });
+
   it("fails note cross-tenant reads, writes, and linking safely", async () => {
     const firstContext = await createTenantContext("notes-first@example.com");
     const secondContext = await createTenantContext("notes-second@example.com");
@@ -133,9 +173,10 @@ describeWithDatabase("notes and pasted capture tenant isolation", () => {
     ).rejects.toBeInstanceOf(TenantScopedEntityNotFoundError);
     await expect(
       createTenantNote(firstContext, {
-        body: "Cross-tenant link.",
+        body: "Cross-tenant LinkedIn context link.",
         noteType: "PERSON",
         personId: secondPerson.id,
+        sourceType: "LINKEDIN_USER_PROVIDED",
       }),
     ).rejects.toBeInstanceOf(TenantScopedEntityNotFoundError);
   });

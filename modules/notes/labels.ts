@@ -17,6 +17,12 @@ export const editableSensitivityTypes = [
   "DO_NOT_SHARE",
 ] as const satisfies readonly Sensitivity[];
 
+export const editableNoteSourceTypes = [
+  "MANUAL",
+  "TEAMS_COPILOT_PASTE",
+  "LINKEDIN_USER_PROVIDED",
+] as const satisfies readonly RecordSourceType[];
+
 const noteTypeLabels: Record<NoteType, string> = {
   COMPANY: "Company note",
   GENERAL: "General note",
@@ -35,6 +41,7 @@ const sensitivityLabels: Record<Sensitivity, string> = {
 };
 
 const sourceTypeLabels: Record<RecordSourceType, string> = {
+  LINKEDIN_USER_PROVIDED: "LinkedIn user-provided",
   MANUAL: "Manual",
   TEAMS_COPILOT_PASTE: "Teams/Copilot paste",
 };

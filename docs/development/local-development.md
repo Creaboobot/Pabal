@@ -166,8 +166,8 @@ Step 6B adds affiliation management and read-only related context:
 - view latest tenant-scoped meeting and note summaries on person/company detail
   pages.
 
-These flows do not create notes, call AI, run search/matching, or store
-LinkedIn URLs.
+These flows do not create notes, call AI, run search/matching, or fetch
+LinkedIn content. Step 12B adds manual LinkedIn URL fields to person forms.
 
 ## Meetings
 
@@ -314,3 +314,16 @@ configuration values. They are separate from Microsoft Entra/Auth.js sign-in
 variables and are not required for build or readiness. Step 12A does not start
 OAuth, store tokens, call live Graph APIs, sync calendar data, ingest email or
 contacts, or create background jobs.
+
+## LinkedIn Manual Enrichment
+
+Step 12B adds manual LinkedIn enrichment only. Person create/edit forms can
+store optional LinkedIn profile and Sales Navigator URLs after local URL
+parsing, and `/notes/new` can create notes labelled
+`LINKEDIN_USER_PROVIDED` from user-pasted context. Use person or company detail
+actions to preselect the relevant note context.
+
+Local development does not require any LinkedIn secrets or providers. The app
+does not fetch LinkedIn URLs, preview profile pages, scrape, run browser
+automation, monitor profiles, call LinkedIn APIs, sync Sales Navigator, or
+create background jobs.

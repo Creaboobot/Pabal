@@ -33,8 +33,10 @@ describeWithDatabase("people and company workflow services", () => {
     const person = await createTenantPerson(context, {
       displayName: "Anna Keller",
       email: "anna@example.com",
+      linkedinUrl: "https://www.linkedin.com/in/anna-keller/",
       relationshipStatus: "ACTIVE",
       relationshipTemperature: "WARM",
+      salesNavigatorUrl: "https://www.linkedin.com/sales/lead/123",
     });
     const updated = await updateTenantPerson(context, person.id, {
       displayName: "Anna M. Keller",
@@ -42,12 +44,20 @@ describeWithDatabase("people and company workflow services", () => {
       firstName: "Anna",
       jobTitle: "Partner",
       lastName: "Keller",
+      linkedinUrl: "https://www.linkedin.com/in/anna-m-keller/",
       phone: null,
       relationshipStatus: "ACTIVE",
       relationshipTemperature: "HOT",
+      salesNavigatorUrl: "https://www.linkedin.com/sales/people/456",
     });
 
     expect(updated.displayName).toBe("Anna M. Keller");
+    expect(updated.linkedinUrl).toBe(
+      "https://www.linkedin.com/in/anna-m-keller/",
+    );
+    expect(updated.salesNavigatorUrl).toBe(
+      "https://www.linkedin.com/sales/people/456",
+    );
 
     await archiveTenantPerson(context, person.id);
 
@@ -71,6 +81,12 @@ describeWithDatabase("people and company workflow services", () => {
     ]);
     expect(JSON.stringify(auditLogs)).not.toContain("anna@example.com");
     expect(JSON.stringify(auditLogs)).not.toContain("anna.keller@example.com");
+    expect(JSON.stringify(auditLogs)).not.toContain(
+      "https://www.linkedin.com/in/anna",
+    );
+    expect(JSON.stringify(auditLogs)).not.toContain(
+      "https://www.linkedin.com/sales/",
+    );
   });
 
   it("creates, updates, archives, and audits a company", async () => {

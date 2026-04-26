@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   CalendarDays,
   CheckCircle2,
+  Link2,
   Mail,
   PlugZap,
   ShieldCheck,
@@ -39,6 +40,13 @@ const privacyBoundaries = [
   "No bulk ingestion",
   "No background sync",
   "No email body import",
+];
+
+const linkedInBoundaries = [
+  "User-provided URLs and pasted context only",
+  "No scraping or browser automation",
+  "No background monitoring",
+  "No LinkedIn API or Sales Navigator sync",
 ];
 
 export default async function IntegrationsSettingsPage() {
@@ -140,6 +148,55 @@ export default async function IntegrationsSettingsPage() {
               Connection coming later
             </Button>
           </div>
+        </div>
+      </CockpitCard>
+
+      <CockpitCard
+        eyebrow="LinkedIn"
+        title="LinkedIn manual enrichment"
+        value="Manual only"
+      >
+        <div className="grid gap-5">
+          <div className="flex gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
+              <Link2 aria-hidden="true" className="size-5" />
+            </span>
+            <div className="grid gap-2 text-sm">
+              <p className="font-medium text-foreground">
+                No connection required. LinkedIn context is manual only.
+              </p>
+              <p className="text-muted-foreground">
+                People can store user-provided LinkedIn and Sales Navigator
+                URLs, and notes can store pasted context labelled as
+                user-provided. Pabal does not connect to LinkedIn or import
+                profile content.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-md bg-muted p-3 text-sm">
+            <div className="mb-2 flex items-center gap-2 font-medium text-foreground">
+              <ShieldCheck aria-hidden="true" className="size-4" />
+              Compliance boundary
+            </div>
+            <ul className="grid gap-2 text-muted-foreground">
+              {linkedInBoundaries.map((boundary) => (
+                <li className="flex items-center gap-2" key={boundary}>
+                  <CheckCircle2
+                    aria-hidden="true"
+                    className="size-4 shrink-0 text-primary"
+                  />
+                  {boundary}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            Users should only paste LinkedIn or Sales Navigator content they are
+            allowed to use. Pabal does not use LinkedIn cookies, sessions,
+            headless browsing, extensions, or automated enrichment.
+          </p>
         </div>
       </CockpitCard>
     </div>

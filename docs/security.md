@@ -209,6 +209,15 @@ include disconnect/revoke before requesting offline access. Step 12A does not
 start OAuth, store tokens, call Microsoft Graph, sync calendar data, ingest
 email/contact data, or create background jobs.
 
+Step 12B LinkedIn handling is manual user-provided context only. LinkedIn and
+Sales Navigator URLs are stored on tenant-owned `Person` records after pure URL
+parsing with no network request. LinkedIn-context notes use the existing
+tenant-aware note service, so cross-tenant person/company links fail in the
+service layer. Audit metadata may include changed field names, source type, and
+URL presence booleans, but it must not include full LinkedIn URLs, pasted
+LinkedIn content, cookies, tokens, headers, or raw form payloads. The app must
+not scrape, fetch, preview, monitor, automate, or call LinkedIn/Sales Navigator.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

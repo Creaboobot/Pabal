@@ -5,6 +5,7 @@ import {
   createNote,
   findNoteById,
   findNoteProfileById,
+  listNotesForPersonBySource,
   listNotesForTenant,
   updateNote,
 } from "@/server/repositories/notes";
@@ -179,6 +180,26 @@ export async function listTenantNotes(context: TenantContext) {
   await requireTenantAccess(context);
 
   return listNotesForTenant(context.tenantId);
+}
+
+export async function listTenantLinkedInNotesForPerson(
+  context: TenantContext,
+  personId: string,
+) {
+  await requireTenantAccess(context);
+
+  await assertOptionalRelationshipEntityBelongsToTenant({
+    tenantId: context.tenantId,
+    entityType: "PERSON",
+    entityId: personId,
+  });
+
+  return listNotesForPersonBySource({
+    tenantId: context.tenantId,
+    personId,
+    sourceType: "LINKEDIN_USER_PROVIDED",
+    take: 5,
+  });
 }
 
 export async function updateTenantNote(

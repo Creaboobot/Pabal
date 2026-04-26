@@ -17,6 +17,7 @@ export const editableMeetingParticipantRoles = [
 ] as const satisfies readonly MeetingParticipantRole[];
 
 const sourceTypeLabels: Record<RecordSourceType, string> = {
+  LINKEDIN_USER_PROVIDED: "LinkedIn user-provided",
   MANUAL: "Manual",
   TEAMS_COPILOT_PASTE: "Teams/Copilot paste",
 };

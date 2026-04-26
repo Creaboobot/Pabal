@@ -55,6 +55,21 @@ describe("meeting validation", () => {
     expect(parsed.error?.flatten().fieldErrors.sourceType).toBeDefined();
   });
 
+  it("does not allow LinkedIn user-provided source on meeting forms", () => {
+    const parsed = meetingFormSchema.safeParse({
+      endedAt: "",
+      location: "",
+      occurredAt: "2026-04-24T10:00",
+      primaryCompanyId: "",
+      sourceType: "LINKEDIN_USER_PROVIDED",
+      summary: "",
+      title: "Meeting",
+    });
+
+    expect(parsed.success).toBe(false);
+    expect(parsed.error?.flatten().fieldErrors.sourceType).toBeDefined();
+  });
+
   it("requires a known person or a participant snapshot", () => {
     const parsed = meetingParticipantFormSchema.safeParse({
       companyId: "",

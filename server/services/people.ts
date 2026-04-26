@@ -46,6 +46,8 @@ export async function createTenantPerson(
         entityType: "Person",
         entityId: person.id,
         metadata: {
+          hasLinkedInUrl: Boolean(person.linkedinUrl),
+          hasSalesNavigatorUrl: Boolean(person.salesNavigatorUrl),
           source: "manual-form",
         },
       },
@@ -139,6 +141,8 @@ export async function updateTenantPerson(
         entityId: person.id,
         metadata: {
           changedFields,
+          hasLinkedInUrl: Boolean(person.linkedinUrl),
+          hasSalesNavigatorUrl: Boolean(person.salesNavigatorUrl),
         },
       },
       tx,

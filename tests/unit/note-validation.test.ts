@@ -21,6 +21,21 @@ describe("note validation", () => {
     expect(parsed.success).toBe(true);
   });
 
+  it("accepts a LinkedIn user-provided note source", () => {
+    const parsed = noteFormSchema.safeParse({
+      body: "Manually pasted LinkedIn context.",
+      companyId: "",
+      meetingId: "",
+      noteType: "SOURCE_EXCERPT",
+      personId: "person_1",
+      sensitivity: "NORMAL",
+      sourceType: "LINKEDIN_USER_PROVIDED",
+      summary: "",
+    });
+
+    expect(parsed.success).toBe(true);
+  });
+
   it("rejects missing body, invalid source, and invalid sensitivity", () => {
     const parsed = noteFormSchema.safeParse({
       body: "",

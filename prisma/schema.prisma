@@ -46,6 +46,7 @@ enum MeetingParticipantRole {
 enum RecordSourceType {
   MANUAL
   TEAMS_COPILOT_PASTE
+  LINKEDIN_USER_PROVIDED
 }
 
 enum NoteType {
@@ -408,6 +409,8 @@ model Person {
   email                       String?
   phone                       String?
   jobTitle                    String?                  @map("job_title")
+  linkedinUrl                 String?                  @map("linkedin_url")
+  salesNavigatorUrl           String?                  @map("sales_navigator_url")
   relationshipStatus          RelationshipStatus       @default(UNKNOWN) @map("relationship_status")
   relationshipTemperature     RelationshipTemperature  @default(UNKNOWN) @map("relationship_temperature")
   createdByUserId             String?                  @map("created_by_user_id")

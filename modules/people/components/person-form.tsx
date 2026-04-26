@@ -28,9 +28,11 @@ export type PersonFormInitialValues = {
   firstName?: string | null;
   jobTitle?: string | null;
   lastName?: string | null;
+  linkedinUrl?: string | null;
   phone?: string | null;
   relationshipStatus?: (typeof editableRelationshipStatuses)[number];
   relationshipTemperature?: (typeof editableRelationshipTemperatures)[number];
+  salesNavigatorUrl?: string | null;
 };
 
 type PersonFormProps = {
@@ -158,6 +160,45 @@ export function PersonForm({
           <FieldError id="phone-error" message={firstError(state, "phone")} />
         </label>
       </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="grid gap-2">
+          <span className="text-sm font-medium text-foreground">
+            LinkedIn profile URL
+          </span>
+          <Input
+            defaultValue={initialValues?.linkedinUrl ?? ""}
+            name="linkedinUrl"
+            placeholder="https://www.linkedin.com/in/name"
+            type="url"
+          />
+          <FieldError
+            id="linkedinUrl-error"
+            message={firstError(state, "linkedinUrl")}
+          />
+        </label>
+        <label className="grid gap-2">
+          <span className="text-sm font-medium text-foreground">
+            Sales Navigator URL
+          </span>
+          <Input
+            defaultValue={initialValues?.salesNavigatorUrl ?? ""}
+            name="salesNavigatorUrl"
+            placeholder="https://www.linkedin.com/sales/..."
+            type="url"
+          />
+          <FieldError
+            id="salesNavigatorUrl-error"
+            message={firstError(state, "salesNavigatorUrl")}
+          />
+        </label>
+      </div>
+
+      <p className="rounded-md border border-border bg-muted p-3 text-sm leading-6 text-muted-foreground">
+        LinkedIn fields are manual only. Pabal validates the URL format but
+        does not visit LinkedIn, preview profile content, monitor pages, or use
+        LinkedIn cookies or APIs.
+      </p>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="grid gap-2">

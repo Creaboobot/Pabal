@@ -1,7 +1,10 @@
 import { z } from "zod";
 
-import { editableRecordSourceTypes } from "@/modules/meetings/labels";
-import { editableNoteTypes, editableSensitivityTypes } from "@/modules/notes/labels";
+import {
+  editableNoteSourceTypes,
+  editableNoteTypes,
+  editableSensitivityTypes,
+} from "@/modules/notes/labels";
 
 const dateTimePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?$/;
 
@@ -55,7 +58,7 @@ export const noteFormSchema = z.object({
   noteType: z.enum(editableNoteTypes),
   personId: nullableId("Person"),
   sensitivity: z.enum(editableSensitivityTypes),
-  sourceType: z.enum(editableRecordSourceTypes),
+  sourceType: z.enum(editableNoteSourceTypes),
   summary: nullableText("Summary", 2000),
 });
 

@@ -57,12 +57,14 @@ export default async function EditPersonPage({ params }: EditPersonPageProps) {
             firstName: person.firstName,
             jobTitle: person.jobTitle,
             lastName: person.lastName,
+            linkedinUrl: person.linkedinUrl,
             phone: person.phone,
             relationshipStatus:
               person.relationshipStatus === "ARCHIVED"
                 ? "UNKNOWN"
                 : person.relationshipStatus,
             relationshipTemperature: person.relationshipTemperature,
+            salesNavigatorUrl: person.salesNavigatorUrl,
           }}
           mode="edit"
           personId={person.id}
