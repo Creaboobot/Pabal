@@ -17,7 +17,7 @@ jobs:
   checks:
     name: Foundation checks
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16-alpine
@@ -85,6 +85,17 @@ jobs:
 
       - name: Production build
         run: pnpm build
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Seed V1 review demo data for e2e
+        env:
+          SEED_DEMO_DATA: "true"
+        run: pnpm prisma:seed
+
+      - name: Playwright smoke tests
+        run: pnpm test:e2e
 
       - name: Docker build
         run: docker build .

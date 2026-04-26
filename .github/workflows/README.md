@@ -1,16 +1,20 @@
 # GitHub Actions Workflows
 
-This folder intentionally starts with documentation only.
-
-The first Codex foundation task should create the initial CI workflow after the application scaffold exists.
-
-Minimum expected checks after scaffold:
+The CI workflow runs the current V1 quality gates:
 
 - install dependencies;
-- typecheck;
+- Prisma generation and validation;
+- migrations and deterministic seed data;
 - lint;
-- unit tests;
-- Prisma validation;
+- typecheck;
+- unit and integration tests;
 - production build;
+- signed-in mobile Playwright smoke tests with deterministic demo data;
 - Docker build;
-- basic secret/dependency scan where practical.
+- Docker Compose config;
+- Docker Compose PostgreSQL health verification.
+
+The Playwright job uses development auth only in the CI/test environment and
+seeds synthetic V1 review data before running browser checks. It does not
+require production OAuth, OpenAI, Microsoft Graph, LinkedIn, Stripe, or other
+external provider credentials.

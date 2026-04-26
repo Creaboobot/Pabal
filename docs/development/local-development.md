@@ -124,6 +124,48 @@ Troubleshooting:
 For a guided reviewer path, use
 [`docs/review/v1-review-walkthrough.md`](../review/v1-review-walkthrough.md).
 
+## Playwright E2E Smoke
+
+The signed-in Playwright smoke suite uses the existing development auth provider
+and deterministic V1 review demo data. It does not weaken production auth:
+`ENABLE_DEV_AUTH=true` is required and the provider is still disabled whenever
+`NODE_ENV=production`.
+
+First install the browser binary once:
+
+```bash
+pnpm exec playwright install --with-deps chromium
+```
+
+Then prepare the local database with migrations and demo data:
+
+```bash
+docker compose up -d postgres
+pnpm prisma:deploy
+SEED_DEMO_DATA=true pnpm prisma:seed
+pnpm test:e2e
+```
+
+PowerShell:
+
+```powershell
+docker compose up -d postgres
+pnpm prisma:deploy
+$env:SEED_DEMO_DATA = "true"
+pnpm prisma:seed
+pnpm test:e2e
+```
+
+Playwright starts the Next.js dev server on `http://127.0.0.1:3100` with
+`ENABLE_DEV_AUTH=true`,
+`SPEECH_TO_TEXT_PROVIDER=mock`, `TRANSCRIPT_STRUCTURING_PROVIDER=mock`,
+`MICROSOFT_GRAPH_PROVIDER=disabled`, and `BILLING_PROVIDER=disabled`. The suite
+signs in as `demo@pobal.local`, verifies the mobile app shell, and loads the V1
+review-critical routes plus deterministic seeded deep links. It does not call
+real OpenAI, Microsoft Graph, LinkedIn, Stripe, or any external provider. Use
+`PLAYWRIGHT_BASE_URL` and `PLAYWRIGHT_WEB_SERVER_COMMAND` only when you need to
+point the smoke suite at a deliberately chosen local server.
+
 ## Voice Transcription And Review
 
 Step 11A-1 adds backend transcription. Step 11A-2 adds the browser recording UI
