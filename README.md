@@ -90,7 +90,9 @@ structuring into `AIProposal` and `AIProposalItem` records through a provider
 adapter. Step 12A adds Microsoft Graph readiness with a protected integrations
 settings page, disabled/mock provider boundary, and optional environment
 variable documentation. Step 12B adds manual LinkedIn URL fields and
-user-provided LinkedIn-context notes. It does not implement AI proposal
+user-provided LinkedIn-context notes. Step 13A adds workspace admin settings,
+member role/status controls, and read-only feature readiness cards using the
+existing tenant, membership, and role models. It does not implement AI proposal
 application, VoiceMention extraction, target record mutation, billing, live
 Microsoft Graph, LinkedIn automation, production search,
 matching, scoring, notifications, reminders, background jobs, automatic task
@@ -261,6 +263,17 @@ person detail pages. Users may store LinkedIn/Sales Navigator URLs and create
 `LINKEDIN_USER_PROVIDED` notes from manually pasted context. Pabal does not
 scrape, preview, fetch, monitor, automate, sync, call LinkedIn APIs, or use
 LinkedIn cookies/sessions.
+
+Workspace administration is available under settings:
+
+- `/settings/workspace` for workspace name/details and safe tenant metadata.
+- `/settings/members` for tenant-scoped member cards, role badges, owner-only
+  role updates, and membership activation/deactivation.
+- `/settings/features` for read-only feature readiness cards.
+
+Step 13A does not add `/settings/billing`, Stripe providers, billing schema,
+checkout, billing portal, webhooks, email invitations, invite tokens, complex
+RBAC, quotas, entitlements, or plan enforcement.
 
 Manual relationship intelligence is available under `/opportunities`:
 

@@ -32,8 +32,11 @@ const mocks = vi.hoisted(() => ({
   getTenantTaskFormOptions: vi.fn(),
   getTenantTaskProfile: vi.fn(),
   getTenantVoiceNoteProfile: vi.fn(),
+  getTenantWorkspaceAdminProfile: vi.fn(),
+  getTenantWorkspaceSettingsProfile: vi.fn(),
   getAppShellSummary: vi.fn(),
   getCurrentUserContext: vi.fn(),
+  listTenantFeatureReadiness: vi.fn(),
   getTenantCompany: vi.fn(),
   getTenantPerson: vi.fn(),
   listTenantCompaniesWithProfiles: vi.fn(),
@@ -179,6 +182,23 @@ vi.mock("@/server/services/relationship-health", () => ({
   getTenantRelationshipAttentionBoard: mocks.getTenantRelationshipAttentionBoard,
 }));
 
+vi.mock("@/server/services/workspace-admin", () => ({
+  getTenantWorkspaceAdminProfile: mocks.getTenantWorkspaceAdminProfile,
+  getTenantWorkspaceSettingsProfile: mocks.getTenantWorkspaceSettingsProfile,
+}));
+
+vi.mock("@/server/services/feature-registry", () => ({
+  listTenantFeatureReadiness: mocks.listTenantFeatureReadiness,
+}));
+
+vi.mock("@/modules/settings/components/workspace-name-form", () => ({
+  WorkspaceNameForm: () => <form aria-label="Workspace form" />,
+}));
+
+vi.mock("@/modules/settings/components/member-management-card", () => ({
+  MemberManagementCard: () => <article>Member management card</article>,
+}));
+
 vi.mock("@/modules/people/actions", () => ({
   archiveAffiliationAction: vi.fn(),
   archiveCompanyAction: vi.fn(),
@@ -293,6 +313,57 @@ const tenantContext = {
   tenantName: "Demo Workspace",
   roleKey: "OWNER",
 };
+
+const workspaceAdminProfile = {
+  activeOwnerCount: 1,
+  canManageMembers: true,
+  canUpdateWorkspace: true,
+  currentUserRole: "OWNER",
+  members: [
+    {
+      createdAt: new Date("2026-04-24T10:00:00.000Z"),
+      email: "owner@example.com",
+      id: "membership_test_1",
+      name: "Owner User",
+      roleKey: "OWNER",
+      status: "ACTIVE",
+      updatedAt: new Date("2026-04-24T10:00:00.000Z"),
+      userId: "user_test_1",
+    },
+    {
+      createdAt: new Date("2026-04-24T10:00:00.000Z"),
+      email: "inactive@example.com",
+      id: "membership_test_2",
+      name: "Inactive User",
+      roleKey: "MEMBER",
+      status: "INACTIVE",
+      updatedAt: new Date("2026-04-24T10:00:00.000Z"),
+      userId: "user_test_2",
+    },
+  ],
+  tenant: {
+    createdAt: new Date("2026-04-24T10:00:00.000Z"),
+    id: "tenant_test_1",
+    name: "Demo Workspace",
+    slug: "demo-workspace",
+    updatedAt: new Date("2026-04-24T10:00:00.000Z"),
+  },
+};
+
+const featureReadinessCards = [
+  {
+    description: "Mobile voice recording is available.",
+    key: "voice-capture",
+    status: "enabled",
+    title: "Voice capture",
+  },
+  {
+    description: "Billing is deferred to Step 13B.",
+    key: "billing-readiness",
+    status: "disabled",
+    title: "Billing readiness",
+  },
+];
 
 const appSummary = {
   action: {
@@ -1020,6 +1091,13 @@ describe("protected app routes", () => {
     mocks.getTenantCompanyRelationshipHealth.mockResolvedValue(
       companyRelationshipHealth,
     );
+    mocks.getTenantWorkspaceAdminProfile.mockResolvedValue(
+      workspaceAdminProfile,
+    );
+    mocks.getTenantWorkspaceSettingsProfile.mockResolvedValue(
+      workspaceAdminProfile,
+    );
+    mocks.listTenantFeatureReadiness.mockResolvedValue(featureReadinessCards);
     mocks.getTenantPersonRelatedContext.mockResolvedValue(relatedContext);
     mocks.getTenantCompanyRelatedContext.mockResolvedValue(relatedContext);
     mocks.listTenantPeople.mockResolvedValue([personProfile]);
@@ -1074,6 +1152,52 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("link", { name: "Open integrations" }),
     ).toHaveAttribute("href", "/settings/integrations");
+    expect(
+      screen.getByRole("link", { name: "Open workspace" }),
+    ).toHaveAttribute("href", "/settings/workspace");
+    expect(screen.getByRole("link", { name: "Open members" })).toHaveAttribute(
+      "href",
+      "/settings/members",
+    );
+    expect(
+      screen.getByRole("link", { name: "Open features" }),
+    ).toHaveAttribute("href", "/settings/features");
+    expect(screen.getByText("Planned for a later step")).toBeInTheDocument();
+  });
+
+  it("renders the workspace settings route", async () => {
+    const Page = (await import("@/app/(app)/settings/workspace/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Workspace" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Workspace form")).toBeInTheDocument();
+  });
+
+  it("renders the member settings route", async () => {
+    const Page = (await import("@/app/(app)/settings/members/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Members" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("Member management card")).toHaveLength(2);
+    expect(screen.getByText("Invitations coming later")).toBeInTheDocument();
+  });
+
+  it("renders the feature readiness route", async () => {
+    const Page = (await import("@/app/(app)/settings/features/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Features" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Voice capture")).toBeInTheDocument();
+    expect(screen.getByText("Billing readiness")).toBeInTheDocument();
   });
 
   it("renders the integrations settings route", async () => {

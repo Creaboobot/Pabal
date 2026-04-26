@@ -327,3 +327,22 @@ Local development does not require any LinkedIn secrets or providers. The app
 does not fetch LinkedIn URLs, preview profile pages, scrape, run browser
 automation, monitor profiles, call LinkedIn APIs, sync Sales Navigator, or
 create background jobs.
+
+## Workspace Admin Settings
+
+Step 13A adds workspace admin foundation routes:
+
+- `/settings/workspace`
+- `/settings/members`
+- `/settings/features`
+
+Workspace name changes require owner/admin access. Member role updates and
+membership activation/deactivation are owner-only in this foundation step, and
+the service blocks demoting or deactivating the last active owner. Memberships
+are never hard-deleted.
+
+The feature readiness page is read-only. It shows internal configuration
+states for voice capture, AI structuring, Microsoft readiness, LinkedIn manual
+enrichment, billing readiness, meeting prep, and relationship health. Step 13A
+does not implement billing, Stripe providers, checkout, webhooks, invite
+emails, invite tokens, complex RBAC, quotas, entitlements, or plan enforcement.

@@ -184,6 +184,13 @@ failures, settings-card rendering, safe audit metadata without full URLs or
 pasted content, and proof that no LinkedIn provider/API/scraper/job surface is
 added.
 
+The Step 13A tests cover route smoke rendering for `/settings/workspace`,
+`/settings/members`, and `/settings/features`, settings hub links, workspace
+name update authorization, tenant-scoped member lists, owner-only role/status
+mutations, cross-tenant membership mutation rejection, last-active-owner
+demotion/deactivation protection, membership deactivation without hard delete,
+reactivation, read-only feature registry states, and safe audit metadata.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

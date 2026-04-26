@@ -388,6 +388,15 @@ LinkedIn URL values are not represented as `SourceReference` rows in this step.
 No company LinkedIn fields, LinkedIn provider models, OAuth tokens, scraping
 state, browser automation state, sync jobs, or enrichment records are added.
 
+Step 13A uses the existing `Tenant`, `Membership`, `Role`, and
+`MembershipStatus` models for workspace admin. It does not add a migration.
+Workspace name updates write to `Tenant.name`. Member role updates resolve
+existing `Role.key` values (`OWNER`, `ADMIN`, `MEMBER`, `VIEWER`) server-side.
+Membership deactivation/reactivation updates `Membership.status` and never
+hard-deletes the membership row. Billing, Stripe customer/subscription fields,
+feature-flag tables, invite models, and entitlement models are not added in
+Step 13A.
+
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.
 
