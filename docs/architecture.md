@@ -371,6 +371,16 @@ Step 14C does not add permanent deletion, tenant/account deletion, audit-log
 deletion/editing, purge jobs, retention automation, external storage cleanup,
 or legal workflow automation.
 
+Step 15B-2 refreshes the local V1 review story without adding product
+features. `SEED_DEMO_DATA=true` now runs a top-level deterministic demo seed
+that builds on the older Step 4 demo layers and adds synthetic records across
+the implemented V1 flows: people, companies, affiliations, meetings,
+meeting participants, notes, Teams/Copilot pasted-note source, LinkedIn
+user-provided notes, tasks, commitments, needs, capabilities, introductions,
+review-only AI proposals, voice notes, source references, archived records, and
+safe audit events. The seed is idempotent, tenant-scoped, uses fake local review
+data only, and never calls providers or stores raw audio.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,

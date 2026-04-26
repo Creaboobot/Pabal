@@ -231,6 +231,15 @@ sanitization for sensitive keys, suspicious values, long strings, arrays, and
 nested objects. Search tests assert the boundary remains structured keyword
 lookup only, with no AI, embeddings, semantic ranking, or external search.
 
+The Step 15B-2 tests cover the top-level V1 review demo seed. They verify that
+the seed is idempotent, creates representative records across the major V1
+flows, includes Teams/Copilot and LinkedIn user-provided source examples,
+includes archived records and voice retention metadata, and keeps seeded audit
+metadata synthetic without note bodies, transcripts, provider payloads, tokens,
+or proposed patch dumps. Lightweight documentation guard tests verify the V1
+review walkthrough exists and that README search copy keeps semantic search,
+pgvector, and embeddings out of the implemented capability set.
+
 The Playwright smoke tests currently verify unauthenticated redirect behaviour
 and the health endpoint. Signed-in mobile shell e2e coverage is deferred until a
 stable test-auth setup is introduced for browser tests.

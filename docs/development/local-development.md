@@ -51,9 +51,7 @@ pnpm prisma:deploy
 pnpm prisma:seed
 ```
 
-To also seed the small deterministic Step 4A relationship demo dataset,
-Step 4B-1 action/intelligence-readiness demo records, and Step 4B-2
-AI/voice-readiness demo records, set:
+To also seed the deterministic V1 review workspace, set:
 
 ```bash
 SEED_DEMO_DATA=true
@@ -67,8 +65,64 @@ $env:SEED_DEMO_DATA = "true"
 pnpm prisma:seed
 ```
 
-Demo seed data creates deterministic local review records only. It does not
-store real audio, provider responses, or external integration data.
+Demo seed data creates deterministic local review records only. It includes a
+coherent fake workspace with people, companies, affiliations, meetings, pasted
+Teams/Copilot notes, manual LinkedIn-context notes, tasks, commitments, needs,
+capabilities, introduction suggestions, review-only AI proposals, voice notes,
+source references, archived records, and safe audit events.
+
+The seed is idempotent and tenant-scoped. It uses synthetic `.example`-style
+people and organisations, stores no raw audio, stores no provider responses, and
+does not call AI, transcription, Microsoft, LinkedIn, billing, or any external
+service.
+
+## Local V1 Review Setup
+
+For a local reviewer path:
+
+```bash
+pnpm install
+cp .env.example .env.local
+docker compose up -d postgres
+pnpm prisma:deploy
+SEED_DEMO_DATA=true pnpm prisma:seed
+pnpm dev
+```
+
+PowerShell:
+
+```powershell
+pnpm install
+Copy-Item .env.example .env.local
+docker compose up -d postgres
+pnpm prisma:deploy
+$env:SEED_DEMO_DATA = "true"
+pnpm prisma:seed
+pnpm dev
+```
+
+Use `ENABLE_DEV_AUTH=true` for local review sign-in. Provider mocks are optional
+and explicit: `SPEECH_TO_TEXT_PROVIDER=mock` for local transcription tests,
+`TRANSCRIPT_STRUCTURING_PROVIDER=mock` for local transcript-to-proposal tests,
+`MICROSOFT_GRAPH_PROVIDER=disabled` for normal readiness-only Microsoft
+settings, and `BILLING_PROVIDER=disabled` for billing readiness. `OPENAI_API_KEY`
+is needed only for runtime OpenAI transcription or transcript structuring, not
+for build, seed, or local review of stored demo data.
+
+Troubleshooting:
+
+- If sign-in shows review guidance instead of a dev sign-in form, confirm
+  `ENABLE_DEV_AUTH=true` and `NODE_ENV` is not `production`.
+- If Prisma cannot connect, confirm the Docker PostgreSQL container is healthy
+  and `DATABASE_URL` matches `.env.local`.
+- If provider-backed voice or structuring calls fail locally, switch to the
+  explicit mock provider for that runtime path or seed demo data and review the
+  stored VoiceNote/AIProposal records instead.
+- If a route looks empty, search for `Anna`, `Sofia`, `Harbor`, or `governance`
+  in `/search` after seeding the V1 demo workspace.
+
+For a guided reviewer path, use
+[`docs/review/v1-review-walkthrough.md`](../review/v1-review-walkthrough.md).
 
 ## Voice Transcription And Review
 

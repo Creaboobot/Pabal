@@ -21,6 +21,12 @@ roles, and sanitized audit logs.
 Both exports are scoped to the active workspace. They do not collect data across
 all workspaces.
 
+The deterministic V1 review seed intentionally includes fake note bodies,
+voice transcripts, AI proposal patches, archived records, and safe audit events
+so export and governance surfaces can be reviewed locally. These records are
+synthetic demo content only and are still exported according to the same tenant
+scope and inclusion rules as normal records.
+
 ## Format And Delivery
 
 Exports are synchronous JSON downloads with a stable versioned shape:

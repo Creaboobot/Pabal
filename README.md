@@ -128,6 +128,8 @@ Edit `.env.local` before starting the app:
 - set `AUTH_SECRET` to a local random value;
 - for example, run `pnpm exec auth secret` after dependencies are installed;
 - set `ENABLE_DEV_AUTH=true` only for local development sign-in;
+- set `SEED_DEMO_DATA=true` before `pnpm prisma:seed` when preparing a local
+  V1 review workspace;
 - set `OPENAI_API_KEY` only when testing runtime OpenAI transcription;
 - use `SPEECH_TO_TEXT_PROVIDER=mock` only for explicit local/test mock
   transcription;
@@ -386,8 +388,14 @@ pnpm prisma:seed
 ```
 
 Optional deterministic demo data can be seeded by setting
-`SEED_DEMO_DATA=true` before `pnpm prisma:seed`. The seed creates local review
-records only; it does not store raw audio or call AI/transcription providers.
+`SEED_DEMO_DATA=true` before `pnpm prisma:seed`. The V1 review seed creates a
+coherent fake workspace with people, companies, affiliations, meetings, pasted
+Teams/Copilot notes, manual LinkedIn-context notes, tasks, commitments,
+opportunities, introduction suggestions, review-only AI proposals, voice notes,
+source references, archived records, and safe audit events. It is deterministic
+and idempotent, uses only synthetic `.example`-style data, does not store raw
+audio, and does not call AI, transcription, Microsoft, LinkedIn, billing, or
+other external providers.
 
 ### Docker Compose
 
@@ -426,3 +434,4 @@ docker compose run --rm seed
 - [Auth and tenancy](docs/development/auth-and-tenancy.md)
 - [Design system](docs/design-system.md)
 - [Privacy](docs/privacy.md)
+- [V1 review walkthrough](docs/review/v1-review-walkthrough.md)

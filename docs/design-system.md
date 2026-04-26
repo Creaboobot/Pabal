@@ -236,6 +236,11 @@ Step 14C adds archive and retention controls:
 Archive UI must avoid wide tables, permanent-delete affordances, retention-job
 controls, audit-log deletion/editing controls, and legal advice copy.
 
+Step 15B-2 adds no UI primitives. The V1 review walkthrough and richer demo
+seed rely on the existing mobile-first cards, badges, empty states, inline
+confirmations, and settings surfaces. Demo content should make implemented
+workflows easier to inspect without adding visual claims for deferred features.
+
 Admin UI should make authorization boundaries visible without exposing
 cross-tenant data. Invite flows, SCIM/SSO provisioning, entitlement
 matrices, quota controls, and analytics dashboards are not represented as

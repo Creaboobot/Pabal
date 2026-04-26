@@ -22,6 +22,11 @@ docker compose run --rm migrate
 docker compose run --rm seed
 ```
 
+`SEED_DEMO_DATA=true` is intended for local review/demo environments only. It
+creates deterministic fake V1 review records and does not call providers, store
+raw audio, or require OpenAI/Microsoft/LinkedIn/Stripe credentials. Do not use
+the demo seed for production tenant data.
+
 The production image runs the Next.js production server and must not bake
 secrets into the image. The image includes a container health check against
 `/api/health`.
