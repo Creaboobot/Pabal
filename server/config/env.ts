@@ -31,6 +31,7 @@ export const runtimeEnvSchema = z.object({
   OPENAI_TRANSCRIPTION_MODEL: optionalString,
   OPENAI_STRUCTURING_MODEL: optionalString,
   OPENAI_EMBEDDING_MODEL: optionalString,
+  SPEECH_TO_TEXT_PROVIDER: optionalString,
 
   STORAGE_PROVIDER: optionalString,
   S3_ENDPOINT: optionalString,

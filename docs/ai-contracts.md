@@ -56,3 +56,16 @@ semantic search, apply proposal patches, mutate target records, create tasks or
 commitments, sync Outlook/Teams, or save generated brief records. Future
 AI-generated meeting preparation must remain an explicit proposal-based,
 human-confirmed workflow.
+
+## Step 11A-1 Voice Transcription Boundary
+
+Voice transcription in Step 11A-1 is limited to audio-to-text through a
+server-side speech-to-text provider interface. OpenAI may be used only by the
+OpenAI transcription adapter. The transcription endpoint stores the resulting
+`VoiceNote` transcript and safe audio metadata, but it does not call chat or
+completion APIs, structure the transcript, extract entities, create
+`VoiceMention` records, create `AIProposal` records, mutate target records,
+summarise, search, or run background jobs.
+
+Raw audio is not retained by default, and raw provider responses are not stored
+or written to audit logs.

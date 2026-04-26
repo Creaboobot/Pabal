@@ -16,6 +16,8 @@ relationship-intelligence workflows without changing the schema. Step 10A-2
 uses the existing `IntroductionSuggestion` model for manual introduction
 tracking without changing the schema. Step 10C uses existing meeting and
 relationship records for read-only prep briefs without changing the schema.
+Step 11A-1 uses the existing `VoiceNote` model for backend transcription
+without changing the schema.
 
 ## Foundation tables
 
@@ -85,6 +87,13 @@ Step 4B-2 was schema/service readiness only. It did not call AI providers,
 transcribe audio, record audio, upload audio, apply proposal patches, mutate
 target records, or add proposal review UI. Even `APPROVED` proposal statuses
 are stored state only until a later explicit application engine exists.
+
+Step 11A-1 turns `VoiceNote` into the backend transcription persistence target.
+Successful transcription stores transcript text, optional language/confidence,
+audio MIME type, size, optional duration, `audioRetentionStatus=NOT_STORED`,
+and `rawAudioDeletedAt`. Raw audio and provider raw responses are not persisted.
+This step does not create `VoiceMention`, `AIProposal`, or `AIProposalItem`
+records and does not mutate linked person, company, meeting, or note records.
 
 ## Step 6A people and company workflow
 
@@ -324,6 +333,18 @@ time from existing tenant-scoped records:
 No prep brief rows are persisted. The service does not create source
 references, mutate statuses, write audit logs, call AI providers, or sync from
 Outlook/Teams.
+
+## Step 11A-1 voice transcription backend
+
+Step 11A-1 does not add a migration. The existing `VoiceNote` table stores
+transcribed voice-note records created by the backend transcription endpoint.
+The endpoint validates optional person, company, meeting, and note context
+against the active tenant before persistence. Raw audio is processed only in the
+request/provider call path and is not retained by default.
+
+`VoiceMention` remains readiness-only in this step. Mention extraction,
+transcript structuring, AI proposals, and automatic record updates remain out of
+scope.
 
 Future tenant-owned tables must include `tenantId` and be protected by service
 and repository-layer tenant checks.

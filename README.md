@@ -80,13 +80,15 @@ status-only AI proposal confirmation framework. Step 10A-1 adds manual needs
 and capabilities under Opportunities. Step 10A-2 adds manual introduction
 suggestion workflows. Step 10B-1 adds deterministic read-only relationship
 health and why-now signals for Today and person/company detail pages. Step 10C
-adds deterministic read-only meeting prep briefs from existing records. It does
-not implement LinkedIn URL storage, AI provider calls, proposal application,
-transcription, audio
-recording/upload, billing, Microsoft Graph, LinkedIn enrichment, production
-search, matching, scoring, notifications, reminders, background jobs,
-automatic task creation, message drafting, outreach sending, or production
-deployment.
+adds deterministic read-only meeting prep briefs from existing records. Step
+11A-1 adds the backend speech-to-text provider boundary and
+`POST /api/voice-notes/transcribe` for tenant-validated VoiceNote transcript
+persistence. It does not implement LinkedIn URL storage, AI proposal
+application, browser voice recording UI, transcript review UI, VoiceMention
+extraction, AIProposal creation, billing, Microsoft Graph, LinkedIn enrichment,
+production search, matching, scoring, notifications, reminders, background
+jobs, automatic task creation, message drafting, outreach sending, or
+production deployment.
 
 ### Requirements
 
@@ -112,6 +114,9 @@ Edit `.env.local` before starting the app:
 - set `AUTH_SECRET` to a local random value;
 - for example, run `pnpm exec auth secret` after dependencies are installed;
 - set `ENABLE_DEV_AUTH=true` only for local development sign-in;
+- set `OPENAI_API_KEY` only when testing runtime OpenAI transcription;
+- use `SPEECH_TO_TEXT_PROVIDER=mock` only for explicit local/test mock
+  transcription;
 - keep Microsoft Entra variables blank until OAuth is intentionally configured.
 
 The app runs at `http://localhost:3000`. Development sign-in is available at
