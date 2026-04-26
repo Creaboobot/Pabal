@@ -79,3 +79,24 @@ text, save edited transcript text, update direct source links, and archive the
 VoiceNote. They do not structure transcripts, extract entities, create
 `VoiceMention`, `AIProposal`, or `AIProposalItem` records, mutate linked
 records, call chat/completion APIs, summarise, search, or run background jobs.
+
+## Step 11B Voice Structuring Boundary
+
+Voice-to-proposal structuring in Step 11B sends the stored transcript or
+reviewed transcript to the configured transcript-structuring provider adapter
+and creates review-only `AIProposal` and `AIProposalItem` records.
+
+The provider output must pass strict schema validation before any proposal rows
+are created. Entity resolution is deterministic and tenant-local: exact
+person/company names, person emails, company domains, direct VoiceNote context,
+and meeting participant context are the only allowed inputs. Ambiguous or
+missing matches become unresolved proposal items or `NEEDS_CLARIFICATION`
+items.
+
+Step 11B still does not apply proposals. It does not mutate Person, Company,
+Meeting, Note, Task, Commitment, Need, Capability, IntroductionSuggestion,
+VoiceNote, or VoiceMention records. It does not create `VoiceMention` records,
+perform external search, access LinkedIn/Microsoft/Teams/Outlook, generate
+messages, run embeddings, or start background jobs. Approved proposal items
+remain conceptual review states until a later explicit application engine
+exists.

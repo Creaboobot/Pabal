@@ -186,6 +186,21 @@ lengths, and changed field names only; they must not include transcript text,
 edited transcript text, raw audio, provider payloads, headers, cookies, tokens,
 environment values, API keys, or secrets.
 
+Step 11B voice structuring sends a tenant-owned VoiceNote transcript to the
+configured server-side transcript-structuring provider only after user
+confirmation. The service never trusts client tenant ids, validates the
+VoiceNote inside the active tenant, sends only tenant-owned candidate context to
+the provider, validates strict output before persistence, and revalidates every
+resolved target id before storing proposal items. Cross-tenant target ids are
+not exposed and become unresolved review items.
+
+Voice structuring audit metadata may include voice-note id, proposal id, item
+count, provider name, transcript length, and resolved/unresolved target counts.
+It must not include transcript text, edited transcript text, raw AI output,
+proposed patch JSON, provider payloads, headers, cookies, tokens, environment
+values, API keys, or secrets. Creating proposals from voice notes must not
+mutate target records or create `VoiceMention` records.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

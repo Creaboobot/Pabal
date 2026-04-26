@@ -46,3 +46,20 @@ provider configuration fails the transcription request safely without exposing
 secret values. The browser recorder posts multipart audio to the app runtime;
 raw audio is not retained by default, and review pages do not require additional
 deployment services beyond the existing app and database.
+
+## Voice Transcript Structuring
+
+Step 11B adds optional runtime transcript structuring:
+
+- `TRANSCRIPT_STRUCTURING_PROVIDER`: `openai` by default; `mock` is for
+  local/test only and is rejected in production.
+- `OPENAI_API_KEY`: required only at runtime when using the OpenAI transcript
+  structuring provider.
+- `OPENAI_STRUCTURING_MODEL`: optional, defaults to `gpt-4o-mini`.
+
+Builds and readiness checks must not require `OPENAI_API_KEY`. Missing runtime
+provider configuration fails the structuring request safely without exposing
+secret values. The structuring path creates review-only `AIProposal` and
+`AIProposalItem` records linked to a VoiceNote; it does not apply proposal
+patches, mutate target records, create voice mentions, or call external lookup
+services.

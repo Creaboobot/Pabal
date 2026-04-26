@@ -49,6 +49,20 @@ export function findVoiceNoteProfileById(
       archivedAt: null,
     },
     include: {
+      aiProposals: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          createdAt: true,
+          id: true,
+          status: true,
+          title: true,
+        },
+        where: {
+          archivedAt: null,
+        },
+      },
       company: true,
       meeting: true,
       note: true,
