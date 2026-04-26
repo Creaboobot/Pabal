@@ -229,6 +229,13 @@ only ids, changed fields, role/status values, and tenant context; it must not
 include secrets, raw form payloads, sensitive personal details, payment/card
 data, provider payloads, or environment values.
 
+Step 13B billing readiness is read-only. `/settings/billing` requires active
+tenant context and owner/admin access, and the service returns only normalized
+provider readiness for the active workspace. No billing rows are read or
+written, no audit logs are written for page views, no payment method/card data
+is collected or stored, and no Stripe raw payloads, secrets, tokens, headers,
+or environment values are logged.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

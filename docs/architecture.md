@@ -309,6 +309,19 @@ configuration. It does not add entitlements, quotas, plan enforcement, billing
 schema, checkout, Stripe providers, invite flows, email jobs, SCIM, SSO
 provisioning, or a complex RBAC matrix.
 
+Step 13B adds billing readiness:
+
+- `/settings/billing` is an owner/admin settings surface.
+- `server/providers/billing` defines normalized billing DTOs and disabled/mock
+  providers.
+- `server/services/billing-readiness.ts` returns tenant-scoped read-only
+  readiness from the active tenant context.
+
+The default billing provider is disabled. The mock provider is local/test only
+and is rejected in production. No Stripe SDK, live Stripe provider, checkout,
+portal, webhook, billing schema, payment data storage, plan enforcement, quota,
+or billing lockout is implemented.
+
 ## Relationship backbone boundary
 
 Step 4A adds server-side schema and skeletons for people, companies,

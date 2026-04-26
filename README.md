@@ -92,8 +92,10 @@ settings page, disabled/mock provider boundary, and optional environment
 variable documentation. Step 12B adds manual LinkedIn URL fields and
 user-provided LinkedIn-context notes. Step 13A adds workspace admin settings,
 member role/status controls, and read-only feature readiness cards using the
-existing tenant, membership, and role models. It does not implement AI proposal
-application, VoiceMention extraction, target record mutation, billing, live
+existing tenant, membership, and role models. Step 13B adds billing readiness
+with a disabled/mock provider boundary and a read-only billing settings page.
+It does not implement AI proposal application, VoiceMention extraction, target
+record mutation, live billing, live
 Microsoft Graph, LinkedIn automation, production search,
 matching, scoring, notifications, reminders, background jobs, automatic task
 creation, message drafting, outreach sending, or production deployment.
@@ -270,10 +272,13 @@ Workspace administration is available under settings:
 - `/settings/members` for tenant-scoped member cards, role badges, owner-only
   role updates, and membership activation/deactivation.
 - `/settings/features` for read-only feature readiness cards.
+- `/settings/billing` for read-only billing readiness.
 
-Step 13A does not add `/settings/billing`, Stripe providers, billing schema,
-checkout, billing portal, webhooks, email invitations, invite tokens, complex
-RBAC, quotas, entitlements, or plan enforcement.
+Billing readiness uses a disabled provider by default and a mock provider for
+local/test verification only. It does not add a Stripe provider, Stripe SDK,
+billing schema, checkout, billing portal, webhooks, payment collection, card
+storage, plan gates, lockouts, quotas, entitlements, email invitations, invite
+tokens, or complex RBAC.
 
 Manual relationship intelligence is available under `/opportunities`:
 

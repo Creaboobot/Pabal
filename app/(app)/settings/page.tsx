@@ -62,11 +62,11 @@ export default async function SettingsPage() {
     },
     {
       description:
-        "Billing readiness is intentionally deferred to Step 13B. No checkout, portal, or Stripe schema exists in this step.",
-      href: undefined,
+        "Review billing readiness, disabled provider status, and future subscription boundaries.",
+      href: canOpenAdmin ? "/settings/billing" : undefined,
       icon: CreditCard,
       title: "Billing",
-      value: "Coming later",
+      value: canOpenAdmin ? "Readiness" : "Owner/admin only",
     },
   ];
 

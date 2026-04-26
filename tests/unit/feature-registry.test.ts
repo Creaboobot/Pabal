@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { buildFeatureReadinessCards } from "@/server/services/feature-registry";
 
 describe("feature readiness registry", () => {
-  it("renders the expected 13A readiness states without billing entitlements", () => {
+  it("renders readiness states without billing entitlements", () => {
     const features = buildFeatureReadinessCards({
       FEATURE_BILLING: false,
       FEATURE_LINKEDIN_MANUAL_ENRICHMENT: true,
@@ -24,7 +24,7 @@ describe("feature readiness registry", () => {
         }),
         expect.objectContaining({
           key: "billing-readiness",
-          status: "disabled",
+          status: "readiness_only",
         }),
       ]),
     );

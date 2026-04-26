@@ -191,13 +191,18 @@ language.
 Step 13A extends the settings area with mobile-first admin cards:
 
 - settings hub cards for workspace, members, features, integrations, and a
-  disabled future billing placeholder;
+  billing readiness link;
 - compact member cards instead of tables;
 - role and membership-status badges;
 - inline confirmation before role or membership-status changes;
 - read-only feature readiness cards.
 
+Step 13B adds the billing readiness page with card-based status, provider,
+future subscription, and privacy/payment boundary sections. Billing actions use
+disabled buttons with clear "coming later" copy. There are no tables, pricing
+pages, payment forms, card fields, checkout widgets, or portal controls.
+
 Admin UI should make authorization boundaries visible without exposing
-cross-tenant data. Billing, invite flows, SCIM/SSO provisioning, entitlement
+cross-tenant data. Invite flows, SCIM/SSO provisioning, entitlement
 matrices, quota controls, and analytics dashboards are not represented as
 active workflows in this step.

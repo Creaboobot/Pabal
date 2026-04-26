@@ -34,6 +34,7 @@ const mocks = vi.hoisted(() => ({
   getTenantVoiceNoteProfile: vi.fn(),
   getTenantWorkspaceAdminProfile: vi.fn(),
   getTenantWorkspaceSettingsProfile: vi.fn(),
+  getTenantBillingReadiness: vi.fn(),
   getAppShellSummary: vi.fn(),
   getCurrentUserContext: vi.fn(),
   listTenantFeatureReadiness: vi.fn(),
@@ -189,6 +190,10 @@ vi.mock("@/server/services/workspace-admin", () => ({
 
 vi.mock("@/server/services/feature-registry", () => ({
   listTenantFeatureReadiness: mocks.listTenantFeatureReadiness,
+}));
+
+vi.mock("@/server/services/billing-readiness", () => ({
+  getTenantBillingReadiness: mocks.getTenantBillingReadiness,
 }));
 
 vi.mock("@/modules/settings/components/workspace-name-form", () => ({
@@ -364,6 +369,43 @@ const featureReadinessCards = [
     title: "Billing readiness",
   },
 ];
+
+const billingReadiness = {
+  billing: {
+    checkout: {
+      available: false,
+      message: "Billing is readiness-only. This action is coming later.",
+      provider: "disabled",
+    },
+    customer: null,
+    portal: {
+      available: false,
+      message: "Billing is readiness-only. This action is coming later.",
+      provider: "disabled",
+    },
+    providerStatus: {
+      capabilities: {
+        checkout: false,
+        portal: false,
+        webhooks: false,
+      },
+      configured: false,
+      liveMode: false,
+      message:
+        "Billing readiness only. No checkout, portal, webhooks, or payment collection are live.",
+      provider: "disabled",
+      status: "DISABLED",
+    },
+    status: "DISABLED",
+    subscription: null,
+  },
+  currentUserRole: "OWNER",
+  tenant: {
+    id: "tenant_test_1",
+    name: "Demo Workspace",
+  },
+};
+
 
 const appSummary = {
   action: {
@@ -1097,6 +1139,7 @@ describe("protected app routes", () => {
     mocks.getTenantWorkspaceSettingsProfile.mockResolvedValue(
       workspaceAdminProfile,
     );
+    mocks.getTenantBillingReadiness.mockResolvedValue(billingReadiness);
     mocks.listTenantFeatureReadiness.mockResolvedValue(featureReadinessCards);
     mocks.getTenantPersonRelatedContext.mockResolvedValue(relatedContext);
     mocks.getTenantCompanyRelatedContext.mockResolvedValue(relatedContext);
@@ -1162,7 +1205,10 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("link", { name: "Open features" }),
     ).toHaveAttribute("href", "/settings/features");
-    expect(screen.getByText("Planned for a later step")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Open billing" })).toHaveAttribute(
+      "href",
+      "/settings/billing",
+    );
   });
 
   it("renders the workspace settings route", async () => {
@@ -1220,6 +1266,39 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("button", { name: "Connection coming later" }),
     ).toBeDisabled();
+  });
+
+  it("renders the billing settings route", async () => {
+    const Page = (await import("@/app/(app)/settings/billing/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Billing" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Disabled")).toBeInTheDocument();
+    expect(
+      screen.getByText("Billing is readiness-only. No payment processing is enabled."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Checkout coming later" }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Billing portal coming later" }),
+    ).toBeDisabled();
+  });
+
+  it("fails billing settings safely for non-admin users", async () => {
+    mocks.getCurrentUserContext.mockResolvedValueOnce({
+      ...tenantContext,
+      roleKey: "MEMBER",
+    });
+    const Page = (await import("@/app/(app)/settings/billing/page")).default;
+
+    render(await Page());
+
+    expect(screen.getByText("Admin access required")).toBeInTheDocument();
+    expect(mocks.getTenantBillingReadiness).not.toHaveBeenCalled();
   });
 
   it("redirects the protected app shell when no session context exists", async () => {

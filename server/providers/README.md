@@ -28,3 +28,15 @@ Step 12A adds Microsoft Graph readiness only:
 
 No provider in Step 12A calls live Microsoft Graph services, starts OAuth,
 stores tokens, syncs data, or ingests calendar, email, or contact records.
+
+Step 13B adds billing readiness only:
+
+- `billing/types.ts`: normalized app-level billing status, customer,
+  subscription, checkout-unavailable, and portal-unavailable DTOs.
+- `billing/disabled.ts`: default provider that reports disabled readiness state.
+- `billing/mock.ts`: deterministic local/test provider, rejected in production
+  by the factory.
+- `billing/index.ts`: provider factory.
+
+No provider in Step 13B calls Stripe, creates checkout or portal sessions,
+handles webhooks, stores payment data, or enforces plans.

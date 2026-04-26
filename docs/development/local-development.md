@@ -346,3 +346,17 @@ states for voice capture, AI structuring, Microsoft readiness, LinkedIn manual
 enrichment, billing readiness, meeting prep, and relationship health. Step 13A
 does not implement billing, Stripe providers, checkout, webhooks, invite
 emails, invite tokens, complex RBAC, quotas, entitlements, or plan enforcement.
+
+## Billing Readiness
+
+Step 13B adds `/settings/billing` and `server/providers/billing`.
+
+- `BILLING_PROVIDER=disabled` is the default.
+- `BILLING_PROVIDER=mock` may be used only in local/test and is rejected in
+  production.
+- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and `STRIPE_PRICE_ID_PRO` are
+  future optional values and are not required for build/readiness.
+
+No live Stripe provider, checkout, billing portal, webhook endpoint, billing
+schema, payment collection, card storage, plan enforcement, quota, or lockout is
+implemented.

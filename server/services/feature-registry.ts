@@ -62,11 +62,9 @@ export function buildFeatureReadinessCards(
     },
     {
       description:
-        "Billing is explicitly deferred to Step 13B. No checkout, portal, webhooks, or billing schema exist in this step.",
+        "Billing readiness exposes a disabled provider and settings surface. No checkout, portal, webhooks, plan gates, or billing schema are implemented.",
       key: "billing-readiness",
-      status: envFlag(env.FEATURE_BILLING, false)
-        ? "readiness_only"
-        : "disabled",
+      status: "readiness_only",
       title: "Billing readiness",
     },
     {

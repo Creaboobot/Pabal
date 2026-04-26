@@ -78,3 +78,18 @@ Builds and readiness checks must not require these variables. They are separate
 from the existing Microsoft Entra/Auth.js sign-in variables. Step 12A does not
 start OAuth, acquire or refresh tokens, store tokens, call live Microsoft Graph
 services, create sync jobs, or ingest calendar, email, or contact data.
+
+## Billing Readiness
+
+Step 13B introduces readiness-only billing configuration:
+
+- `BILLING_PROVIDER`: `disabled` by default. `mock` is for local/test only and
+  is rejected in production.
+- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and `STRIPE_PRICE_ID_PRO`:
+  optional future Stripe values.
+
+Builds and readiness checks must not require billing or Stripe variables. Step
+13B does not add a live Stripe provider, Stripe SDK, checkout sessions, billing
+portal sessions, webhook endpoints, customer/subscription creation, payment
+method collection, card storage, invoices, tax/VAT handling, plan enforcement,
+or billing background jobs.
