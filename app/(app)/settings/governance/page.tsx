@@ -362,8 +362,8 @@ export default async function GovernanceSettingsPage({
           </span>
           <p className="text-sm leading-6 text-muted-foreground">
             Viewing this page never mutates audit rows and does not write page
-            view audit events. Data export is planned for Step 14B; deletion and
-            retention controls are planned for Step 14C.
+            view audit events. Privacy exports are available under settings;
+            deletion and retention controls are planned for Step 14C.
           </p>
         </div>
       </CockpitCard>

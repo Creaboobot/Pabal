@@ -244,6 +244,26 @@ sanitization redacts sensitive keys and suspicious values, truncates long
 strings, bounds arrays/nested objects, and avoids raw JSON display. Viewing the
 audit log must not mutate audit rows or write additional audit logs.
 
+Step 14B exports require active tenant context and never trust client-provided
+tenant ids. Personal export is available to authenticated users for their
+contribution inside the active workspace. Workspace export requires
+owner/admin access. Export queries filter by the active tenant, exclude
+cross-tenant rows, and exclude tenant-null audit logs.
+
+Export-request audit logs use `privacy.personal_export_requested` and
+`privacy.workspace_export_requested` with safe metadata: export type,
+requesting user id, tenant id, section counts, generated timestamp, and
+truncation flags. Exported content, note bodies, transcripts, AI proposal
+patches, raw payloads, provider responses, secrets, tokens, cookies, headers,
+environment values, and payment/card data must not be written to audit
+metadata.
+
+Workspace exports may contain sensitive tenant business content such as note
+bodies, pasted Teams/Copilot notes, user-provided LinkedIn notes, transcripts,
+and AI proposal patches. Audit logs inside exports include sanitized metadata
+previews only. Auth.js tokens, raw provider payloads, raw audio files,
+`VoiceNote.audioStorageKey`, and raw audit metadata are excluded.
+
 ## Development auth
 
 Development credentials sign-in is local-only. It is enabled only when

@@ -5,6 +5,7 @@ import {
   BadgeCheck,
   Building2,
   CreditCard,
+  FileDown,
   PlugZap,
   ScrollText,
   ShieldCheck,
@@ -76,6 +77,14 @@ export default async function SettingsPage() {
       icon: ScrollText,
       title: "Governance",
       value: canOpenAdmin ? "Audit viewer" : "Owner/admin only",
+    },
+    {
+      description:
+        "Download tenant-scoped JSON exports and review privacy handling boundaries.",
+      href: "/settings/privacy",
+      icon: FileDown,
+      title: "Privacy & export",
+      value: "JSON export",
     },
   ];
 

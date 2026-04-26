@@ -130,9 +130,9 @@ export const governanceOverviewCards = [
   },
   {
     description:
-      "Export controls are planned for Step 14B; deletion and retention controls are planned for Step 14C.",
+      "Privacy exports are available under settings; deletion and retention controls are planned for Step 14C.",
     key: "export-delete",
-    title: "Export and deletion later",
+    title: "Privacy exports available",
   },
 ] satisfies GovernanceOverviewCard[];
 
