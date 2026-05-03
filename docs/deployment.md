@@ -35,6 +35,81 @@ Runtime environments must provide `DATABASE_URL` and `AUTH_SECRET` for
 readiness. Missing values make `/api/ready` return `503` without exposing the
 values.
 
+## Public Hosting From GitHub
+
+The GitHub source repository is `Creaboobot/Pabal`. The recommended first
+public deployment is:
+
+```text
+GitHub -> Vercel -> Neon PostgreSQL
+```
+
+Use this path for normal public hosting because it keeps deploys simple,
+supports preview deployments from pull requests, and matches the current
+Next.js architecture without locking the app away from future container or Azure
+hosting.
+
+Configure Vercel from GitHub:
+
+- import `Creaboobot/Pabal` into Vercel;
+- keep the framework preset as Next.js;
+- use the commands from `vercel.json`;
+- create a Neon PostgreSQL database and copy the pooled connection string into
+  `DATABASE_URL`;
+- copy the values from `.env.public.example` into Vercel environment
+  variables, replacing all placeholders with real secrets;
+- set `APP_URL` to the final public URL;
+- set `AUTH_SECRET` to a long random production value;
+- set `AUTH_TRUST_HOST=true`;
+- keep `ENABLE_DEV_AUTH=false`.
+
+Apply production migrations with `pnpm prisma:deploy` against the production
+database. Do not run `pnpm prisma:migrate` or seed demo data against production
+tenant data. `SEED_DEMO_DATA=true` is only for private review environments.
+
+## Cloudflare Tunnel Review Hosting
+
+Pabal can also be exposed through Cloudflare Tunnel from a local machine or a
+small VM. This mirrors the board setup and is useful for private review links
+while the product is still moving quickly.
+
+For a local private review tunnel:
+
+```powershell
+Copy-Item .env.example .env.local
+.\scripts\start-public-dev.ps1 -SeedDemoData
+```
+
+Before starting, edit `.env.local`:
+
+- set `AUTH_SECRET`;
+- set `ENABLE_DEV_AUTH=true` only for this private review tunnel;
+- set `AUTH_TRUST_HOST=true`;
+- keep provider secrets blank unless you are explicitly testing live providers.
+
+In Cloudflare, route the tunnel hostname to `http://localhost:3000` and protect
+the hostname with Cloudflare Access.
+
+For a Docker-backed public or VM deployment:
+
+```bash
+cp .env.public.example .env.public
+docker compose --env-file .env.public -f deploy/docker-compose.public.yml up -d postgres
+docker compose --env-file .env.public -f deploy/docker-compose.public.yml run --rm migrate
+docker compose --env-file .env.public -f deploy/docker-compose.public.yml up -d app
+```
+
+Then configure a named Cloudflare Tunnel using
+`deploy/cloudflare-tunnel.example.yml`, replace the placeholders, route the
+hostname to `http://localhost:3000`, and enable Cloudflare Access if the
+environment is not meant to be fully public.
+
+## Runtime Checks
+
+- `GET /api/health` returns a basic service health payload.
+- `GET /api/ready` validates runtime readiness and returns `503` when required
+  runtime values such as `DATABASE_URL` or `AUTH_SECRET` are missing.
+
 ## Voice Transcription
 
 Step 11A introduces optional runtime transcription configuration:

@@ -23,6 +23,7 @@ export const runtimeEnvSchema = z.object({
   AUTH_MICROSOFT_ENTRA_ID_SECRET: optionalString,
   AUTH_MICROSOFT_ENTRA_ID_TENANT_ID: optionalString,
   AUTH_MICROSOFT_ENTRA_ID_ISSUER: optionalUrl,
+  AUTH_TRUST_HOST: optionalFlag,
   ENABLE_DEV_AUTH: optionalFlag,
 
   DATABASE_URL: optionalString,
