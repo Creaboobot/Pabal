@@ -1,0 +1,87 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pobal}
+      POSTGRES_USER: ${POSTGRES_USER:-pobal}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.public}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pobal} -d ${POSTGRES_DB:-pobal}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - pobal-public-postgres-data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      APP_URL: ${APP_URL:?Set APP_URL in .env.public}
+      AUTH_MICROSOFT_ENTRA_ID_ID: ${AUTH_MICROSOFT_ENTRA_ID_ID:-}
+      AUTH_MICROSOFT_ENTRA_ID_ISSUER: ${AUTH_MICROSOFT_ENTRA_ID_ISSUER:-}
+      AUTH_MICROSOFT_ENTRA_ID_SECRET: ${AUTH_MICROSOFT_ENTRA_ID_SECRET:-}
+      AUTH_MICROSOFT_ENTRA_ID_TENANT_ID: ${AUTH_MICROSOFT_ENTRA_ID_TENANT_ID:-}
+      AUTH_SECRET: ${AUTH_SECRET:?Set AUTH_SECRET in .env.public}
+      AUTH_TRUST_HOST: ${AUTH_TRUST_HOST:-true}
+      BILLING_PROVIDER: ${BILLING_PROVIDER:-disabled}
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env.public}
+      ENABLE_DEV_AUTH: "false"
+      FEATURE_BILLING: ${FEATURE_BILLING:-false}
+      FEATURE_LINKEDIN_MANUAL_ENRICHMENT: ${FEATURE_LINKEDIN_MANUAL_ENRICHMENT:-true}
+      FEATURE_MICROSOFT_GRAPH: ${FEATURE_MICROSOFT_GRAPH:-false}
+      FEATURE_VOICE_CAPTURE: ${FEATURE_VOICE_CAPTURE:-true}
+      MICROSOFT_GRAPH_PROVIDER: ${MICROSOFT_GRAPH_PROVIDER:-disabled}
+      NEXT_TELEMETRY_DISABLED: "1"
+      NODE_ENV: production
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_STRUCTURING_MODEL: ${OPENAI_STRUCTURING_MODEL:-gpt-4o-mini}
+      OPENAI_TRANSCRIPTION_MODEL: ${OPENAI_TRANSCRIPTION_MODEL:-gpt-4o-mini-transcribe}
+      SPEECH_TO_TEXT_PROVIDER: ${SPEECH_TO_TEXT_PROVIDER:-openai}
+      TRANSCRIPT_STRUCTURING_PROVIDER: ${TRANSCRIPT_STRUCTURING_PROVIDER:-openai}
+    ports:
+      - "${APP_PORT:-3000}:3000"
+
+  migrate:
+    image: node:22.13.1-alpine
+    profiles: ["tools"]
+    working_dir: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env.public}
+    volumes:
+      - ..:/app
+    command: >
+      sh -c "corepack enable &&
+      corepack prepare pnpm@9.15.4 --activate &&
+      pnpm install --frozen-lockfile &&
+      pnpm prisma:deploy"
+
+  seed:
+    image: node:22.13.1-alpine
+    profiles: ["tools"]
+    working_dir: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env.public}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-false}
+    volumes:
+      - ..:/app
+    command: >
+      sh -c "corepack enable &&
+      corepack prepare pnpm@9.15.4 --activate &&
+      pnpm install --frozen-lockfile &&
+      pnpm prisma:seed"
+
+volumes:
+  pobal-public-postgres-data:

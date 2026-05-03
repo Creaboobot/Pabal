@@ -56,7 +56,7 @@ Do **not** ask Codex to build the full application in one step.
 
 ## Manual repository upload
 
-If uploading this pack manually through GitHub, upload the full folder contents to the root of the `Creaboobot/Pobal` repository and commit them. Then start Codex with the prompt in `FIRST_CODEX_PROMPT.md`.
+If uploading this pack manually through GitHub, upload the full folder contents to the root of the `Creaboobot/Pabal` repository and commit them. Then start Codex with the prompt in `FIRST_CODEX_PROMPT.md`.
 
 ## Local development
 
@@ -146,6 +146,20 @@ Signed-in users land on `/today`; unauthenticated access to `/today`,
 `/capture`, `/commitments`, `/meetings`, `/notes`, `/tasks`, `/people`,
 `/proposals`, `/opportunities`, `/voice-notes`, `/search`, `/account`, and
 `/settings` redirects to `/sign-in`.
+
+### Public hosting
+
+The GitHub source repository is `Creaboobot/Pabal`. The preferred public
+hosting path is GitHub -> Vercel for the Next.js app and Neon for PostgreSQL.
+Use `.env.public.example` as the production environment checklist, set
+`APP_URL` to the public URL, keep `ENABLE_DEV_AUTH=false`, set
+`AUTH_TRUST_HOST=true` behind the hosting proxy, and run Prisma migrations with
+`pnpm prisma:deploy` against the production database.
+
+For a board-managed workflow, create Pabal tasks with repository
+`Creaboobot/Pabal` and a target environment such as `Pabal Vercel preview`,
+`Pabal production`, or `Pabal Cloudflare review tunnel`. See
+[`docs/deployment.md`](docs/deployment.md) for the full hosting runbook.
 
 ### App shell routes
 

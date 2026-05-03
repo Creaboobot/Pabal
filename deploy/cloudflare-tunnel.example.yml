@@ -1,0 +1,11 @@
+# Example Cloudflare Tunnel configuration for exposing Pabal from a local
+# machine or small VM. Copy to your cloudflared config directory and replace
+# the placeholders. Do not commit the real tunnel credentials file.
+
+tunnel: pabal
+credentials-file: "C:\\Users\\YOUR_USER\\.cloudflared\\YOUR_TUNNEL_ID.json"
+
+ingress:
+  - hostname: pabal.example.com
+    service: http://localhost:3000
+  - service: http_status:404
