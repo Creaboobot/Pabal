@@ -1407,9 +1407,24 @@ describe("protected app routes", () => {
             },
           ],
         },
+        {
+          kind: "proposals",
+          label: "Suggested updates",
+          results: [
+            {
+              badges: ["PENDING_REVIEW", "NOTE_EXTRACTION"],
+              description: "Review-only suggested update.",
+              href: "/proposals/proposal_test_1",
+              id: "proposal_test_1",
+              kind: "proposals",
+              title: "Suggested follow-up",
+              updatedAt: new Date("2026-04-24T10:00:00.000Z"),
+            },
+          ],
+        },
       ],
       query: "Anna",
-      resultCount: 1,
+      resultCount: 2,
     });
     const Page = (await import("@/app/(app)/search/page")).default;
 
@@ -1423,6 +1438,11 @@ describe("protected app routes", () => {
     expect(
       screen.getByText(/uses no AI, embeddings, pgvector, semantic ranking/),
     ).toBeInTheDocument();
+    expect(screen.getAllByText("Suggested updates").length).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("link", { name: /Suggested follow-up/ }),
+    ).toHaveAttribute("href", "/proposals/proposal_test_1");
+    expect(screen.queryByText("Proposals")).not.toBeInTheDocument();
     expect(screen.queryByText("Introductions")).not.toBeInTheDocument();
   });
 
