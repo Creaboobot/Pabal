@@ -132,12 +132,6 @@ export function TaskCard({ task }: TaskCardProps) {
               </Link>
             </Badge>
           ) : null}
-          {task.introductionSuggestion ? (
-            <Badge variant="outline">
-              <Lightbulb aria-hidden="true" className="mr-1 size-3.5" />
-              Introduction suggestion
-            </Badge>
-          ) : null}
         </div>
       </div>
     </article>

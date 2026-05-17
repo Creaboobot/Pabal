@@ -5,7 +5,6 @@ import type {
   CapabilityType,
   CommitmentOwnerType,
   CommitmentStatus,
-  IntroductionSuggestionStatus,
   MeetingParticipantRole,
   NeedStatus,
   NeedType,
@@ -23,7 +22,6 @@ import {
   listMeetingPrepCapabilities,
   listMeetingPrepCommitments,
   listMeetingPrepCompanyNotes,
-  listMeetingPrepIntroductions,
   listMeetingPrepNeeds,
   listMeetingPrepNotes,
   listMeetingPrepPersonNotes,
@@ -147,14 +145,6 @@ export type MeetingPrepCapabilityRecord = {
   title: string;
 };
 
-export type MeetingPrepIntroductionRecord = {
-  confidence: number | null;
-  href: string;
-  id: string;
-  rationalePreview: string;
-  status: IntroductionSuggestionStatus;
-};
-
 export type MeetingPrepProposalRecord = {
   confidence: number | null;
   href: string;
@@ -193,7 +183,6 @@ export type MeetingPrepBrief = {
   records: {
     capabilities: MeetingPrepCapabilityRecord[];
     commitments: MeetingPrepCommitmentRecord[];
-    introductions: MeetingPrepIntroductionRecord[];
     needs: MeetingPrepNeedRecord[];
     notes: MeetingPrepNotePreview[];
     proposals: MeetingPrepProposalRecord[];
@@ -222,7 +211,7 @@ function entityHref(entityType: SourceEntityType, entityId: string) {
     case "CAPABILITY":
       return `/opportunities/capabilities/${entityId}`;
     case "INTRODUCTION_SUGGESTION":
-      return `/opportunities/introductions/${entityId}`;
+      return null;
     case "AI_PROPOSAL":
       return `/proposals/${entityId}`;
     case "AI_PROPOSAL_ITEM":
@@ -249,7 +238,7 @@ function entityLabel(entityType: SourceEntityType, entityId: string) {
     case "COMPANY_AFFILIATION":
       return "Company affiliation";
     case "INTRODUCTION_SUGGESTION":
-      return "Introduction suggestion";
+      return "Legacy internal record";
     case "MEETING":
       return "Meeting";
     case "MEETING_PARTICIPANT":
@@ -388,23 +377,6 @@ function mapCapability(
   };
 }
 
-function mapIntroduction(
-  introduction: {
-    confidence: number | null;
-    id: string;
-    rationale: string;
-    status: IntroductionSuggestionStatus;
-  },
-): MeetingPrepIntroductionRecord {
-  return {
-    confidence: introduction.confidence,
-    href: `/opportunities/introductions/${introduction.id}`,
-    id: introduction.id,
-    rationalePreview: truncate(introduction.rationale, 120),
-    status: introduction.status,
-  };
-}
-
 function mapProposal(proposal: MeetingPrepProposal): MeetingPrepProposalRecord {
   return {
     confidence: proposal.confidence,
@@ -429,6 +401,13 @@ function mapSourceReference(
     source: sourceLink(reference.sourceEntityType, reference.sourceEntityId),
     target: sourceLink(reference.targetEntityType, reference.targetEntityId),
   };
+}
+
+function isRetiredIntroductionReference(reference: MeetingPrepSourceReference) {
+  return (
+    reference.sourceEntityType === "INTRODUCTION_SUGGESTION" ||
+    reference.targetEntityType === "INTRODUCTION_SUGGESTION"
+  );
 }
 
 export async function getTenantMeetingPrepBrief(
@@ -532,17 +511,6 @@ export async function getTenantMeetingPrepBrief(
         tenantId: context.tenantId,
       }),
     ]);
-  const introductions = await listMeetingPrepIntroductions({
-    capabilityIds: uniqueMeetingPrepIds(
-      capabilities.map((capability) => capability.id),
-    ),
-    companyIds,
-    needIds: uniqueMeetingPrepIds(needs.map((need) => need.id)),
-    personIds,
-    take: RELATED_RECORD_LIMIT,
-    tenantId: context.tenantId,
-  });
-
   const [personHealthEntries, companyHealthEntries] = await Promise.all([
     Promise.all(
       personIds.map(async (personId) => [
@@ -652,12 +620,13 @@ export async function getTenantMeetingPrepBrief(
     records: {
       capabilities: capabilities.map(mapCapability),
       commitments: commitments.map(mapCommitment),
-      introductions: introductions.map(mapIntroduction),
       needs: needs.map(mapNeed),
       notes: meetingNotes.map(notePreview),
       proposals: proposals.map(mapProposal),
       recentMeetings: recentMeetings.map(mapRecentMeeting),
-      sourceReferences: sourceReferences.map(mapSourceReference),
+      sourceReferences: sourceReferences
+        .filter((reference) => !isRetiredIntroductionReference(reference))
+        .map(mapSourceReference),
       tasks: tasks.map(mapTask),
     },
   };

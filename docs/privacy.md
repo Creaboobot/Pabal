@@ -14,9 +14,9 @@ sanitized audit events where the user is the actor.
 
 Workspace export requires owner/admin access. It may include tenant-owned
 people, companies, affiliations, meetings, participants, notes, tasks,
-commitments, needs, capabilities, introduction suggestions, AI proposals,
-proposal items, voice notes, voice mentions, source references, memberships,
-roles, and sanitized audit logs.
+commitments, needs, capabilities, legacy internal introduction suggestion
+records, AI proposals, proposal items, voice notes, voice mentions, source
+references, memberships, roles, and sanitized audit logs.
 
 Both exports are scoped to the active workspace. They do not collect data across
 all workspaces.

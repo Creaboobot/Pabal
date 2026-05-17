@@ -75,9 +75,6 @@ function HealthSummary({
         <Badge variant="secondary">
           {health.counts.activeCapabilities} capabilities
         </Badge>
-        <Badge variant="secondary">
-          {health.counts.activeIntroductions} introductions
-        </Badge>
       </div>
       <p className="text-sm leading-6 text-muted-foreground">
         {health.explanation}

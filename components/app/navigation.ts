@@ -28,7 +28,7 @@ export const primaryNavigationItems = [
   {
     href: "/opportunities",
     label: "Opportunities",
-    description: "Needs, capabilities, intros",
+    description: "Needs and capabilities",
     icon: BriefcaseBusiness,
   },
   {

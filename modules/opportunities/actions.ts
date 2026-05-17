@@ -7,11 +7,9 @@ import type { OpportunitiesActionState } from "@/modules/opportunities/action-st
 import {
   capabilityFormSchema,
   formDataValue,
-  introductionSuggestionFormSchema,
   needFormSchema,
   toFieldErrors,
   type CapabilityFormValues,
-  type IntroductionSuggestionFormValues,
   type NeedFormValues,
 } from "@/modules/opportunities/validation";
 import {
@@ -24,13 +22,6 @@ import {
   createTenantNeed,
   updateTenantNeed,
 } from "@/server/services/needs";
-import {
-  archiveTenantIntroductionSuggestion,
-  createTenantIntroductionSuggestion,
-  dismissTenantIntroductionSuggestion,
-  InvalidIntroductionSuggestionError,
-  updateTenantIntroductionSuggestion,
-} from "@/server/services/introduction-suggestions";
 import { TenantScopedEntityNotFoundError } from "@/server/services/relationship-entities";
 import { getCurrentUserContext } from "@/server/services/session";
 
@@ -74,22 +65,6 @@ function capabilityFormData(formData: FormData) {
   };
 }
 
-function introductionSuggestionFormData(formData: FormData) {
-  return {
-    capabilityId: formDataValue(formData, "capabilityId"),
-    confidence: formDataValue(formData, "confidence"),
-    fromCompanyId: formDataValue(formData, "fromCompanyId"),
-    fromPersonId: formDataValue(formData, "fromPersonId"),
-    needId: formDataValue(formData, "needId"),
-    rationale: formDataValue(formData, "rationale"),
-    sourceMeetingId: formDataValue(formData, "sourceMeetingId"),
-    sourceNoteId: formDataValue(formData, "sourceNoteId"),
-    status: formDataValue(formData, "status"),
-    toCompanyId: formDataValue(formData, "toCompanyId"),
-    toPersonId: formDataValue(formData, "toPersonId"),
-  };
-}
-
 function needMutationPayload(data: NeedFormValues) {
   return {
     companyId: data.companyId,
@@ -117,24 +92,6 @@ function capabilityMutationPayload(data: CapabilityFormValues) {
     sensitivity: data.sensitivity,
     status: data.status,
     title: data.title,
-  };
-}
-
-function introductionSuggestionMutationPayload(
-  data: IntroductionSuggestionFormValues,
-) {
-  return {
-    capabilityId: data.capabilityId,
-    confidence: data.confidence,
-    fromCompanyId: data.fromCompanyId,
-    fromPersonId: data.fromPersonId,
-    needId: data.needId,
-    rationale: data.rationale,
-    sourceMeetingId: data.sourceMeetingId,
-    sourceNoteId: data.sourceNoteId,
-    status: data.status,
-    toCompanyId: data.toCompanyId,
-    toPersonId: data.toPersonId,
   };
 }
 
@@ -189,51 +146,10 @@ function revalidateCapabilityContext(record: {
   }
 }
 
-function revalidateIntroductionSuggestionContext(record: {
-  capabilityId: string | null;
-  fromCompanyId: string | null;
-  fromPersonId: string | null;
-  id: string;
-  needId: string | null;
-  toCompanyId: string | null;
-  toPersonId: string | null;
-}) {
-  revalidatePath("/opportunities");
-  revalidatePath("/opportunities/introductions");
-  revalidatePath(`/opportunities/introductions/${record.id}`);
-
-  if (record.needId) {
-    revalidatePath(`/opportunities/needs/${record.needId}`);
-  }
-
-  if (record.capabilityId) {
-    revalidatePath(`/opportunities/capabilities/${record.capabilityId}`);
-  }
-
-  for (const personId of [record.fromPersonId, record.toPersonId]) {
-    if (personId) {
-      revalidatePath(`/people/${personId}`);
-    }
-  }
-
-  for (const companyId of [record.fromCompanyId, record.toCompanyId]) {
-    if (companyId) {
-      revalidatePath(`/people/companies/${companyId}`);
-    }
-  }
-}
-
 function mutationError(error: unknown): OpportunitiesActionState {
   if (error instanceof TenantScopedEntityNotFoundError) {
     return {
       message: "That linked record was not found in this workspace.",
-      status: "error",
-    };
-  }
-
-  if (error instanceof InvalidIntroductionSuggestionError) {
-    return {
-      message: error.message,
       status: "error",
     };
   }
@@ -408,142 +324,6 @@ export async function archiveCapabilityAction(
 
     return {
       redirectTo: "/opportunities/capabilities",
-      status: "success",
-    };
-  } catch (error) {
-    return mutationError(error);
-  }
-}
-
-export async function createIntroductionSuggestionAction(
-  formData: FormData,
-): Promise<OpportunitiesActionState> {
-  const parsed = introductionSuggestionFormSchema.safeParse(
-    introductionSuggestionFormData(formData),
-  );
-
-  if (!parsed.success) {
-    return {
-      fieldErrors: toFieldErrors(parsed.error),
-      message: "Check the highlighted fields.",
-      status: "error",
-    };
-  }
-
-  const context = await requireActionContext("/opportunities/introductions/new");
-
-  try {
-    const suggestion = await createTenantIntroductionSuggestion(
-      context,
-      introductionSuggestionMutationPayload(parsed.data),
-    );
-
-    revalidateIntroductionSuggestionContext(suggestion);
-
-    if (parsed.data.sourceMeetingId) {
-      revalidatePath(`/meetings/${parsed.data.sourceMeetingId}`);
-    }
-
-    if (parsed.data.sourceNoteId) {
-      revalidatePath(`/notes/${parsed.data.sourceNoteId}`);
-    }
-
-    return {
-      redirectTo: `/opportunities/introductions/${suggestion.id}`,
-      status: "success",
-    };
-  } catch (error) {
-    return mutationError(error);
-  }
-}
-
-export async function updateIntroductionSuggestionAction(
-  introductionSuggestionId: string,
-  formData: FormData,
-): Promise<OpportunitiesActionState> {
-  const parsed = introductionSuggestionFormSchema.safeParse(
-    introductionSuggestionFormData(formData),
-  );
-
-  if (!parsed.success) {
-    return {
-      fieldErrors: toFieldErrors(parsed.error),
-      message: "Check the highlighted fields.",
-      status: "error",
-    };
-  }
-
-  const context = await requireActionContext(
-    `/opportunities/introductions/${introductionSuggestionId}/edit`,
-  );
-
-  try {
-    const suggestion = await updateTenantIntroductionSuggestion(
-      context,
-      introductionSuggestionId,
-      introductionSuggestionMutationPayload(parsed.data),
-    );
-
-    revalidateIntroductionSuggestionContext(suggestion);
-
-    if (parsed.data.sourceMeetingId) {
-      revalidatePath(`/meetings/${parsed.data.sourceMeetingId}`);
-    }
-
-    if (parsed.data.sourceNoteId) {
-      revalidatePath(`/notes/${parsed.data.sourceNoteId}`);
-    }
-
-    return {
-      redirectTo: `/opportunities/introductions/${suggestion.id}`,
-      status: "success",
-    };
-  } catch (error) {
-    return mutationError(error);
-  }
-}
-
-export async function archiveIntroductionSuggestionAction(
-  introductionSuggestionId: string,
-): Promise<OpportunitiesActionState> {
-  const context = await requireActionContext(
-    `/opportunities/introductions/${introductionSuggestionId}`,
-  );
-
-  try {
-    const suggestion = await archiveTenantIntroductionSuggestion(
-      context,
-      introductionSuggestionId,
-    );
-
-    revalidateIntroductionSuggestionContext(suggestion);
-
-    return {
-      redirectTo: "/opportunities/introductions",
-      status: "success",
-    };
-  } catch (error) {
-    return mutationError(error);
-  }
-}
-
-export async function dismissIntroductionSuggestionAction(
-  introductionSuggestionId: string,
-): Promise<OpportunitiesActionState> {
-  const context = await requireActionContext(
-    `/opportunities/introductions/${introductionSuggestionId}`,
-  );
-
-  try {
-    const suggestion = await dismissTenantIntroductionSuggestion(
-      context,
-      introductionSuggestionId,
-    );
-
-    revalidateIntroductionSuggestionContext(suggestion);
-
-    return {
-      redirectTo: `/opportunities/introductions/${suggestion.id}`,
       status: "success",
     };
   } catch (error) {

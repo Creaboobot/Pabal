@@ -1,23 +1,14 @@
 import { listTenantCommitments } from "@/server/services/commitments";
 import { listTenantCompanies } from "@/server/services/companies";
-import { listTenantIntroductionSuggestions } from "@/server/services/introduction-suggestions";
 import { listTenantMeetings } from "@/server/services/meetings";
 import { listTenantNotes } from "@/server/services/notes";
 import { listTenantPeople } from "@/server/services/people";
 import type { TenantContext } from "@/server/services/tenancy";
 
 export async function getTenantTaskFormOptions(context: TenantContext) {
-  const [
-    commitments,
-    companies,
-    introductionSuggestions,
-    meetings,
-    notes,
-    people,
-  ] = await Promise.all([
+  const [commitments, companies, meetings, notes, people] = await Promise.all([
     listTenantCommitments(context),
     listTenantCompanies(context),
-    listTenantIntroductionSuggestions(context),
     listTenantMeetings(context),
     listTenantNotes(context),
     listTenantPeople(context),
@@ -31,10 +22,6 @@ export async function getTenantTaskFormOptions(context: TenantContext) {
     companies: companies.map((company) => ({
       id: company.id,
       name: company.name,
-    })),
-    introductionSuggestions: introductionSuggestions.map((suggestion) => ({
-      id: suggestion.id,
-      rationale: suggestion.rationale,
     })),
     meetings: meetings.map((meeting) => ({
       id: meeting.id,

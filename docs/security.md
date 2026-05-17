@@ -97,9 +97,9 @@ cookies, tokens, headers, environment values, or secrets.
 
 Step 8A task mutations use the same server-action boundary. Task reads and
 writes filter by explicit tenant context, and linked person, company, meeting,
-note, commitment, and introduction suggestion ids are validated in server
-services. Contextual create URLs are convenience hints only and do not carry
-trusted tenant context.
+note, commitment, and legacy internal introduction suggestion ids are validated
+in server services. Contextual create URLs are convenience hints only and do not
+carry trusted tenant context.
 
 Task audit metadata may include task id, status, priority, task type, linked
 entity ids, due/reminder/snooze date presence, and changed field names. It must
@@ -145,12 +145,12 @@ field names. It must not include full descriptions, note bodies, pasted
 meeting-note text, raw form payloads, sensitive values, cookies, tokens,
 environment values, or secrets.
 
-Step 10A-2 introduction suggestion mutations use the same boundary. Reads and
-writes filter by explicit tenant context. Need, capability, from/to person, and
-from/to company ids are validated server-side before persistence. Meeting and
-note provenance is only created through tenant-validated `SourceReference`
-records. Query parameters preselect fields only and are never trusted as tenant
-context.
+Step 10A-2 legacy/internal introduction suggestion mutations use the same
+boundary. Reads and writes filter by explicit tenant context. Need, capability,
+from/to person, and from/to company ids are validated server-side before
+persistence. Meeting and note provenance is only created through
+tenant-validated `SourceReference` records. The user-facing routes are retired,
+and query parameters remain untrusted if internal tooling invokes these services.
 
 Introduction audit metadata may include suggestion id, status, linked need and
 capability ids, from/to person/company ids, confidence presence, and changed
@@ -167,11 +167,12 @@ background jobs, or add dismissal/snooze preferences.
 
 Step 10C meeting prep briefs follow the same read-only boundary. Prep reads
 require explicit tenant context, the meeting lookup filters by `tenantId`, and
-all related notes, tasks, commitments, needs, capabilities, introductions,
-proposals, source references, people, and companies are tenant-scoped. Snapshot
-participants are displayed only from their meeting snapshot fields and are not
-resolved by name or email. No audit log is written because the service does not
-mutate data.
+all related notes, tasks, commitments, needs, capabilities, proposals, source
+references, people, and companies are tenant-scoped. Legacy introduction
+suggestion source references are not surfaced in the user-facing prep output.
+Snapshot participants are displayed only from their meeting snapshot fields and
+are not resolved by name or email. No audit log is written because the service
+does not mutate data.
 
 Step 11A-1 voice transcription uses a server-side provider adapter. The API
 route requires authenticated tenant context, never accepts trusted `tenantId`

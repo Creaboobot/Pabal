@@ -25,7 +25,6 @@ export type StructuredSearchResultKind =
   | "commitments"
   | "needs"
   | "capabilities"
-  | "introductions"
   | "proposals"
   | "voiceNotes";
 
@@ -61,7 +60,6 @@ const groupLabels: Record<StructuredSearchResultKind, string> = {
   capabilities: "Capabilities",
   commitments: "Commitments",
   companies: "Companies",
-  introductions: "Introductions",
   meetings: "Meetings",
   needs: "Needs",
   notes: "Notes",
@@ -79,29 +77,6 @@ function preview(value: string | null | undefined, fallback = "No preview.") {
   const text = value?.trim() || fallback;
 
   return text.length > 160 ? `${text.slice(0, 157)}...` : text;
-}
-
-function introductionTitle(input: {
-  capability: { title: string } | null;
-  fromCompany: { name: string } | null;
-  fromPerson: { displayName: string } | null;
-  need: { title: string } | null;
-  rationale: string;
-  toCompany: { name: string } | null;
-  toPerson: { displayName: string } | null;
-}) {
-  if (input.need && input.capability) {
-    return `${input.need.title} <> ${input.capability.title}`;
-  }
-
-  const from = input.fromPerson?.displayName ?? input.fromCompany?.name;
-  const to = input.toPerson?.displayName ?? input.toCompany?.name;
-
-  if (from && to) {
-    return `${from} <> ${to}`;
-  }
-
-  return preview(input.rationale, "Introduction suggestion");
 }
 
 function groupsFromResults(
@@ -153,7 +128,6 @@ export async function getTenantStructuredSearch(
     commitments,
     needs,
     capabilities,
-    introductions,
     proposals,
     voiceNotes,
   ] = await Promise.all([
@@ -244,55 +218,6 @@ export async function getTenantStructuredSearch(
         OR: [{ description: contains }, { title: contains }],
       },
     }),
-    prisma.introductionSuggestion.findMany({
-      include: {
-        capability: {
-          select: {
-            title: true,
-          },
-        },
-        fromCompany: {
-          select: {
-            name: true,
-          },
-        },
-        fromPerson: {
-          select: {
-            displayName: true,
-          },
-        },
-        need: {
-          select: {
-            title: true,
-          },
-        },
-        toCompany: {
-          select: {
-            name: true,
-          },
-        },
-        toPerson: {
-          select: {
-            displayName: true,
-          },
-        },
-      },
-      orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
-      take: SEARCH_GROUP_LIMIT,
-      where: {
-        archivedAt: null,
-        tenantId: context.tenantId,
-        OR: [
-          { rationale: contains },
-          { capability: { title: contains } },
-          { fromCompany: { name: contains } },
-          { fromPerson: { displayName: contains } },
-          { need: { title: contains } },
-          { toCompany: { name: contains } },
-          { toPerson: { displayName: contains } },
-        ],
-      },
-    }),
     prisma.aIProposal.findMany({
       orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
       take: SEARCH_GROUP_LIMIT,
@@ -351,15 +276,6 @@ export async function getTenantStructuredSearch(
       kind: "companies",
       title: company.name,
       updatedAt: company.updatedAt,
-    })),
-    introductions: introductions.map((introduction) => ({
-      badges: [introduction.status],
-      description: preview(introduction.rationale),
-      href: `/opportunities/introductions/${introduction.id}`,
-      id: introduction.id,
-      kind: "introductions",
-      title: introductionTitle(introduction),
-      updatedAt: introduction.updatedAt,
     })),
     meetings: meetings.map((meeting) => ({
       badges: [meeting.sourceType],

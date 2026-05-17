@@ -196,5 +196,5 @@ export function introductionDisplayTitle(suggestion: {
     return truncatedText(suggestion.rationale.trim(), 80);
   }
 
-  return "Introduction suggestion";
+  return "Legacy relationship suggestion";
 }

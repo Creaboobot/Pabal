@@ -167,12 +167,11 @@ describeWithDatabase("relationship health why-now signals", () => {
         "OVERDUE_TASK",
         "OVERDUE_COMMITMENT",
         "ACTIVE_NEED",
-        "ACTIVE_INTRODUCTION",
         "PENDING_AI_PROPOSAL",
       ]),
     );
-    expect(health?.reasonCount).toBeGreaterThan(
-      health?.reasons.length ?? 0,
+    expect(health?.reasons.map((reason) => reason.type)).not.toContain(
+      "ACTIVE_INTRODUCTION",
     );
     expect(health?.reasons.every((reason) => reason.relatedEntityId)).toBe(
       true,

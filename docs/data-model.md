@@ -13,8 +13,8 @@ ledger without changing the schema. Step 9 uses the existing `AIProposal` and
 `AIProposalItem` models for status-only human review without changing the
 schema. Step 10A-1 uses the existing `Need` and `Capability` models for manual
 relationship-intelligence workflows without changing the schema. Step 10A-2
-uses the existing `IntroductionSuggestion` model for manual introduction
-tracking without changing the schema. Step 10C uses existing meeting and
+keeps the existing `IntroductionSuggestion` model as legacy/internal schema
+only; it is no longer an active V1 user-facing workflow. Step 10C uses existing meeting and
 relationship records for read-only prep briefs without changing the schema.
 Step 11A uses the existing `VoiceNote` model for backend transcription and
 transcript review without changing the schema. Step 11B uses existing
@@ -57,14 +57,17 @@ enrichment fields and one source enum value.
 ## Step 4B-1 action and intelligence readiness
 
 - `Task`: tenant-owned follow-up/action shell with optional person, company,
-  meeting, note, commitment, and introduction suggestion links.
+  meeting, note, commitment, and legacy internal introduction suggestion links.
 - `Commitment`: tenant-owned promise/obligation ledger, distinct from generic
   tasks, with owner/counterparty person or company links.
 - `Need`: tenant-owned problem, requirement, request, opportunity, or interest.
 - `Capability`: tenant-owned expertise, access, asset, experience, or solution
   potential.
-- `IntroductionSuggestion`: tenant-owned relationship brokerage suggestion that
-  can link a need, capability, people, and companies.
+- `IntroductionSuggestion`: tenant-owned legacy/internal relationship
+  brokerage suggestion that can link a need, capability, people, and companies.
+  The schema/table remains for historical data, source references, export, and
+  migration safety, but V1 no longer exposes it as an active user-facing
+  workflow.
 
 Step 4B-1 intentionally does not add `AIProposal`, `AIProposalItem`,
 `VoiceNote`, `VoiceMention`, billing, Microsoft Graph, LinkedIn enrichment,
@@ -281,9 +284,9 @@ Need and capability services validate linked records before writing and hide
 archived records from active lists/detail reads. Archiving sets `archivedAt`
 and never hard-deletes the record.
 
-Step 10A-2 promotes the existing `IntroductionSuggestion` model from readiness
-into a manual workflow. It does not add a migration. Introduction suggestions
-remain tenant-scoped and can link directly to:
+Step 10A-2 keeps the existing `IntroductionSuggestion` model for legacy/internal
+data. It does not add a migration. Introduction suggestion records remain
+tenant-scoped and can link directly to:
 
 - `Need`
 - `Capability`
@@ -295,6 +298,9 @@ so meeting/note provenance is recorded with tenant-validated
 `SourceReference` rows such as `MEETING -> INTRODUCTION_SUGGESTION` or
 `NOTE -> INTRODUCTION_SUGGESTION`. Dismissal maps to the existing `REJECTED`
 status. Archiving sets `archivedAt` and never hard-deletes the record.
+
+The user-facing Introduction Suggestion routes are retired and return
+not-found. Needs and capabilities remain the active V1 Opportunities workflow.
 
 Step 10A does not add automated matching, scoring, AI generation, semantic
 search, embeddings, message drafting, outreach sending, or background jobs.
@@ -315,8 +321,10 @@ Computed signals are:
 
 The service also returns explainable why-now reasons linked to source records
 where possible, including overdue/upcoming tasks, open commitments, active
-needs/capabilities, active introduction suggestions, pending proposal review,
-recent meetings/notes, and stale or dormant relationship context.
+needs/capabilities, pending proposal review, recent meetings/notes, and stale
+or dormant relationship context. Legacy introduction suggestion records may
+remain in the database but are not surfaced as user-facing relationship
+attention reasons.
 
 Existing stored `Person.relationshipStatus` and
 `Person.relationshipTemperature` remain unchanged. Step 10B-1 does not add AI
@@ -330,10 +338,13 @@ time from existing tenant-scoped records:
 
 - `Meeting`, `MeetingParticipant`, `Person`, and `Company` for meeting and
   participant context;
-- `Note`, `Task`, `Commitment`, `Need`, `Capability`,
-  `IntroductionSuggestion`, and `AIProposal` for explicitly linked context;
+- `Note`, `Task`, `Commitment`, `Need`, `Capability`, and `AIProposal` for
+  explicitly linked user-facing context;
 - `SourceReference` for provenance;
 - deterministic relationship-health DTOs for participant and company signals.
+
+Legacy `IntroductionSuggestion` records and source references remain in the
+schema but are filtered out of user-facing meeting prep output.
 
 No prep brief rows are persisted. The service does not create source
 references, mutate statuses, write audit logs, call AI providers, or sync from
@@ -418,8 +429,8 @@ retention and audio metadata are exported.
 
 Step 14C does not add a migration. Archive management uses existing
 `archivedAt` fields on people, companies, company affiliations, meetings, notes,
-tasks, commitments, needs, capabilities, introduction suggestions, AI
-proposals, and voice notes. Restore clears `archivedAt` and updates
+tasks, commitments, needs, capabilities, legacy internal introduction suggestion
+records, AI proposals, and voice notes. Restore clears `archivedAt` and updates
 `updatedByUserId` where the model has that field.
 
 Restoring a `Person` whose stored `relationshipStatus` is `ARCHIVED` maps the

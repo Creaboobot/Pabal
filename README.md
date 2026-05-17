@@ -8,7 +8,7 @@ The application helps users:
 - capture meeting notes and voice updates;
 - structure relationship intelligence with AI;
 - track follow-ups and commitments;
-- track manual needs, capabilities, and introduction opportunities;
+- track manual needs and capabilities;
 - prepare for meetings using relationship memory;
 - maintain a migration-ready SaaS foundation.
 
@@ -65,7 +65,7 @@ foundation: Auth.js-compatible authentication wiring, tenants/workspaces,
 memberships, roles, protected route shells, and audit logging baseline. It also
 includes the Step 4A relationship backbone models and the Step 4B-1
 action/intelligence-readiness models for tasks, commitments, needs,
-capabilities, and introduction suggestions. It also includes Step 4B-2
+capabilities, and legacy internal introduction suggestion records. It also includes Step 4B-2
 schema/readiness models for AI proposals and voice notes. Step 5 adds the
 mobile-first authenticated app shell for Today, Capture, People,
 Opportunities, and Search. Step 6A adds the first real
@@ -78,7 +78,7 @@ adds manual follow-up task workflows and Today task sections. Step 8B adds the
 manual commitment ledger and Today commitment sections. Step 9 adds the
 status-only AI proposal confirmation framework. Step 10A-1 adds manual needs
 and capabilities under Opportunities. Step 10A-2 adds manual introduction
-suggestion workflows. Step 10B-1 adds deterministic read-only relationship
+suggestion schema readiness, retained as legacy/internal data only. Step 10B-1 adds deterministic read-only relationship
 health and why-now signals for Today and person/company detail pages. Step 10C
 adds deterministic read-only meeting prep briefs from existing records. Step
 11A-1 adds the backend speech-to-text provider boundary and
@@ -146,6 +146,19 @@ Signed-in users land on `/today`; unauthenticated access to `/today`,
 `/capture`, `/commitments`, `/meetings`, `/notes`, `/tasks`, `/people`,
 `/proposals`, `/opportunities`, `/voice-notes`, `/search`, `/account`, and
 `/settings` redirects to `/sign-in`.
+
+Windows reviewers can also use the optional local launcher:
+
+```powershell
+tools/start-pobal-launcher.cmd
+```
+
+It is a local development utility only. It can load/select a GitHub repository,
+clone or reuse a matching local clone, fetch GitHub refs, fast-forward the
+current branch when clean, prepare local review environment values, start
+PostgreSQL, apply migrations, seed demo data, and launch the app on a selected
+`127.0.0.1` port. See
+[`docs/development/local-launcher.md`](docs/development/local-launcher.md).
 
 ### App shell routes
 
@@ -216,8 +229,9 @@ Manual follow-up tasks are available under `/tasks`:
 - `/tasks/[taskId]` for task detail and complete/reopen/archive actions.
 - `/tasks/[taskId]/edit` for task edits.
 
-Tasks can link to existing people, companies, meetings, notes, commitments, and
-introduction suggestions. Query-parameter context links from people, companies,
+Tasks can link to existing people, companies, meetings, notes, and commitments.
+Legacy internal introduction suggestion links are preserved on existing records
+but are not exposed in the task form. Query-parameter context links from people, companies,
 meetings, and notes are convenience hints only; server actions validate all
 linked records inside the active workspace. Step 8A does not add reminders,
 notifications, background jobs, automatic extraction, AI recommendations, or
@@ -337,34 +351,29 @@ Manual relationship intelligence is available under `/opportunities`:
 - `/opportunities/capabilities/[capabilityId]` for capability detail and
   archive actions.
 - `/opportunities/capabilities/[capabilityId]/edit` for capability edits.
-- `/opportunities/introductions` for manual introduction suggestions.
-- `/opportunities/introductions/new` for manual introduction creation.
-- `/opportunities/introductions/[introductionSuggestionId]` for introduction
-  detail, archive, and dismissal actions.
-- `/opportunities/introductions/[introductionSuggestionId]/edit` for
-  introduction edits.
 
 Needs can link to people, companies, meetings, and notes. Capabilities can link
 to people, companies, and notes; the current schema has no direct meeting link
-for capabilities. Introduction suggestions can link to needs, capabilities,
-from/to people, and from/to companies. Meeting and note provenance is recorded
-through tenant-validated `SourceReference` rows where provided. Contextual
-create links are convenience hints only, and server actions validate all linked
-records inside the active workspace. Step 10A does not add matching, scoring,
-AI generation, message drafting, outreach sending, semantic search, embeddings,
-notifications, jobs, or permanent deletion.
+for capabilities. Meeting and note provenance is recorded through
+tenant-validated `SourceReference` rows where provided. Contextual create links
+are convenience hints only, and server actions validate all linked records
+inside the active workspace. `IntroductionSuggestion` schema/data and
+historical source references remain available internally for legacy data and
+exports, but the user-facing routes are retired. Step 10A does not add
+matching, scoring, AI generation, message drafting, outreach sending, semantic
+search, embeddings, notifications, jobs, or permanent deletion.
 
 Deterministic relationship health is visible on `/today`, person detail pages,
 and company detail pages. Signals are computed at read time from existing
 tenant-scoped records such as tasks, commitments, meetings, notes, needs,
-capabilities, introductions, and suggested update review records. They are
+capabilities, and suggested update review records. They are
 explainable, source-linked where possible, and are not persisted as scores.
 They do not call AI providers, create recommendations automatically, send
 notifications, or run background jobs.
 
 Meeting prep briefs are available at `/meetings/[meetingId]/prep` from meeting
 detail. Briefs aggregate existing tenant-scoped meeting, participant, company,
-note, task, commitment, need, capability, introduction, suggested update, and
+note, task, commitment, need, capability, suggested update, and
 relationship-health context. They are deterministic, source-linked, read-only,
 not AI-generated, and not synced from Outlook or Teams.
 
@@ -392,8 +401,9 @@ Optional deterministic demo data can be seeded by setting
 `SEED_DEMO_DATA=true` before `pnpm prisma:seed`. The V1 review seed creates a
 coherent fake workspace with people, companies, affiliations, meetings, pasted
 Teams/Copilot notes, manual LinkedIn-context notes, tasks, commitments,
-opportunities, introduction suggestions, review-only AI proposals, voice notes,
-source references, archived records, and safe audit events. It is deterministic
+opportunities, legacy internal introduction suggestion rows, review-only AI
+proposals, voice notes, source references, archived records, and safe audit
+events. It is deterministic
 and idempotent, uses only synthetic `.example`-style data, does not store raw
 audio, and does not call AI, transcription, Microsoft, LinkedIn, billing, or
 other external providers.

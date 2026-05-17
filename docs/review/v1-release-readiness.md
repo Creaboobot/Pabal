@@ -33,9 +33,9 @@ documentation refresh, and signed-in Playwright smoke coverage were merged.
   demo workspace.
 - The demo story covers people, companies, affiliations, meetings, notes,
   Teams/Copilot-style pasted notes, LinkedIn user-provided notes, tasks,
-  commitments, opportunities, needs, capabilities, introduction suggestions,
-  AI proposals, voice notes, source references, archived records, and audit
-  events.
+  commitments, opportunities, needs, capabilities, legacy internal introduction
+  suggestion rows, AI proposals, voice notes, source references, archived
+  records, and audit events.
 - Demo data is scoped to the active demo tenant and does not depend on external
   services.
 

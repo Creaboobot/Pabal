@@ -37,7 +37,6 @@ import {
   capabilityStatusLabel,
   capabilityTypeLabel,
   confidenceLabel,
-  introductionStatusLabel,
   needStatusLabel,
   needTypeLabel,
   priorityLabel,
@@ -150,23 +149,6 @@ function capabilityRecords(
       href: capability.href,
       id: capability.id,
       title: capability.title,
-    })) ?? []
-  );
-}
-
-function introductionRecords(
-  brief: Awaited<ReturnType<typeof getTenantMeetingPrepBrief>>,
-): PrepRecordListItem[] {
-  return (
-    brief?.records.introductions.map((introduction) => ({
-      badges: [
-        introductionStatusLabel(introduction.status),
-        confidenceLabel(introduction.confidence),
-      ],
-      description: introduction.rationalePreview,
-      href: introduction.href,
-      id: introduction.id,
-      title: "Introduction suggestion",
     })) ?? []
   );
 }
@@ -430,16 +412,6 @@ export default async function MeetingPrepPage({
       </section>
 
       <section className="grid gap-3 lg:grid-cols-2">
-        <CockpitCard
-          title="Introduction suggestions"
-          value={brief.records.introductions.length}
-        >
-          <PrepRecordList
-            emptyDescription="No active introduction suggestions are explicitly linked to this meeting context."
-            records={introductionRecords(brief)}
-          />
-        </CockpitCard>
-
         <CockpitCard
           title="Pending suggested updates"
           value={brief.records.proposals.length}

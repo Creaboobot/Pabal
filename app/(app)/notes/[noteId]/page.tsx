@@ -40,6 +40,16 @@ type NoteDetailPageProps = {
   }>;
 };
 
+function isVisibleSourceReference(reference: {
+  sourceEntityType: string;
+  targetEntityType: string;
+}) {
+  return (
+    reference.sourceEntityType !== "INTRODUCTION_SUGGESTION" &&
+    reference.targetEntityType !== "INTRODUCTION_SUGGESTION"
+  );
+}
+
 export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
   const [{ noteId }, context] = await Promise.all([
     params,
@@ -63,6 +73,10 @@ export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
       : note.companyId
         ? `/people/companies/${note.companyId}`
         : "/capture";
+  const visibleSourceReferences =
+    note.sourceReferences.filter(isVisibleSourceReference);
+  const visibleTargetReferences =
+    note.targetReferences.filter(isVisibleSourceReference);
 
   return (
     <div className="space-y-6">
@@ -105,14 +119,6 @@ export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
               >
                 <BadgeCheck aria-hidden="true" className="mr-2 size-4" />
                 Create capability
-              </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link
-                href={`/opportunities/introductions/new?sourceNoteId=${note.id}`}
-              >
-                <Handshake aria-hidden="true" className="mr-2 size-4" />
-                Create introduction
               </Link>
             </Button>
           </div>
@@ -171,13 +177,13 @@ export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
             </p>
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline">
-                {note.sourceReferences.length} outgoing
+                {visibleSourceReferences.length} outgoing
               </Badge>
               <Badge variant="outline">
-                {note.targetReferences.length} incoming
+                {visibleTargetReferences.length} incoming
               </Badge>
             </div>
-            {note.sourceReferences.map((reference) => (
+            {visibleSourceReferences.map((reference) => (
               <div
                 className="rounded-md border border-border bg-background p-3"
                 key={reference.id}

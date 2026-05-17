@@ -48,11 +48,11 @@ in one transaction. They do not parse pasted text, call AI providers, create
 proposals, or extract tasks/commitments/needs/capabilities.
 
 Task services validate tenant-owned person, company, meeting, note, commitment,
-and introduction suggestion links before mutating records. They own manual task
-create/update/complete/reopen/archive lifecycle changes, write safe audit logs,
-and derive Today task sections from `dueAt` at read time. They do not send
-reminders, run background jobs, create tasks automatically, call AI providers,
-or implement the commitment-ledger workflow.
+and legacy internal introduction suggestion links before mutating records. They
+own manual task create/update/complete/reopen/archive lifecycle changes, write
+safe audit logs, and derive Today task sections from `dueAt` at read time. They
+do not send reminders, run background jobs, create tasks automatically, call AI
+providers, or implement the commitment-ledger workflow.
 
 Commitment services validate tenant-owned owner/counterparty people and
 companies plus meeting/note links before mutating records. They own manual

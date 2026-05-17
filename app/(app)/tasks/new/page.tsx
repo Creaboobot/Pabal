@@ -34,10 +34,6 @@ export default async function NewTaskPage({ searchParams }: NewTaskPageProps) {
   const options = await getTenantTaskFormOptions(context);
   const commitmentId = firstSearchParam(params, "commitmentId") ?? null;
   const companyId = firstSearchParam(params, "companyId") ?? null;
-  const introductionSuggestionId = firstSearchParam(
-    params,
-    "introductionSuggestionId",
-  ) ?? null;
   const meetingId = firstSearchParam(params, "meetingId") ?? null;
   const noteId = firstSearchParam(params, "noteId") ?? null;
   const personId = firstSearchParam(params, "personId") ?? null;
@@ -55,11 +51,10 @@ export default async function NewTaskPage({ searchParams }: NewTaskPageProps) {
           initialValues={{
             commitmentId,
             companyId,
-            introductionSuggestionId,
             meetingId,
             noteId,
             personId,
-            taskType: introductionSuggestionId ? "INTRODUCTION" : "FOLLOW_UP",
+            taskType: "FOLLOW_UP",
           }}
           mode="create"
           options={options}
