@@ -64,7 +64,7 @@ const groupLabels: Record<StructuredSearchResultKind, string> = {
   needs: "Needs",
   notes: "Notes",
   people: "People",
-  proposals: "Proposals",
+  proposals: "Suggested updates",
   tasks: "Tasks",
   voiceNotes: "Voice notes",
 };
