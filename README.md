@@ -65,11 +65,11 @@ foundation: Auth.js-compatible authentication wiring, tenants/workspaces,
 memberships, roles, protected route shells, and audit logging baseline. It also
 includes the Step 4A relationship backbone models and the Step 4B-1
 action/intelligence-readiness models for tasks, commitments, needs,
-capabilities, and legacy internal introduction suggestion records. It also includes Step 4B-2
-schema/readiness models for AI proposals and voice notes. Step 5 adds the
-mobile-first authenticated app shell for Today, Capture, People,
-Opportunities, and Search. Step 6A adds the first real
-product workflow: mobile-first people and company record management. Step 6B
+capabilities, and legacy internal introduction suggestion records. It also
+includes Step 4B-2 schema/readiness models for AI proposals and voice notes.
+Step 5 adds the mobile-first authenticated app shell for Today, Capture,
+People, Opportunities, and Search. Step 6A adds the first real product
+workflow: mobile-first people and company record management. Step 6B
 adds basic affiliation management and read-only related meeting/note summaries.
 Step 7A adds manual meeting records, meeting participants, source metadata, and
 audit-logged archive/remove actions. Step 7B adds manual note workflows and
@@ -77,13 +77,13 @@ pasted Teams/Copilot meeting-note capture as user-provided text only. Step 8A
 adds manual follow-up task workflows. Step 8B adds the manual commitment
 ledger. The current workflow makes `/tasks` the unified action area for tasks
 and active commitments while keeping `/commitments` as the commitment ledger.
-Step 9 adds the status-only AI proposal confirmation framework. Step 10A-1 adds
-manual needs and capabilities under Opportunities. Step 10A-2 adds manual
-introduction suggestion schema readiness, retained as legacy/internal data
-only. Step 10B-1 adds deterministic read-only relationship health and why-now
-signals for Today and person/company detail pages, including due Need review
-dates. Step 10C adds deterministic read-only meeting prep briefs from existing
-records. Step 11A-1 adds the backend speech-to-text provider boundary and
+Step 9 adds status-only Suggested update review on internal `AIProposal`
+records. Step 10A-1 adds manual needs and capabilities under Opportunities.
+Step 10A-2 keeps introduction suggestion schema/data readiness as
+legacy/internal data only. Step 10B-1 adds deterministic read-only
+relationship health and why-now signals for Today and person/company detail
+pages, including due Need review dates. Step 10C adds deterministic read-only
+meeting prep briefs from existing records. Step 11A-1 adds the backend speech-to-text provider boundary and
 `POST /api/voice-notes/transcribe` for tenant-validated VoiceNote transcript
 persistence. Step 11A-2 adds the mobile browser voice recorder, transcript
 review pages, edit/archive actions, and source-context chips while keeping raw
@@ -425,6 +425,10 @@ seeded `demo@pobal.local` reviewer, and checks the V1 review-critical routes
 against deterministic demo data. Development auth remains disabled in
 production, and the e2e suite uses mock/disabled provider settings so no real
 OpenAI, Microsoft, LinkedIn, Stripe, or other external calls are made.
+Use `corepack pnpm test:e2e` if bare `pnpm` is not available on the local shell
+path. If seeded deep links return 404 locally, rerun the deterministic seed
+after migrations against a disposable local database; CI reseeds before the
+browser smoke suite.
 
 ### Docker Compose
 

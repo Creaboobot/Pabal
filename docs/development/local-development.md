@@ -149,26 +149,26 @@ and deterministic V1 review demo data. It does not weaken production auth:
 First install the browser binary once:
 
 ```bash
-pnpm exec playwright install --with-deps chromium
+corepack pnpm exec playwright install --with-deps chromium
 ```
 
 Then prepare the local database with migrations and demo data:
 
 ```bash
 docker compose up -d postgres
-pnpm prisma:deploy
-SEED_DEMO_DATA=true pnpm prisma:seed
-pnpm test:e2e
+corepack pnpm prisma:deploy
+SEED_DEMO_DATA=true corepack pnpm prisma:seed
+corepack pnpm test:e2e
 ```
 
 PowerShell:
 
 ```powershell
 docker compose up -d postgres
-pnpm prisma:deploy
+corepack pnpm prisma:deploy
 $env:SEED_DEMO_DATA = "true"
-pnpm prisma:seed
-pnpm test:e2e
+corepack pnpm prisma:seed
+corepack pnpm test:e2e
 ```
 
 Playwright starts the Next.js dev server on `http://127.0.0.1:3100` with
@@ -180,6 +180,13 @@ review-critical routes plus deterministic seeded deep links. It does not call
 real OpenAI, Microsoft Graph, LinkedIn, Stripe, or any external provider. Use
 `PLAYWRIGHT_BASE_URL` and `PLAYWRIGHT_WEB_SERVER_COMMAND` only when you need to
 point the smoke suite at a deliberately chosen local server.
+
+If seeded deep links return 404 locally, the database does not contain the
+deterministic V1 review records. Rerun the seed after migrations against a
+disposable local database. If an older local database fails the seed on an
+existing uniqueness conflict, prefer a fresh local database for review instead
+of changing seed logic; CI applies migrations and reseeds before the browser
+suite.
 
 ## Voice Transcription And Review
 
@@ -213,7 +220,7 @@ redirects to the VoiceNote detail page after transcription. Reviewing a
 transcript can save edited transcript text and source links; it does not
 structure the transcript or update linked records automatically.
 
-Step 11B adds a `Create proposal from transcript` action on VoiceNote detail.
+Step 11B adds a `Create suggested update` action on VoiceNote detail.
 For local/mock testing, set:
 
 ```bash
@@ -229,10 +236,11 @@ OPENAI_STRUCTURING_MODEL=gpt-4o-mini
 ```
 
 `OPENAI_API_KEY` is still not required for build or readiness checks. The
-structuring action creates review-only `AIProposal` and `AIProposalItem`
-records linked to the VoiceNote. It does not apply proposal patches, mutate
-target records, create `VoiceMention` records, perform external lookup, or call
-LinkedIn/Microsoft/Teams/Outlook services.
+structuring action creates review-only Suggested update records, internally
+stored as `AIProposal` and `AIProposalItem` rows linked to the VoiceNote. It
+does not apply proposal patches, mutate target records, create `VoiceMention`
+records, perform external lookup, or call LinkedIn/Microsoft/Teams/Outlook
+services.
 
 ## App Shell
 
@@ -328,10 +336,11 @@ actions still validate every linked record inside the active tenant. Task
 lifecycle actions can complete, reopen, and archive records without deleting
 linked relationship context.
 
-The Today screen shows task sections for overdue, due-today, upcoming, and
-recently completed manual tasks. Step 8A does not send reminders, run
-background jobs, parse notes, create tasks automatically, call AI providers, or
-add the commitment-ledger workflow.
+The `/tasks` page is now the unified action area for existing tasks and active
+commitments. It groups action items by needs attention, upcoming, waiting, open
+without date, and recently completed. The aggregation is read-only and does not
+send reminders, run background jobs, parse notes, create tasks automatically,
+call AI providers, or merge the underlying Task and Commitment models.
 
 ## Commitment Ledger
 
@@ -348,23 +357,28 @@ commitment server actions still validate every linked record inside the active
 tenant. Commitment lifecycle actions can fulfil, cancel, and archive records
 without deleting linked relationship context.
 
-The Today screen shows commitment sections for overdue, due-today, upcoming,
-waiting, and recently fulfilled commitments. Step 8B does not create tasks
-automatically, send reminders, run background jobs, parse notes, extract
-commitments, or call AI providers.
+The commitment ledger remains available at `/commitments` for commitment-
+specific status, ownership, fulfil, cancel, archive, and detail review.
+Commitments can also appear in `/tasks` for unified action review. Step 8B and
+the unified action board do not create tasks automatically, send reminders, run
+background jobs, parse notes, extract commitments, or call AI providers.
 
-## Proposal Review
+## Suggested Update Review
 
-Step 9 adds status-only AI proposal review:
+Step 9 adds status-only Suggested update review:
 
 - `/proposals`
 - `/proposals/[proposalId]`
 
-Seed demo data with `SEED_DEMO_DATA=true` to preview stored proposal records.
+User-facing screens call these records Suggested updates at `/proposals`; the
+internal model names remain `AIProposal` and `AIProposalItem`.
+Seed demo data with `SEED_DEMO_DATA=true` to preview stored suggested update
+records.
 Users can approve, reject, mark items as needing clarification, approve/reject
-all pending items, or dismiss a proposal. These actions update proposal review
+all pending items, or dismiss a suggested update. These actions update review
 status and write audit logs only. They do not apply patches, mutate target
-records, create tasks or commitments, call AI providers, or run background jobs.
+records, create tasks or commitments, call AI providers, or run background
+jobs.
 
 ## Opportunities
 
@@ -395,8 +409,8 @@ or permanent deletion.
 Step 10B-1 adds deterministic why-now signals on `/today`, person detail, and
 company detail pages. The signals are read-only and computed from existing
 tenant-scoped tasks, commitments, meetings, notes, needs, capabilities,
-proposal review records, and legacy internal introduction suggestion records
-that are not surfaced as introduction-specific user-facing output.
+suggested update review records, and legacy internal introduction suggestion
+records that are not surfaced as introduction-specific user-facing output.
 
 The V1 thresholds are hardcoded internally: active within 14 days, warm within
 45 days, stale after 60 days, dormant after 120 days, and upcoming due items
@@ -409,8 +423,9 @@ in this step.
 Step 10C adds `/meetings/[meetingId]/prep`, linked from meeting detail as
 `View prep brief`. The brief is deterministic, read-only, and source-linked. It
 aggregates existing tenant-scoped participant, company, note, task,
-commitment, need, capability, introduction, proposal, and relationship-health
-context. It does not generate summaries, call AI providers, sync from
+commitment, need, capability, suggested update, and relationship-health
+context. Legacy introduction suggestion records are filtered out of the
+user-facing brief. It does not generate summaries, call AI providers, sync from
 Outlook/Teams, create source references, write audit logs, or mutate records.
 
 ## Microsoft Graph Readiness

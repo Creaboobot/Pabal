@@ -1,12 +1,20 @@
 # V1 Review Walkthrough
 
-This walkthrough uses the deterministic demo workspace created with
+This walkthrough follows the current V1 review flow:
+
+```text
+Capture source memory -> review Suggested updates -> act through Tasks, Meetings, and Relationship attention
+```
+
+It uses the deterministic demo workspace created with
 `SEED_DEMO_DATA=true pnpm prisma:seed`. The data is synthetic and idempotent.
 It does not call external providers or include real personal/customer data.
 
 CI also runs a signed-in mobile Playwright smoke suite against this demo shape.
-For local browser smoke checks, seed the demo workspace and run `pnpm test:e2e`;
-the suite uses development auth only in non-production test environments.
+For local browser smoke checks, seed the demo workspace and run
+`pnpm test:e2e`; use `corepack pnpm ...` if bare `pnpm` is not available on
+the local shell path. The suite uses development auth only in non-production
+test environments.
 
 ## 1. Sign In
 
@@ -26,7 +34,9 @@ Review:
 
 - primary cards for Tasks, Meetings, and Relationship attention;
 - a secondary Suggested updates review queue;
-- commitment context that remains accessible without competing with Tasks;
+- a unified action attention section that combines tasks and active
+  commitments;
+- the commitment ledger remaining reachable without competing with Tasks;
 - deterministic relationship attention with source-linked reasons, including
   due Need review dates where present.
 
@@ -111,7 +121,7 @@ Review:
 
 Boundary: opportunities are manual records. There is no automated matching,
 scoring, outreach drafting, message sending, semantic search, embeddings,
-reminder creation, or active Introduction Suggestions workflow.
+reminder creation, or active introduction-suggestion workflow.
 
 ## 8. Suggested Update Review
 
@@ -125,10 +135,10 @@ Review:
 - proposed patch preview;
 - needs-clarification items.
 
-Boundary: suggested update approval is status-only. There is no proposal application
-engine, automatic record mutation, automatic outreach, or background job. Task
-and Meeting creation are separate user-confirmed form submissions with
-SourceReference provenance.
+Boundary: suggested update approval is status-only. There is no proposal
+application engine, automatic record mutation, automatic outreach, or
+background job. Task and Meeting creation are separate user-confirmed form
+submissions with SourceReference provenance.
 
 ## 9. Voice Notes
 

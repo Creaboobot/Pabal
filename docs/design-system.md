@@ -114,27 +114,28 @@ Step 8B extends the same patterns for the manual commitment ledger:
 - read-only linked task displays where an existing task references the
   commitment;
 - inline confirmation controls for fulfil/cancel/archive lifecycle actions;
-- Today sections for overdue, due-today, upcoming, waiting, and recently
-  fulfilled commitments.
+- commitment ledger sections for overdue, due-today, upcoming, waiting, and
+  recently fulfilled commitments.
 
 Commitment screens should keep tasks distinct from commitments and avoid
 automatic task creation, reminder-delivery, background-job, AI extraction, or
 autonomous workflow affordances.
 
-Step 9 extends the same patterns for AI proposal confirmation:
+Step 9 extends the same patterns for Suggested update review over internal AI
+proposal records:
 
-- compact proposal inbox cards instead of tables;
-- proposal item cards with status, action type, confidence, source, and target
-  context;
+- compact Suggested update inbox cards instead of tables;
+- suggested update item cards with status, action type, confidence, source, and
+  target context;
 - readable proposed patch previews that mask sensitive-looking values and
   truncate long text;
 - inline confirmation controls for approve, reject, needs-clarification,
   approve-all, reject-all, and dismiss actions;
 - clear copy that approval is status-only and does not apply changes.
 
-Proposal screens should avoid provider, generation, extraction, notification,
-or background-job affordances. They review existing stored proposal records
-only.
+Suggested update screens should avoid provider, generation, extraction,
+notification, or background-job affordances. They review existing stored
+proposal records only.
 
 Step 10A extends the same patterns for manual needs and capabilities:
 
