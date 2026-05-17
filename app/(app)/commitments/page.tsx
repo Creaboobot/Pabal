@@ -71,7 +71,7 @@ export default async function CommitmentsPage() {
             </Link>
           </Button>
         }
-        description="Promises and obligations tracked separately from generic follow-up tasks."
+        description="The promise ledger behind the Tasks action area. Use this view for commitment-specific status and ownership."
         eyebrow="Ledger"
         title="Commitments"
       />
@@ -132,8 +132,10 @@ export default async function CommitmentsPage() {
             className="mt-0.5 size-5 text-primary"
           />
           <p className="text-sm leading-6 text-muted-foreground">
-            This step stores user-entered commitments only. It does not parse
-            notes, create tasks, send reminders, or run background jobs.
+            This ledger stores user-entered commitments only. Commitments can
+            appear in Tasks for action review, but this page remains the
+            dedicated place for fulfil, cancel, archive, and commitment-specific
+            detail.
           </p>
         </div>
       </CockpitCard>

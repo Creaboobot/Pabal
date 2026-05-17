@@ -1,39 +1,43 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CheckCircle2, ListChecks, Plus } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Handshake,
+  ListChecks,
+  Plus,
+} from "lucide-react";
 
 import { PageHeader } from "@/components/app/page-header";
 import { CockpitCard } from "@/components/cards/cockpit-card";
 import { EmptyState } from "@/components/states/empty-state";
 import { Button } from "@/components/ui/button";
-import {
-  TaskCard,
-  type TaskCardTask,
-} from "@/modules/tasks/components/task-card";
+import { ActionItemCard } from "@/modules/tasks/components/action-item-card";
+import type { ActionBoardItem } from "@/server/services/action-board";
+import { getTenantActionBoard } from "@/server/services/action-board";
 import { getCurrentUserContext } from "@/server/services/session";
-import { getTenantTaskBoard } from "@/server/services/tasks";
 
 export const dynamic = "force-dynamic";
 
-type TaskSectionProps = {
+type ActionSectionProps = {
   description: string;
-  tasks: TaskCardTask[];
+  items: ActionBoardItem[];
   title: string;
 };
 
-function TaskSection({ description, tasks, title }: TaskSectionProps) {
-  if (tasks.length === 0) {
+function ActionSection({ description, items, title }: ActionSectionProps) {
+  if (items.length === 0) {
     return null;
   }
 
   return (
-    <CockpitCard title={title} value={tasks.length}>
+    <CockpitCard title={title} value={items.length}>
       <p className="mb-3 text-sm leading-6 text-muted-foreground">
         {description}
       </p>
       <div className="grid gap-3">
-        {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+        {items.map((item) => (
+          <ActionItemCard item={item} key={`${item.sourceType}:${item.id}`} />
         ))}
       </div>
     </CockpitCard>
@@ -47,55 +51,63 @@ export default async function TasksPage() {
     redirect("/sign-in?callbackUrl=/tasks");
   }
 
-  const board = await getTenantTaskBoard(context);
+  const board = await getTenantActionBoard(context);
   const hasTasks =
-    board.overdue.length > 0 ||
-    board.dueToday.length > 0 ||
+    board.needsAttention.length > 0 ||
     board.upcoming.length > 0 ||
-    board.openWithoutDue.length > 0 ||
+    board.waiting.length > 0 ||
+    board.openWithoutDate.length > 0 ||
     board.recentlyCompleted.length > 0;
 
   return (
     <div className="space-y-6">
       <PageHeader
         actions={
-          <Button asChild>
-            <Link href="/tasks/new">
-              <Plus aria-hidden="true" className="mr-2 size-4" />
-              New task
-            </Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild>
+              <Link href="/tasks/new">
+                <Plus aria-hidden="true" className="mr-2 size-4" />
+                New task
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/commitments/new">
+                <Handshake aria-hidden="true" className="mr-2 size-4" />
+                New commitment
+              </Link>
+            </Button>
+          </div>
         }
-        description="Manual follow-ups linked to the relationship context that explains why they matter."
+        description="The unified action area for follow-ups and commitments linked to relationship context."
         eyebrow="Follow-ups"
         title="Tasks"
       />
 
       {hasTasks ? (
         <div className="grid gap-4">
-          <TaskSection
-            description="Due dates that have passed and still need attention."
-            tasks={board.overdue}
-            title="Overdue"
+          <ActionSection
+            description="Overdue and due-today work across tasks and commitments."
+            items={board.needsAttention}
+            title="Needs attention"
           />
-          <TaskSection
-            description="Follow-ups due before the day ends."
-            tasks={board.dueToday}
-            title="Due today"
-          />
-          <TaskSection
-            description="Future manual follow-ups with due dates."
-            tasks={board.upcoming}
+          <ActionSection
+            description="Future follow-ups and commitments with due dates or due windows."
+            items={board.upcoming}
             title="Upcoming"
           />
-          <TaskSection
-            description="Open follow-ups without a due date yet."
-            tasks={board.openWithoutDue}
+          <ActionSection
+            description="Commitments currently waiting on another person or organisation."
+            items={board.waiting}
+            title="Waiting"
+          />
+          <ActionSection
+            description="Open follow-ups and commitments without a due date or due window."
+            items={board.openWithoutDate}
             title="Open without due date"
           />
-          <TaskSection
-            description="Recently completed follow-ups for quick review."
-            tasks={board.recentlyCompleted}
+          <ActionSection
+            description="Recently completed tasks and fulfilled commitments for quick review."
+            items={board.recentlyCompleted}
             title="Recently completed"
           />
         </div>
@@ -109,23 +121,31 @@ export default async function TasksPage() {
               </Link>
             </Button>
           }
-          description="Create a follow-up from a person, company, meeting, note, or directly here."
+          description="Create a follow-up task or commitment from relationship context, or start directly here."
           icon={ListChecks}
-          title="No tasks yet"
+          title="No action items yet"
         />
       )}
 
-      <CockpitCard title="Manual task workflow">
-        <div className="flex gap-3 rounded-md border border-border bg-background p-3">
-          <CheckCircle2
-            aria-hidden="true"
-            className="mt-0.5 size-5 text-primary"
-          />
-          <p className="text-sm leading-6 text-muted-foreground">
-            This step stores user-entered follow-ups only. It does not parse
-            notes, create AI recommendations, send reminders, or run background
-            jobs.
-          </p>
+      <CockpitCard title="Action boundaries">
+        <div className="grid gap-3">
+          <div className="flex gap-3 rounded-md border border-border bg-background p-3">
+            <CheckCircle2
+              aria-hidden="true"
+              className="mt-0.5 size-5 text-primary"
+            />
+            <p className="text-sm leading-6 text-muted-foreground">
+              This page combines existing tasks and commitments for review
+              only. It does not create tasks from commitments, send reminders,
+              or run background jobs.
+            </p>
+          </div>
+          <Button asChild className="w-fit" size="sm" variant="outline">
+            <Link href="/commitments">
+              Open commitment ledger
+              <ArrowRight aria-hidden="true" className="ml-2 size-4" />
+            </Link>
+          </Button>
         </div>
       </CockpitCard>
     </div>

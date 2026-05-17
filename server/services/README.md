@@ -50,17 +50,22 @@ proposals, or extract tasks/commitments/needs/capabilities.
 Task services validate tenant-owned person, company, meeting, note, commitment,
 and legacy internal introduction suggestion links before mutating records. They
 own manual task create/update/complete/reopen/archive lifecycle changes, write
-safe audit logs, and derive Today task sections from `dueAt` at read time. They
+safe audit logs, and derive task board sections from `dueAt` at read time. They
 do not send reminders, run background jobs, create tasks automatically, call AI
 providers, or implement the commitment-ledger workflow.
 
 Commitment services validate tenant-owned owner/counterparty people and
 companies plus meeting/note links before mutating records. They own manual
 commitment create/update/fulfil/cancel/archive lifecycle changes, write safe
-audit logs, and derive Today commitment sections from `dueAt` or due-window
+audit logs, and derive commitment board sections from `dueAt` or due-window
 boundaries at read time. They do not create tasks automatically, send
 reminders, run background jobs, parse notes, extract commitments, or call AI
 providers.
+
+Action-board services are read-only. They combine existing task and commitment
+board sections for `/tasks` and Today display without creating, updating,
+completing, fulfilling, cancelling, archiving, auditing, notifying, or running
+background work.
 
 Relationship-health services are read-only. They compute deterministic
 relationship signals and why-now reasons from existing tenant-scoped records,

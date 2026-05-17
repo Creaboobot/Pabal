@@ -74,15 +74,16 @@ adds basic affiliation management and read-only related meeting/note summaries.
 Step 7A adds manual meeting records, meeting participants, source metadata, and
 audit-logged archive/remove actions. Step 7B adds manual note workflows and
 pasted Teams/Copilot meeting-note capture as user-provided text only. Step 8A
-adds manual follow-up task workflows and Today task sections. Step 8B adds the
-manual commitment ledger and Today commitment sections. Step 9 adds the
-status-only AI proposal confirmation framework. Step 10A-1 adds manual needs
-and capabilities under Opportunities. Step 10A-2 adds manual introduction
-suggestion schema readiness, retained as legacy/internal data only. Step 10B-1
-adds deterministic read-only relationship health and why-now signals for Today
-and person/company detail pages, including due Need review dates. Step 10C
-adds deterministic read-only meeting prep briefs from existing records. Step
-11A-1 adds the backend speech-to-text provider boundary and
+adds manual follow-up task workflows. Step 8B adds the manual commitment
+ledger. The current workflow makes `/tasks` the unified action area for tasks
+and active commitments while keeping `/commitments` as the commitment ledger.
+Step 9 adds the status-only AI proposal confirmation framework. Step 10A-1 adds
+manual needs and capabilities under Opportunities. Step 10A-2 adds manual
+introduction suggestion schema readiness, retained as legacy/internal data
+only. Step 10B-1 adds deterministic read-only relationship health and why-now
+signals for Today and person/company detail pages, including due Need review
+dates. Step 10C adds deterministic read-only meeting prep briefs from existing
+records. Step 11A-1 adds the backend speech-to-text provider boundary and
 `POST /api/voice-notes/transcribe` for tenant-validated VoiceNote transcript
 persistence. Step 11A-2 adds the mobile browser voice recorder, transcript
 review pages, edit/archive actions, and source-context chips while keeping raw
@@ -224,10 +225,10 @@ meeting and note with `TEAMS_COPILOT_PASTE`, and creates a safe `NOTE ->
 MEETING` source reference. It does not parse, summarise, extract tasks,
 commitments, needs, capabilities, or create AI proposals.
 
-Manual follow-up tasks are available under `/tasks`:
+Tasks are the unified action area for follow-ups and active commitments:
 
-- `/tasks` for task sections grouped by overdue, due today, upcoming, open
-  without due date, and recently completed.
+- `/tasks` for unified action sections grouped by needs attention, upcoming,
+  waiting, open without date, and recently completed.
 - `/tasks/new` for manual task creation.
 - `/tasks/[taskId]` for task detail and complete/reopen/archive actions.
 - `/tasks/[taskId]/edit` for task edits.
@@ -236,9 +237,9 @@ Tasks can link to existing people, companies, meetings, notes, and commitments.
 Legacy internal introduction suggestion links are preserved on existing records
 but are not exposed in the task form. Query-parameter context links from people, companies,
 meetings, and notes are convenience hints only; server actions validate all
-linked records inside the active workspace. Step 8A does not add reminders,
-notifications, background jobs, automatic extraction, AI recommendations, or
-the commitment-ledger UI.
+linked records inside the active workspace. The unified action board is read-only:
+it does not create tasks from commitments, send reminders, run background jobs,
+parse notes, extract commitments, or call AI providers.
 
 Manual commitments are available under `/commitments`:
 
@@ -250,7 +251,8 @@ Manual commitments are available under `/commitments`:
 - `/commitments/[commitmentId]/edit` for commitment edits.
 
 Commitments can link to existing people, companies, meetings, and notes. Linked
-tasks are shown read-only when an existing task references a commitment.
+tasks are shown read-only when an existing task references a commitment, and
+active commitments can appear in `/tasks` for action review.
 Contextual links from people, companies, meetings, and notes preselect fields
 only; server actions validate all linked records inside the active workspace.
 Step 8B does not create tasks automatically, send reminders, run background
