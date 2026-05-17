@@ -37,22 +37,25 @@ to later explicit steps.
 
 ## Step 10A Boundary
 
-Manual needs, capabilities, and introduction suggestions are not AI-generated
-in Step 10A. Creating or editing these records never invokes an AI provider,
-computes matches, generates recommendations, drafts messages, sends outreach,
-or mutates records from model output. Future AI-assisted brokerage must create
-reviewable, source-linked proposals before any user-approved application step
-exists.
+Manual needs and capabilities are not AI-generated in Step 10A. Creating or
+editing these records never invokes an AI provider, computes matches, generates
+recommendations, drafts messages, sends outreach, or mutates records from model
+output. Legacy/internal `IntroductionSuggestion` records remain data-only and
+are not surfaced as an active V1 workflow. Future AI-assisted brokerage must
+create reviewable, source-linked proposals before any user-approved application
+step exists.
 
 ## Step 10B-1 Relationship Health Boundary
 
 Relationship health and why-now reasons in Step 10B-1 are deterministic and
 read-only. They are computed from existing tenant-scoped records such as tasks,
-commitments, meetings, notes, needs, capabilities, introductions, and proposal
-review records. They do not invoke AI providers, generate recommendations,
-apply proposal patches, mutate target records, run embeddings/search, or create
-background jobs. Future AI-assisted reasoning must remain proposal-based and
-human-confirmed before any state mutation exists.
+commitments, meetings, notes, needs, capabilities, and proposal review records.
+Legacy/internal introduction suggestion records are not surfaced as
+introduction-specific user-facing why-now output. The signals do not invoke AI
+providers, generate recommendations, apply proposal patches, mutate target
+records, run embeddings/search, or create background jobs. Future AI-assisted
+reasoning must remain proposal-based and human-confirmed before any state
+mutation exists.
 
 ## Step 10C Meeting Prep Boundary
 

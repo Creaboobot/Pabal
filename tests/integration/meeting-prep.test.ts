@@ -234,9 +234,7 @@ describeWithDatabase("meeting prep brief", () => {
     expect(
       brief?.records.capabilities.map((capability) => capability.id),
     ).toContain(data.capability.id);
-    expect(
-      brief?.records.introductions.map((introduction) => introduction.id),
-    ).toContain(data.introduction.id);
+    expect(brief?.records).not.toHaveProperty("introductions");
     expect(brief?.records.proposals).toEqual([
       expect.objectContaining({
         id: data.proposal.id,

@@ -38,7 +38,6 @@ export type WhyNowReasonType =
   | "OPEN_COMMITMENT"
   | "ACTIVE_NEED"
   | "ACTIVE_CAPABILITY"
-  | "ACTIVE_INTRODUCTION"
   | "PENDING_AI_PROPOSAL"
   | "RECENT_MEETING"
   | "RECENT_NOTE"
@@ -452,18 +451,6 @@ function buildReasons(facts: RelationshipHealthFacts, now: Date) {
     });
   }
 
-  for (const introduction of facts.introductions) {
-    reasons.push({
-      explanation: `There is an active manual introduction suggestion.`,
-      href: `/opportunities/introductions/${introduction.id}`,
-      label: "Active introduction",
-      relatedEntityId: introduction.id,
-      relatedEntityType: "INTRODUCTION_SUGGESTION",
-      severity: "MEDIUM",
-      type: "ACTIVE_INTRODUCTION",
-    });
-  }
-
   for (const proposal of facts.proposals) {
     reasons.push({
       explanation: `Proposal "${truncate(
@@ -707,7 +694,6 @@ function hasAttentionValue(health: RelationshipHealth) {
     health.counts.openTasks > 0 ||
     health.counts.openCommitments > 0 ||
     health.counts.activeNeeds > 0 ||
-    health.counts.activeIntroductions > 0 ||
     health.counts.pendingProposals > 0
   );
 }

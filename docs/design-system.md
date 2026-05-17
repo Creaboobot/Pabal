@@ -96,7 +96,7 @@ Step 8A extends the same patterns for manual follow-up tasks:
 - full-page mobile forms for create/edit;
 - due, overdue, priority, and task-type badges;
 - linked-context badges for people, companies, meetings, notes, commitments,
-  and introduction suggestions;
+  and legacy internal introduction suggestion records;
 - inline confirmation controls for complete/reopen/archive lifecycle actions;
 - Today sections for overdue, due-today, upcoming, and recently completed
   tasks.
@@ -136,18 +136,17 @@ Proposal screens should avoid provider, generation, extraction, notification,
 or background-job affordances. They review existing stored proposal records
 only.
 
-Step 10A extends the same patterns for manual needs, capabilities, and
-introduction suggestions:
+Step 10A extends the same patterns for manual needs and capabilities:
 
 - opportunity hub cards for counts and latest manual records;
-- compact need, capability, and introduction cards instead of tables;
+- compact need and capability cards instead of tables;
 - full-page mobile forms for create/edit;
 - status, priority, sensitivity, confidence, and context badges;
 - source/provenance sections where source references already exist;
 - inline archive confirmation controls.
 
-Need, capability, and introduction screens should keep brokerage readiness
-manual and avoid automated matching, scoring, AI generation, message drafting,
+Need and capability screens should keep relationship context manual and avoid
+automated matching, scoring, AI generation, message drafting,
 outreach sending, semantic-search, embedding, notification, or background-job
 affordances.
 

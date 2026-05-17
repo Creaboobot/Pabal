@@ -5,7 +5,6 @@ import {
   Building2,
   Edit,
   FileText,
-  Handshake,
   UserRound,
 } from "lucide-react";
 
@@ -27,6 +26,16 @@ type CapabilityDetailPageProps = {
     capabilityId: string;
   }>;
 };
+
+function isVisibleSourceReference(reference: {
+  sourceEntityType: string;
+  targetEntityType: string;
+}) {
+  return (
+    reference.sourceEntityType !== "INTRODUCTION_SUGGESTION" &&
+    reference.targetEntityType !== "INTRODUCTION_SUGGESTION"
+  );
+}
 
 export default async function CapabilityDetailPage({
   params,
@@ -50,6 +59,8 @@ export default async function CapabilityDetailPage({
     targetEntityId: capability.id,
     targetEntityType: "CAPABILITY",
   });
+  const visibleSourceReferences =
+    sourceReferences.filter(isVisibleSourceReference);
 
   return (
     <div className="space-y-6">
@@ -66,14 +77,6 @@ export default async function CapabilityDetailPage({
               <Link href={`/opportunities/capabilities/${capability.id}/edit`}>
                 <Edit aria-hidden="true" className="mr-2 size-4" />
                 Edit
-              </Link>
-            </Button>
-            <Button asChild>
-              <Link
-                href={`/opportunities/introductions/new?capabilityId=${capability.id}`}
-              >
-                <Handshake aria-hidden="true" className="mr-2 size-4" />
-                Create introduction
               </Link>
             </Button>
           </div>
@@ -150,9 +153,9 @@ export default async function CapabilityDetailPage({
             Provenance links are informational only. This screen does not run
             matching, scoring, extraction, or AI generation.
           </p>
-          {sourceReferences.length > 0 ? (
+          {visibleSourceReferences.length > 0 ? (
             <div className="grid gap-2">
-              {sourceReferences.map((reference) => (
+              {visibleSourceReferences.map((reference) => (
                 <div
                   className="rounded-md border border-border bg-background p-3"
                   key={reference.id}

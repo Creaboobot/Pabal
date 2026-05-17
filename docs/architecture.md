@@ -130,9 +130,10 @@ Step 8A adds the manual follow-up task workflow:
 
 Task server actions validate input with Zod, call `getCurrentUserContext()`,
 and delegate to tenant-aware task services. Tasks can link to existing people,
-companies, meetings, notes, commitments, and introduction suggestions, but every
-link is validated server-side inside the active tenant. Query parameters from
-person, company, meeting, and note detail pages are convenience hints only.
+companies, meetings, notes, commitments, and legacy internal introduction
+suggestion records, but every link is validated server-side inside the active
+tenant. Query parameters from person, company, meeting, and note detail pages
+are convenience hints only.
 
 The Today screen now includes manual task sections for overdue, due-today,
 upcoming, and recently completed tasks. Overdue and due-today states are
@@ -175,8 +176,8 @@ Approval is status-only in this step. The proposal framework does not apply
 patches, create records, mutate targets, call AI providers, generate proposals,
 send messages, or run background jobs.
 
-Step 10A promotes the manual need, capability, and introduction workflows under
-the Opportunities area:
+Step 10A promotes the manual need and capability workflows under the
+Opportunities area:
 
 - `/opportunities`
 - `/opportunities/needs`
@@ -187,10 +188,6 @@ the Opportunities area:
 - `/opportunities/capabilities/new`
 - `/opportunities/capabilities/[capabilityId]`
 - `/opportunities/capabilities/[capabilityId]/edit`
-- `/opportunities/introductions`
-- `/opportunities/introductions/new`
-- `/opportunities/introductions/[introductionSuggestionId]`
-- `/opportunities/introductions/[introductionSuggestionId]/edit`
 
 Need and capability server actions validate input with Zod, call
 `getCurrentUserContext()`, and delegate to tenant-aware services. Query
@@ -198,15 +195,15 @@ parameters from people, company, meeting, and note pages are treated as
 convenience hints only. Services validate linked records inside the active
 tenant before writing and use safe audit metadata.
 
-Introduction suggestion server actions follow the same boundary. Suggestions
-are manually linked to needs, capabilities, people, and companies. Meeting and
-note provenance is stored with tenant-validated `SourceReference` records
-where provided. Dismissal maps to the existing rejected status.
+The existing `IntroductionSuggestion` schema, repositories, services, source
+references, archive handling, and export handling remain for legacy/internal
+data. The user-facing introduction routes are retired and should fail safely
+with not-found rather than rendering active pages.
 
-The Opportunities hub shows manual counts and latest need, capability, and
-introduction suggestion records. It does not run matching, scoring, AI
-generation, message drafting, outreach sending, semantic search, embeddings,
-notifications, or background jobs.
+The Opportunities hub shows manual counts and latest need and capability
+records. It does not run matching, scoring, AI generation, message drafting,
+outreach sending, semantic search, embeddings, notifications, or background
+jobs.
 
 Step 10B-1 adds deterministic relationship health and why-now reasoning to
 Today plus person/company detail pages. The relationship-health service is
@@ -230,8 +227,9 @@ Step 10C adds deterministic meeting prep briefs at
 `/meetings/[meetingId]/prep`. The prep service requires `TenantContext`, calls
 `requireTenantAccess`, verifies the meeting belongs to the tenant, and returns
 a structured read-only DTO assembled from explicit meeting, participant,
-company, note, task, commitment, need, capability, introduction suggestion,
-proposal, source-reference, and relationship-health records. It does not write
+company, note, task, commitment, need, capability, proposal, source-reference,
+and relationship-health records. Legacy introduction suggestion source
+references are filtered from the user-facing prep output. It does not write
 audit logs, create source references, save generated briefs, mutate statuses,
 call AI providers, sync Outlook/Teams, or run background jobs.
 
@@ -376,10 +374,11 @@ features. `SEED_DEMO_DATA=true` now runs a top-level deterministic demo seed
 that builds on the older Step 4 demo layers and adds synthetic records across
 the implemented V1 flows: people, companies, affiliations, meetings,
 meeting participants, notes, Teams/Copilot pasted-note source, LinkedIn
-user-provided notes, tasks, commitments, needs, capabilities, introductions,
-review-only AI proposals, voice notes, source references, archived records, and
-safe audit events. The seed is idempotent, tenant-scoped, uses fake local review
-data only, and never calls providers or stores raw audio.
+user-provided notes, tasks, commitments, needs, capabilities, legacy internal
+introduction suggestion rows, review-only AI proposals, voice notes, source
+references, archived records, and safe audit events. The seed is idempotent,
+tenant-scoped, uses fake local review data only, and never calls providers or
+stores raw audio.
 
 ## Relationship backbone boundary
 
@@ -390,9 +389,9 @@ tenant-scoped reads or writes. Cross-tenant direct relations use composite
 tenant-aware foreign keys where Prisma/PostgreSQL can express them.
 
 Step 4B-1 adds schema and server-side skeletons for tasks, commitments, needs,
-capabilities, and introduction suggestions. These records follow the same
-tenant-aware repository/service pattern and use composite relations for direct
-links to Step 4A records and to each other.
+capabilities, and legacy internal introduction suggestion records. These
+records follow the same tenant-aware repository/service pattern and use
+composite relations for direct links to Step 4A records and to each other.
 
 Step 4B-2 adds schema and server-side skeletons for AI proposal readiness and
 voice note readiness. Direct source/context links use composite tenant-aware

@@ -1,7 +1,6 @@
 import type {
   CapabilityStatus,
   CapabilityType,
-  IntroductionSuggestionStatus,
   NeedStatus,
   NeedType,
   Sensitivity,
@@ -13,24 +12,17 @@ import {
   capabilityStatusLabel,
   capabilityTypeLabel,
   confidenceLabel,
-  introductionStatusLabel,
   needStatusLabel,
   needTypeLabel,
   priorityLabel,
   sensitivityLabel,
 } from "@/modules/opportunities/labels";
 
-function statusVariant(
-  status: NeedStatus | CapabilityStatus | IntroductionSuggestionStatus,
-) {
+function statusVariant(status: NeedStatus | CapabilityStatus) {
   if (
     status === "OPEN" ||
     status === "ACTIVE" ||
-    status === "IN_PROGRESS" ||
-    status === "PROPOSED" ||
-    status === "ACCEPTED" ||
-    status === "OPT_IN_REQUESTED" ||
-    status === "INTRO_SENT"
+    status === "IN_PROGRESS"
   ) {
     return "default" as const;
   }
@@ -38,13 +30,12 @@ function statusVariant(
   if (
     status === "ADDRESSED" ||
     status === "CLOSED" ||
-    status === "RETIRED" ||
-    status === "COMPLETED"
+    status === "RETIRED"
   ) {
     return "success" as const;
   }
 
-  if (status === "ARCHIVED" || status === "REJECTED") {
+  if (status === "ARCHIVED") {
     return "sensitive" as const;
   }
 
@@ -110,23 +101,6 @@ export function CapabilityBadges({
       <Badge variant="outline">{capabilityTypeLabel(capabilityType)}</Badge>
       <Badge variant={sensitivity === "NORMAL" ? "outline" : "sensitive"}>
         {sensitivityLabel(sensitivity)}
-      </Badge>
-      <Badge variant="outline">{confidenceLabel(confidence)}</Badge>
-    </div>
-  );
-}
-
-export function IntroductionBadges({
-  confidence,
-  status,
-}: {
-  confidence: number | null;
-  status: IntroductionSuggestionStatus;
-}) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      <Badge variant={statusVariant(status)}>
-        {introductionStatusLabel(status)}
       </Badge>
       <Badge variant="outline">{confidenceLabel(confidence)}</Badge>
     </div>

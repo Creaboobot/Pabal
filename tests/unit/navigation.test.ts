@@ -22,6 +22,13 @@ describe("primary app navigation", () => {
     ]);
   });
 
+  it("keeps Opportunities focused on needs and capabilities", () => {
+    expect(
+      primaryNavigationItems.find((item) => item.href === "/opportunities")
+        ?.description,
+    ).toBe("Needs and capabilities");
+  });
+
   it("recognises only primary app hrefs", () => {
     expect(isPrimaryNavigationHref("/today")).toBe(true);
     expect(isPrimaryNavigationHref("/settings")).toBe(false);

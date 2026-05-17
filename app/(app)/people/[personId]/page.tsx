@@ -126,14 +126,6 @@ export default async function PersonDetailPage({
             </Button>
             <Button asChild variant="outline">
               <Link
-                href={`/opportunities/introductions/new?fromPersonId=${person.id}`}
-              >
-                <Handshake aria-hidden="true" className="mr-2 size-4" />
-                Create introduction
-              </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link
                 href={`/notes/new?personId=${person.id}&sourceType=LINKEDIN_USER_PROVIDED`}
               >
                 <Link2 aria-hidden="true" className="mr-2 size-4" />

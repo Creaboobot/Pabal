@@ -53,7 +53,7 @@ export const taskFormSchema = z
     companyId: nullableId("Company"),
     description: nullableText("Description", 4000),
     dueAt: nullableDateTime("Due date"),
-    introductionSuggestionId: nullableId("Introduction suggestion"),
+    introductionSuggestionId: nullableId("Legacy context"),
     meetingId: nullableId("Meeting"),
     noteId: nullableId("Note"),
     personId: nullableId("Person"),

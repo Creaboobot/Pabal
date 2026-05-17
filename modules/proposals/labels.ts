@@ -9,7 +9,7 @@ import type {
 export function proposalTypeLabel(proposalType: AIProposalType) {
   const labels: Record<AIProposalType, string> = {
     FOLLOW_UP_SUGGESTION: "Follow-up suggestion",
-    INTRODUCTION_SUGGESTION: "Introduction suggestion",
+    INTRODUCTION_SUGGESTION: "Relationship suggestion",
     MEETING_EXTRACTION: "Meeting extraction",
     NOTE_EXTRACTION: "Note extraction",
     OTHER: "Other",
@@ -65,7 +65,7 @@ export function sourceEntityTypeLabel(entityType: SourceEntityType) {
     COMMITMENT: "Commitment",
     COMPANY: "Company",
     COMPANY_AFFILIATION: "Company affiliation",
-    INTRODUCTION_SUGGESTION: "Introduction suggestion",
+    INTRODUCTION_SUGGESTION: "Legacy internal record",
     MEETING: "Meeting",
     MEETING_PARTICIPANT: "Meeting participant",
     NEED: "Need",

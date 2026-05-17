@@ -129,7 +129,7 @@ describe("relationship health computation", () => {
     expect(health.explanation).toContain("Needs attention because");
   });
 
-  it("creates deterministic reasons for actions, opportunities, introductions, and proposals", () => {
+  it("creates deterministic reasons for actions, opportunities, and proposals", () => {
     const health = buildRelationshipHealth(
       baseFacts({
         capabilities: [
@@ -190,11 +190,12 @@ describe("relationship health computation", () => {
         "UPCOMING_TASK",
         "UPCOMING_COMMITMENT",
         "ACTIVE_NEED",
-        "ACTIVE_INTRODUCTION",
         "PENDING_AI_PROPOSAL",
       ]),
     );
-    expect(health.reasonCount).toBeGreaterThan(health.reasons.length);
+    expect(health.reasons.map((reason) => reason.type)).not.toContain(
+      "ACTIVE_INTRODUCTION",
+    );
 
     const capabilityOnly = buildRelationshipHealth(
       baseFacts({

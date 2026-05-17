@@ -57,8 +57,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     summary.action.openCommitments +
     summary.action.pendingProposals +
     summary.opportunities.needs +
-    summary.opportunities.capabilities +
-    summary.opportunities.introductionSuggestions;
+    summary.opportunities.capabilities;
 
   return (
     <div className="space-y-6">
@@ -91,7 +90,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <Badge variant="outline">Commitments</Badge>
           <Badge variant="outline">Needs</Badge>
           <Badge variant="outline">Capabilities</Badge>
-          <Badge variant="outline">Introductions</Badge>
           <Badge variant="outline">Suggested updates</Badge>
           <Badge variant="outline">Voice notes</Badge>
         </div>

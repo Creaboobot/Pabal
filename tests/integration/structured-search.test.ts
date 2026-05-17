@@ -2,7 +2,10 @@
 import { beforeEach, expect, it } from "vitest";
 
 import { prisma } from "@/server/db/prisma";
+import { createTenantCapability } from "@/server/services/capabilities";
 import { createTenantCompany } from "@/server/services/companies";
+import { createTenantIntroductionSuggestion } from "@/server/services/introduction-suggestions";
+import { createTenantNeed } from "@/server/services/needs";
 import { createTenantNote } from "@/server/services/notes";
 import { createTenantPerson } from "@/server/services/people";
 import { getTenantStructuredSearch } from "@/server/services/structured-search";
@@ -75,5 +78,29 @@ describeWithDatabase("structured keyword search", () => {
     expect(result.query).toBe("");
     expect(result.resultCount).toBe(0);
     expect(result.groups).toEqual([]);
+  });
+
+  it("does not expose legacy introduction suggestions as user-facing search results", async () => {
+    const context = await createTenantContext("search-legacy-intro@example.com");
+    const need = await createTenantNeed(context, {
+      title: "Legacy hidden search need",
+    });
+    const capability = await createTenantCapability(context, {
+      title: "Legacy hidden search capability",
+    });
+    await createTenantIntroductionSuggestion(context, {
+      capabilityId: capability.id,
+      needId: need.id,
+      rationale: "Legacy hidden search introduction rationale.",
+    });
+
+    const result = await getTenantStructuredSearch(context, "Legacy hidden");
+    const serialized = JSON.stringify(result);
+
+    expect(result.groups.map((group) => group.kind)).not.toContain(
+      "introductions",
+    );
+    expect(serialized).not.toContain("/opportunities/introductions");
+    expect(serialized).not.toContain("Legacy hidden search introduction rationale");
   });
 });

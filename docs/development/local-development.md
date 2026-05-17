@@ -68,8 +68,9 @@ pnpm prisma:seed
 Demo seed data creates deterministic local review records only. It includes a
 coherent fake workspace with people, companies, affiliations, meetings, pasted
 Teams/Copilot notes, manual LinkedIn-context notes, tasks, commitments, needs,
-capabilities, introduction suggestions, review-only AI proposals, voice notes,
-source references, archived records, and safe audit events.
+capabilities, legacy internal introduction suggestion rows, review-only AI
+proposals, voice notes, source references, archived records, and safe audit
+events.
 
 The seed is idempotent and tenant-scoped. It uses synthetic `.example`-style
 people and organisations, stores no raw audio, stores no provider responses, and
@@ -123,6 +124,20 @@ Troubleshooting:
 
 For a guided reviewer path, use
 [`docs/review/v1-review-walkthrough.md`](../review/v1-review-walkthrough.md).
+
+## Local Desktop Launcher
+
+Windows reviewers can use the optional local launcher at
+`tools/start-pobal-launcher.cmd`. It loads/selects a GitHub repository, clones
+or reuses a matching local clone, fetches GitHub refs, fast-forwards only when
+the working tree is clean, starts local PostgreSQL through Docker Compose or
+the ignored portable `.tools` runtime, applies migrations, seeds demo data, and
+starts the Next.js app on a selected `127.0.0.1` port.
+
+The launcher is a developer/reviewer utility, not a product runtime. Pobal
+remains a mobile-web-first hosted SaaS application. See
+[`docs/development/local-launcher.md`](local-launcher.md) for usage and safety
+notes.
 
 ## Playwright E2E Smoke
 
@@ -189,7 +204,8 @@ OPENAI_TRANSCRIPTION_MODEL=gpt-4o-mini-transcribe
 `OPENAI_API_KEY` is not required for build or readiness checks. Raw audio is
 not retained; the stored record is a `VoiceNote` transcript with safe audio
 metadata. Transcription does not create mentions, AI proposals, tasks,
-commitments, needs, capabilities, or introduction suggestions.
+commitments, needs, capabilities, or legacy internal introduction suggestion
+records.
 
 In supported browsers, `/capture/voice` uses MediaRecorder and submits audio to
 `POST /api/voice-notes/transcribe`. The UI keeps audio in memory only, then
@@ -352,7 +368,7 @@ records, create tasks or commitments, call AI providers, or run background jobs.
 
 ## Opportunities
 
-Step 10A adds manual needs, capabilities, and introduction suggestions:
+Step 10A adds manual needs and capabilities:
 
 - `/opportunities`
 - `/opportunities/needs`
@@ -363,15 +379,12 @@ Step 10A adds manual needs, capabilities, and introduction suggestions:
 - `/opportunities/capabilities/new`
 - `/opportunities/capabilities/[capabilityId]`
 - `/opportunities/capabilities/[capabilityId]/edit`
-- `/opportunities/introductions`
-- `/opportunities/introductions/new`
-- `/opportunities/introductions/[introductionSuggestionId]`
-- `/opportunities/introductions/[introductionSuggestionId]/edit`
 
 People, company, meeting, and note detail pages include contextual links into
-need/capability/intro creation. Need and capability detail pages also link into
-manual introduction creation. Query parameters only preselect fields; server
-actions still validate every linked record inside the active tenant.
+need/capability creation. Query parameters only preselect fields; server actions
+still validate every linked record inside the active tenant. The legacy
+`IntroductionSuggestion` schema/data remains internal, and the retired
+introduction routes return not-found.
 
 This step does not add automated matching, scoring, AI generation, message
 drafting, outreach sending, semantic search, embeddings, notifications, jobs,
@@ -382,7 +395,8 @@ or permanent deletion.
 Step 10B-1 adds deterministic why-now signals on `/today`, person detail, and
 company detail pages. The signals are read-only and computed from existing
 tenant-scoped tasks, commitments, meetings, notes, needs, capabilities,
-introductions, and proposal review records.
+proposal review records, and legacy internal introduction suggestion records
+that are not surfaced as introduction-specific user-facing output.
 
 The V1 thresholds are hardcoded internally: active within 14 days, warm within
 45 days, stale after 60 days, dormant after 120 days, and upcoming due items

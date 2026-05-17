@@ -32,7 +32,7 @@ export function RelationshipAttentionBoard({
         <div className="grid gap-3">
           <p className="text-sm leading-6 text-muted-foreground">
             Deterministic why-now signals from tasks, commitments, meetings,
-            notes, opportunities, introductions, and proposal review records.
+            notes, needs, capabilities, and suggested update review records.
           </p>
           <div className="grid gap-3">
             {items.map((item) => {

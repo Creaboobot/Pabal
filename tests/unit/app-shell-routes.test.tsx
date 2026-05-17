@@ -19,7 +19,6 @@ const mocks = vi.hoisted(() => ({
   getTenantMeetingPrepBrief: vi.fn(),
   getTenantMeetingProfile: vi.fn(),
   getTenantCapabilityProfile: vi.fn(),
-  getTenantIntroductionSuggestionProfile: vi.fn(),
   getTenantNeedProfile: vi.fn(),
   getTenantNote: vi.fn(),
   getTenantNoteProfile: vi.fn(),
@@ -49,7 +48,6 @@ const mocks = vi.hoisted(() => ({
   listTenantVoiceNotes: vi.fn(),
   getTenantStructuredSearch: vi.fn(),
   listTenantCapabilitiesWithContext: vi.fn(),
-  listTenantIntroductionSuggestionsWithContext: vi.fn(),
   listTenantNeedsWithContext: vi.fn(),
   listTenantAIProposals: vi.fn(),
   listTenantPeopleWithProfiles: vi.fn(),
@@ -135,13 +133,6 @@ vi.mock("@/server/services/needs", () => ({
 vi.mock("@/server/services/capabilities", () => ({
   getTenantCapabilityProfile: mocks.getTenantCapabilityProfile,
   listTenantCapabilitiesWithContext: mocks.listTenantCapabilitiesWithContext,
-}));
-
-vi.mock("@/server/services/introduction-suggestions", () => ({
-  getTenantIntroductionSuggestionProfile:
-    mocks.getTenantIntroductionSuggestionProfile,
-  listTenantIntroductionSuggestionsWithContext:
-    mocks.listTenantIntroductionSuggestionsWithContext,
 }));
 
 vi.mock("@/server/services/opportunities", () => ({
@@ -322,12 +313,6 @@ vi.mock("@/modules/opportunities/components/need-form", () => ({
 
 vi.mock("@/modules/opportunities/components/capability-form", () => ({
   CapabilityForm: () => <form aria-label="Capability form" />,
-}));
-
-vi.mock("@/modules/opportunities/components/introduction-suggestion-form", () => ({
-  IntroductionSuggestionForm: () => (
-    <form aria-label="Introduction suggestion form" />
-  ),
 }));
 
 vi.mock("@/modules/opportunities/components/opportunity-action-button", () => ({
@@ -751,27 +736,6 @@ const capabilityProfile = {
   updatedAt: new Date("2026-04-24T11:30:00.000Z"),
 };
 
-const introductionSuggestionProfile = {
-  capability: capabilityProfile,
-  capabilityId: capabilityProfile.id,
-  confidence: 0.76,
-  createdAt: new Date("2026-04-24T11:45:00.000Z"),
-  fromCompany: companyProfile,
-  fromCompanyId: companyProfile.id,
-  fromPerson: personProfile,
-  fromPersonId: personProfile.id,
-  id: "introduction_test_1",
-  need: needProfile,
-  needId: needProfile.id,
-  rationale: "Introduce Anna to the SE-CERT capability owner.",
-  status: "PROPOSED",
-  toCompany: null,
-  toCompanyId: null,
-  toPerson: null,
-  toPersonId: null,
-  updatedAt: new Date("2026-04-24T11:45:00.000Z"),
-};
-
 const taskProfile = {
   commitment: {
     id: "commitment_test_1",
@@ -1002,15 +966,6 @@ const meetingPrepBrief = {
         title: commitmentProfile.title,
       },
     ],
-    introductions: [
-      {
-        confidence: introductionSuggestionProfile.confidence,
-        href: `/opportunities/introductions/${introductionSuggestionProfile.id}`,
-        id: introductionSuggestionProfile.id,
-        rationalePreview: introductionSuggestionProfile.rationale,
-        status: introductionSuggestionProfile.status,
-      },
-    ],
     needs: [
       {
         confidence: needProfile.confidence,
@@ -1115,7 +1070,6 @@ const taskFormOptions = {
     },
   ],
   companies: [companyProfile],
-  introductionSuggestions: [introductionSuggestionProfile],
   meetings: [meetingProfile],
   notes: [noteProfile],
   people: [personProfile],
@@ -1193,11 +1147,9 @@ describe("protected app routes", () => {
     mocks.getTenantOpportunityHub.mockResolvedValue({
       counts: {
         activeCapabilities: 1,
-        activeIntroductions: 1,
         openNeeds: 1,
       },
       latestCapabilities: [capabilityProfile],
-      latestIntroductions: [introductionSuggestionProfile],
       latestNeeds: [needProfile],
     });
     mocks.getTenantOpportunityFormOptions.mockResolvedValue(
@@ -1207,9 +1159,6 @@ describe("protected app routes", () => {
     mocks.getTenantTaskBoard.mockResolvedValue(taskBoard);
     mocks.getTenantTaskFormOptions.mockResolvedValue(taskFormOptions);
     mocks.getTenantTaskProfile.mockResolvedValue(taskProfile);
-    mocks.getTenantIntroductionSuggestionProfile.mockResolvedValue(
-      introductionSuggestionProfile,
-    );
     mocks.getTenantPerson.mockResolvedValue(personProfile);
     mocks.getTenantPersonProfile.mockResolvedValue(personProfile);
     mocks.getTenantCompanyProfile.mockResolvedValue(companyProfile);
@@ -1273,9 +1222,6 @@ describe("protected app routes", () => {
     mocks.listTenantCapabilitiesWithContext.mockResolvedValue([
       capabilityProfile,
     ]);
-    mocks.listTenantIntroductionSuggestionsWithContext.mockResolvedValue([
-      introductionSuggestionProfile,
-    ]);
     mocks.listTenantAIProposals.mockResolvedValue([proposalProfile]);
     mocks.listTenantPeopleWithProfiles.mockResolvedValue([
       {
@@ -1328,6 +1274,24 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("link", { name: /Review suggested updates/ }),
     ).toHaveAttribute("href", "/proposals");
+    expect(
+      screen.queryByText(/Introduction suggestions/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders Opportunities around needs and capabilities only", async () => {
+    const Page = (await import("@/app/(app)/opportunities/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Needs under review" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Active capabilities" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Introductions/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Create introduction/i)).not.toBeInTheDocument();
   });
 
   it("renders structured search results without semantic or AI copy", async () => {
@@ -1370,6 +1334,7 @@ describe("protected app routes", () => {
     expect(
       screen.getByText(/uses no AI, embeddings, pgvector, semantic ranking/),
     ).toBeInTheDocument();
+    expect(screen.queryByText("Introductions")).not.toBeInTheDocument();
   });
 
   it("renders the Search route empty state", async () => {
@@ -1381,6 +1346,7 @@ describe("protected app routes", () => {
       screen.getByRole("heading", { level: 1, name: "Search" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Search your workspace")).toBeInTheDocument();
+    expect(screen.queryByText("Introductions")).not.toBeInTheDocument();
   });
 
   it("links Capture to voice recording", async () => {
@@ -1627,10 +1593,6 @@ describe("protected app routes", () => {
       "Capabilities",
       () => import("@/app/(app)/opportunities/capabilities/page"),
     ],
-    [
-      "Introductions",
-      () => import("@/app/(app)/opportunities/introductions/page"),
-    ],
   ])("renders the %s protected route", async (heading, importPage) => {
     await renderRoute(importPage);
 
@@ -1728,19 +1690,28 @@ describe("protected app routes", () => {
     expect(screen.getByLabelText("Capability form")).toBeInTheDocument();
   });
 
-  it("renders the introduction suggestion create route", async () => {
-    const Page = (
+  it("retires the introduction suggestion routes with notFound", async () => {
+    const IndexPage = (
+      await import("@/app/(app)/opportunities/introductions/page")
+    ).default;
+    const NewPage = (
       await import("@/app/(app)/opportunities/introductions/new/page")
     ).default;
+    const DetailPage = (
+      await import(
+        "@/app/(app)/opportunities/introductions/[introductionSuggestionId]/page"
+      )
+    ).default;
+    const EditPage = (
+      await import(
+        "@/app/(app)/opportunities/introductions/[introductionSuggestionId]/edit/page"
+      )
+    ).default;
 
-    render(await Page({ searchParams: Promise.resolve({}) }));
-
-    expect(
-      screen.getByRole("heading", { level: 1, name: "Create introduction" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText("Introduction suggestion form"),
-    ).toBeInTheDocument();
+    await expect(IndexPage()).rejects.toThrow("notFound");
+    await expect(NewPage()).rejects.toThrow("notFound");
+    await expect(DetailPage()).rejects.toThrow("notFound");
+    await expect(EditPage()).rejects.toThrow("notFound");
   });
 
   it("renders the voice capture route", async () => {
@@ -2052,46 +2023,6 @@ describe("protected app routes", () => {
     );
 
     expect(screen.getByLabelText("Capability form")).toBeInTheDocument();
-  });
-
-  it("renders the introduction suggestion detail and edit routes", async () => {
-    const DetailPage = (
-      await import(
-        "@/app/(app)/opportunities/introductions/[introductionSuggestionId]/page"
-      )
-    ).default;
-    const EditPage = (
-      await import(
-        "@/app/(app)/opportunities/introductions/[introductionSuggestionId]/edit/page"
-      )
-    ).default;
-
-    render(
-      await DetailPage({
-        params: Promise.resolve({
-          introductionSuggestionId: "introduction_test_1",
-        }),
-      }),
-    );
-
-    expect(
-      screen.getByRole("heading", {
-        level: 1,
-        name: "Practical MBSE training examples <> SE-CERT preparation experience",
-      }),
-    ).toBeInTheDocument();
-
-    render(
-      await EditPage({
-        params: Promise.resolve({
-          introductionSuggestionId: "introduction_test_1",
-        }),
-      }),
-    );
-
-    expect(
-      screen.getByLabelText("Introduction suggestion form"),
-    ).toBeInTheDocument();
   });
 
   it("renders the person detail route", async () => {

@@ -34,9 +34,9 @@ foreign-key enforcement for tenant-aware relations, source-reference validation,
 and idempotent demo seed data.
 
 The Step 4B-1 integration tests cover tenant isolation for tasks, commitments,
-needs, capabilities, and introduction suggestions; cross-tenant direct relation
-rejection; source-reference validation for 4B-1 records; and idempotent demo
-seed data.
+needs, capabilities, and legacy internal introduction suggestion records;
+cross-tenant direct relation rejection; source-reference validation for 4B-1
+records; and idempotent demo seed data.
 
 The Step 4B-2 integration tests cover tenant isolation for AI proposals,
 AI proposal items, voice notes, and voice mentions; polymorphic target pair
@@ -82,7 +82,8 @@ without pasted text or note bodies.
 The Step 8A tests cover task validation, route smoke rendering for `/tasks`,
 `/tasks/new`, `/tasks/[taskId]`, and `/tasks/[taskId]/edit`, manual task
 create/update/complete/reopen/archive service flows, tenant-safe links to
-people, companies, meetings, notes, commitments, and introduction suggestions,
+people, companies, meetings, notes, commitments, and legacy internal
+introduction suggestion records,
 cross-tenant read/write/link failures, tenant-scoped Today task board summaries,
 and audit safety without full descriptions or why-now rationale text.
 
@@ -114,32 +115,31 @@ meetings, and notes, cross-tenant read/write/link failures, tenant-scoped
 Opportunities hub summaries, and audit safety without full descriptions or
 sensitive payloads.
 
-The Step 10A-2 tests cover introduction suggestion validation, route smoke
-rendering for `/opportunities/introductions`,
-`/opportunities/introductions/new`,
-`/opportunities/introductions/[introductionSuggestionId]`, and
-`/opportunities/introductions/[introductionSuggestionId]/edit`, manual
-create/update/archive/dismiss service flows, links to needs, capabilities,
-people, and companies, tenant-validated meeting/note provenance through
-`SourceReference`, cross-tenant read/write/link/provenance failures,
-tenant-scoped Opportunities hub introduction summaries, self-introduction
-validation, and audit safety without rationale text or source content.
+The Step 10A-2 tests cover legacy/internal introduction suggestion validation,
+manual create/update/archive/dismiss service flows, links to needs,
+capabilities, people, and companies, tenant-validated meeting/note provenance
+through `SourceReference`, cross-tenant read/write/link/provenance failures,
+self-introduction validation, audit safety without rationale text or source
+content, and proof that the user-facing introduction routes now fail safely
+with not-found instead of rendering active pages.
 
 The Step 10B-1 tests cover deterministic relationship health computation,
 threshold boundaries for active/stale/dormant signals, needs-attention
 precedence, why-now reasons for tasks, commitments, needs, capabilities,
-introductions, proposals, meetings, and notes, tenant-scoped Today relationship
-attention summaries, cross-tenant person/company signal denial, proof that
-signal computation does not mutate records or write audit logs, and route smoke
-coverage for Today plus person/company detail pages through the app-shell
-tests.
+proposals, meetings, and notes, tenant-scoped Today relationship attention
+summaries, proof that legacy introduction records are not surfaced as
+user-facing relationship attention reasons, cross-tenant person/company signal
+denial, proof that signal computation does not mutate records or write audit
+logs, and route smoke coverage for Today plus person/company detail pages
+through the app-shell tests.
 
 The Step 10C tests cover route smoke rendering for
 `/meetings/[meetingId]/prep`, the meeting-detail prep link, tenant-owned prep
 brief generation, cross-tenant meeting denial, known participant context,
 snapshot-only participant safety, company context limited to meeting-linked
-companies, related notes/tasks/commitments/needs/capabilities/introductions and
-review-only proposals, source-reference provenance, cross-tenant exclusion, and
+companies, related notes/tasks/commitments/needs/capabilities and review-only
+proposals, source-reference provenance, cross-tenant exclusion, proof that
+legacy introduction records are filtered out of user-facing prep output, and
 proof that prep generation does not mutate records or write audit logs.
 
 The Step 11A-1 tests cover speech-to-text provider factory selection, mock
@@ -165,7 +165,8 @@ for edited transcript text, duplicate active proposal prevention, ambiguous
 entity resolution into `NEEDS_CLARIFICATION`, cross-tenant VoiceNote and target
 resolution safety, safe audit metadata without transcript/raw AI/proposedPatch,
 and proof that structuring does not mutate people, companies, tasks,
-commitments, needs, capabilities, introduction suggestions, or voice mentions.
+commitments, needs, capabilities, legacy introduction suggestion records, or
+voice mentions.
 
 The Step 12A tests cover the Microsoft Graph readiness settings route, the
 settings link to `/settings/integrations`, provider factory selection, disabled

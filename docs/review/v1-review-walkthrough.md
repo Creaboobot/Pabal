@@ -95,16 +95,17 @@ parsing, or background jobs.
 
 ## 7. Opportunities
 
-Open `/opportunities`, then needs, capabilities, and introductions.
+Open `/opportunities`, then needs and capabilities.
 
 Review:
 
 - active needs such as PLM governance RACI and grid enablement examples;
 - capabilities such as governance mapping and responsible AI advice;
-- introduction suggestions connecting needs to capabilities.
+- source-linked manual context behind those records.
 
 Boundary: opportunities are manual records. There is no automated matching,
-scoring, outreach drafting, message sending, semantic search, or embeddings.
+scoring, outreach drafting, message sending, semantic search, embeddings, or
+active Introduction Suggestions workflow.
 
 ## 8. Suggested Update Review
 
@@ -145,8 +146,8 @@ Review:
 - meeting overview;
 - participant and company context;
 - recent interactions;
-- linked notes, tasks, commitments, needs, capabilities, introductions, and
-  pending suggested updates;
+- linked notes, tasks, commitments, needs, capabilities, and pending suggested
+  updates;
 - relationship health signals and source links.
 
 Boundary: deterministic, read-only, source-linked, and not AI-generated.

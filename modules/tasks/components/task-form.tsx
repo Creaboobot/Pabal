@@ -48,15 +48,9 @@ export type TaskFormCommitment = {
   title: string;
 };
 
-export type TaskFormIntroductionSuggestion = {
-  id: string;
-  rationale: string | null;
-};
-
 export type TaskFormOptions = {
   commitments: TaskFormCommitment[];
   companies: TaskFormCompany[];
-  introductionSuggestions: TaskFormIntroductionSuggestion[];
   meetings: TaskFormMeeting[];
   notes: TaskFormNote[];
   people: TaskFormPerson[];
@@ -143,6 +137,11 @@ export function TaskForm({
         name="status"
         type="hidden"
         value={initialValues?.status ?? "OPEN"}
+      />
+      <input
+        name="introductionSuggestionId"
+        type="hidden"
+        value={initialValues?.introductionSuggestionId ?? ""}
       />
 
       <label className="grid gap-2">
@@ -380,27 +379,6 @@ export function TaskForm({
             />
           </label>
 
-          <label className="grid gap-2">
-            <span className="text-sm font-medium text-foreground">
-              Introduction suggestion
-            </span>
-            <select
-              className="min-h-11 rounded-md border border-input bg-card px-3 py-2 text-base text-foreground shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-ring md:text-sm"
-              defaultValue={initialValues?.introductionSuggestionId ?? ""}
-              name="introductionSuggestionId"
-            >
-              <option value="">No suggestion</option>
-              {options.introductionSuggestions.map((suggestion) => (
-                <option key={suggestion.id} value={suggestion.id}>
-                  {optionPreview(suggestion.rationale, "Introduction suggestion")}
-                </option>
-              ))}
-            </select>
-            <FieldError
-              id="introductionSuggestionId-error"
-              message={firstError(state, "introductionSuggestionId")}
-            />
-          </label>
         </div>
       </section>
 

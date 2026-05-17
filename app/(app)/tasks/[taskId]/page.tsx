@@ -7,7 +7,6 @@ import {
   Edit,
   FileText,
   Handshake,
-  Lightbulb,
   UserRound,
 } from "lucide-react";
 
@@ -163,18 +162,11 @@ export default async function TaskDetailPage({ params }: TaskDetailPageProps) {
                 </Link>
               </Badge>
             ) : null}
-            {task.introductionSuggestion ? (
-              <Badge variant="outline">
-                <Lightbulb aria-hidden="true" className="mr-1 size-3.5" />
-                Introduction suggestion
-              </Badge>
-            ) : null}
             {!task.person &&
             !task.company &&
             !task.meeting &&
             !task.note &&
-            !task.commitment &&
-            !task.introductionSuggestion ? (
+            !task.commitment ? (
               <Badge variant="secondary">No linked records</Badge>
             ) : null}
           </div>

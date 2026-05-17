@@ -59,9 +59,6 @@ export function RelationshipHealthCard({
             {health.counts.activeCapabilities} capabilities
           </Badge>
           <Badge variant="secondary">
-            {health.counts.activeIntroductions} introductions
-          </Badge>
-          <Badge variant="secondary">
             {health.counts.pendingProposals} suggested updates
           </Badge>
         </div>

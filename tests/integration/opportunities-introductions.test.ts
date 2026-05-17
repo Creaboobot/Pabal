@@ -281,7 +281,7 @@ describeWithDatabase("opportunities introduction suggestions workflow", () => {
     ).rejects.toThrow("same person");
   });
 
-  it("keeps opportunities hub introduction summaries tenant-scoped", async () => {
+  it("keeps legacy introductions tenant-scoped without surfacing them in the opportunities hub", async () => {
     const first = await createIntroductionContext("intro-hub-first@example.com");
     const second = await createIntroductionContext("intro-hub-second@example.com");
 
@@ -301,8 +301,9 @@ describeWithDatabase("opportunities introduction suggestions workflow", () => {
       first.context,
     );
 
-    expect(hub.counts.activeIntroductions).toBe(1);
-    expect(hub.latestIntroductions.map((suggestion) => suggestion.rationale)).toContain(
+    expect(hub.counts).not.toHaveProperty("activeIntroductions");
+    expect(hub).not.toHaveProperty("latestIntroductions");
+    expect(introductions.map((suggestion) => suggestion.rationale)).toContain(
       "First tenant suggestion.",
     );
     expect(introductions.map((suggestion) => suggestion.rationale)).not.toContain(
