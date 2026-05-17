@@ -1293,8 +1293,43 @@ describe("protected app routes", () => {
       screen.getByRole("link", { name: /Review suggested updates/ }),
     ).toHaveAttribute("href", "/proposals");
     expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Unified action attention",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Commitment ledger" }),
+    ).toHaveAttribute("href", "/commitments");
+    expect(screen.queryByText("Task attention")).not.toBeInTheDocument();
+    expect(screen.queryByText("Commitment reminders")).not.toBeInTheDocument();
+    expect(screen.queryByText("Commitment context")).not.toBeInTheDocument();
+    expect(
       screen.queryByText(/Introduction suggestions/i),
     ).not.toBeInTheDocument();
+  });
+
+  it("renders Tasks as a unified action area", async () => {
+    const Page = (await import("@/app/(app)/tasks/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Tasks" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Needs attention" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "New task" })).toHaveAttribute(
+      "href",
+      "/tasks/new",
+    );
+    expect(
+      screen.getByRole("link", { name: "New commitment" }),
+    ).toHaveAttribute("href", "/commitments/new");
+    expect(
+      screen.getByRole("link", { name: /Open commitment ledger/ }),
+    ).toHaveAttribute("href", "/commitments");
   });
 
   it("renders Opportunities around needs and capabilities only", async () => {

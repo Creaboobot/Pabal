@@ -84,8 +84,8 @@ The Step 8A tests cover task validation, route smoke rendering for `/tasks`,
 create/update/complete/reopen/archive service flows, tenant-safe links to
 people, companies, meetings, notes, commitments, and legacy internal
 introduction suggestion records,
-cross-tenant read/write/link failures, tenant-scoped Today task board summaries,
-and audit safety without full descriptions or why-now rationale text.
+cross-tenant read/write/link failures, tenant-scoped task board summaries, and
+audit safety without full descriptions or why-now rationale text.
 
 The Step 8B tests cover commitment validation, route smoke rendering for
 `/commitments`, `/commitments/new`, `/commitments/[commitmentId]`, and
@@ -93,8 +93,13 @@ The Step 8B tests cover commitment validation, route smoke rendering for
 create/update/fulfil/cancel/archive service flows, tenant-safe links to people,
 companies, meetings, and notes, linked task display through the existing
 `Task.commitmentId` relation, cross-tenant read/write/link failures,
-tenant-scoped Today commitment board summaries, and audit safety without full
+tenant-scoped commitment board summaries, and audit safety without full
 descriptions or sensitive payloads.
+
+The PR 6 tests cover deterministic action-board grouping across existing task
+and commitment board sections, source-specific links, relationship context
+badges, and route smoke rendering for `/tasks` and Today using the unified
+read-only action preview.
 
 The Step 9 tests cover proposal review validation, safe proposed patch preview
 masking/truncation, route smoke rendering for `/proposals` and

@@ -14,15 +14,13 @@ import { PageHeader } from "@/components/app/page-header";
 import { CockpitCard } from "@/components/cards/cockpit-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { CommitmentCardCommitment } from "@/modules/commitments/components/commitment-card";
 import { RelationshipAttentionBoard } from "@/modules/relationship-health/components/relationship-attention-board";
-import type { TaskCardTask } from "@/modules/tasks/components/task-card";
+import { ActionItemCard } from "@/modules/tasks/components/action-item-card";
+import { getTenantActionBoard } from "@/server/services/action-board";
 import { getAppShellSummary } from "@/server/services/app-shell-summary";
 import { getTenantAIProposalReviewSummary } from "@/server/services/ai-proposals";
-import { getTenantCommitmentBoard } from "@/server/services/commitments";
 import { getTenantRelationshipAttentionBoard } from "@/server/services/relationship-health";
 import { getCurrentUserContext } from "@/server/services/session";
-import { getTenantTaskBoard } from "@/server/services/tasks";
 
 export const dynamic = "force-dynamic";
 
@@ -63,70 +61,6 @@ function TodayPrimaryCard({
   );
 }
 
-function PriorityTaskList({ tasks }: { tasks: TaskCardTask[] }) {
-  if (tasks.length === 0) {
-    return null;
-  }
-
-  return (
-    <ul className="grid gap-2">
-      {tasks.map((task) => (
-        <li
-          className="rounded-md border border-border bg-background p-3"
-          key={task.id}
-        >
-          <Link
-            className="rounded-sm text-sm font-medium text-foreground outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-            href={`/tasks/${task.id}`}
-          >
-            {task.title}
-          </Link>
-          {task.dueAt ? (
-            <p className="mt-1 text-xs text-muted-foreground">
-              Due{" "}
-              {task.dueAt.toLocaleDateString("en", {
-                day: "numeric",
-                month: "short",
-              })}
-            </p>
-          ) : null}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function PriorityCommitmentList({
-  commitments,
-}: {
-  commitments: CommitmentCardCommitment[];
-}) {
-  if (commitments.length === 0) {
-    return null;
-  }
-
-  return (
-    <ul className="grid gap-2">
-      {commitments.map((commitment) => (
-        <li
-          className="rounded-md border border-border bg-background p-3"
-          key={commitment.id}
-        >
-          <Link
-            className="rounded-sm text-sm font-medium text-foreground outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-            href={`/commitments/${commitment.id}`}
-          >
-            {commitment.title}
-          </Link>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Commitment context
-          </p>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 export default async function TodayPage() {
   const context = await getCurrentUserContext();
 
@@ -136,27 +70,20 @@ export default async function TodayPage() {
 
   const [
     summary,
-    taskBoard,
-    commitmentBoard,
+    actionBoard,
     proposalReviewSummary,
     relationshipAttention,
   ] = await Promise.all([
     getAppShellSummary(context),
-    getTenantTaskBoard(context),
-    getTenantCommitmentBoard(context),
+    getTenantActionBoard(context),
     getTenantAIProposalReviewSummary(context),
     getTenantRelationshipAttentionBoard(context),
   ]);
-  const priorityTasks = [
-    ...taskBoard.overdue,
-    ...taskBoard.dueToday,
-    ...taskBoard.upcoming,
-  ].slice(0, 3);
-  const priorityCommitments = [
-    ...commitmentBoard.overdue,
-    ...commitmentBoard.dueToday,
-    ...commitmentBoard.upcoming,
-    ...commitmentBoard.waiting,
+  const actionPreview = [
+    ...actionBoard.needsAttention,
+    ...actionBoard.upcoming,
+    ...actionBoard.waiting,
+    ...actionBoard.openWithoutDate,
   ].slice(0, 3);
   const hasProposalAttention =
     proposalReviewSummary.pendingProposals > 0 ||
@@ -193,11 +120,11 @@ export default async function TodayPage() {
       >
         <TodayPrimaryCard
           actionLabel="Review tasks"
-          description="Your primary action list for follow-ups and relationship work."
+          description="Your unified action list for follow-ups, commitments, and relationship work."
           href="/tasks"
           icon={ListChecks}
           title="Tasks"
-          value={summary.action.openTasks}
+          value={actionBoard.totals.openActionItems}
         />
         <TodayPrimaryCard
           actionLabel="Review meetings"
@@ -217,10 +144,7 @@ export default async function TodayPage() {
         />
       </section>
 
-      <section
-        aria-label="Secondary review queues"
-        className="grid gap-3 lg:grid-cols-2"
-      >
+      <section aria-label="Secondary review queues" className="grid gap-3">
         <CockpitCard
           title="Suggested updates"
           value={proposalReviewSummary.pendingProposals}
@@ -246,62 +170,41 @@ export default async function TodayPage() {
             </div>
           </div>
         </CockpitCard>
-
-        <CockpitCard
-          title="Commitment context"
-          value={summary.action.openCommitments}
-        >
-          <div className="grid gap-3">
-            <p className="text-sm leading-6 text-muted-foreground">
-              Commitments remain available as tracked promises and obligations,
-              but tasks are the main action list.
-            </p>
-            <Button asChild className="w-fit" size="sm" variant="outline">
-              <Link href="/commitments">
-                View commitments
-                <ArrowRight aria-hidden="true" className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </div>
-        </CockpitCard>
       </section>
 
-      <section aria-label="Today details" className="grid gap-3 lg:grid-cols-2">
-        <CockpitCard title="Task attention" value={priorityTasks.length}>
-          {priorityTasks.length > 0 ? (
-            <div className="grid gap-3">
-              <p className="text-sm leading-6 text-muted-foreground">
-                Top due or upcoming tasks. Use the full task view for grouping
-                and completed items.
-              </p>
-              <PriorityTaskList tasks={priorityTasks} />
-              <Button asChild className="w-fit" size="sm" variant="outline">
-                <Link href="/tasks">View all tasks</Link>
-              </Button>
-            </div>
-          ) : (
-            <p className="text-sm leading-6 text-muted-foreground">
-              No urgent task attention. New follow-ups can be added from the
-              task area.
-            </p>
-          )}
-        </CockpitCard>
-
+      <section aria-label="Today details" className="grid gap-3">
         <CockpitCard
-          title="Commitment reminders"
-          value={priorityCommitments.length}
+          title="Unified action attention"
+          value={actionPreview.length}
         >
-          {priorityCommitments.length > 0 ? (
+          {actionPreview.length > 0 ? (
             <div className="grid gap-3">
               <p className="text-sm leading-6 text-muted-foreground">
-                Promises and obligations remain visible without competing with
-                the task workflow.
+                Top due, upcoming, waiting, or undated action items. Use Tasks
+                for the full unified action area.
               </p>
-              <PriorityCommitmentList commitments={priorityCommitments} />
+              <div className="grid gap-3">
+                {actionPreview.map((item) => (
+                  <ActionItemCard
+                    compact
+                    item={item}
+                    key={`${item.sourceType}:${item.id}`}
+                  />
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button asChild className="w-fit" size="sm" variant="outline">
+                  <Link href="/tasks">View all tasks</Link>
+                </Button>
+                <Button asChild className="w-fit" size="sm" variant="ghost">
+                  <Link href="/commitments">Commitment ledger</Link>
+                </Button>
+              </div>
             </div>
           ) : (
             <p className="text-sm leading-6 text-muted-foreground">
-              No commitment reminders need attention.
+              No action items need attention. New follow-ups can be added from
+              the task area.
             </p>
           )}
         </CockpitCard>

@@ -87,12 +87,16 @@ Open `/tasks` and `/commitments`.
 
 Review:
 
-- due/overdue and status grouping;
+- `/tasks` as the unified action area for task and commitment action items;
+- needs attention, upcoming, waiting, open without date, and recently completed
+  grouping;
+- `/commitments` as the commitment-specific ledger;
 - linked people, companies, meetings, and notes;
 - manual lifecycle actions such as complete/reopen/fulfil/cancel/archive.
 
-Boundary: no reminder delivery, notifications, recurring tasks, automatic
-parsing, or background jobs.
+Boundary: the unified action board is read-only. There is no reminder delivery,
+notification, recurring task, automatic parsing, automatic task creation, AI
+recommendation, or background job.
 
 ## 7. Opportunities
 
