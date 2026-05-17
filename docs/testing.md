@@ -101,16 +101,16 @@ and commitment board sections, source-specific links, relationship context
 badges, and route smoke rendering for `/tasks` and Today using the unified
 read-only action preview.
 
-The Step 9 tests cover proposal review validation, safe proposed patch preview
-masking/truncation, route smoke rendering for `/proposals` and
-`/proposals/[proposalId]`, proposal list/detail tenant isolation, approve,
-reject, needs-clarification, approve-all, reject-all, dismiss actions,
+The Step 9 tests cover Suggested update review validation, safe proposed patch
+preview masking/truncation, route smoke rendering for `/proposals` and
+`/proposals/[proposalId]`, list/detail tenant isolation, approve, reject,
+needs-clarification, approve-all, reject-all, dismiss actions,
 deterministic proposal status rollup, proof that approval does not mutate
 target records or create Tasks, explicit suggested-update-to-Task and
 suggested-update-to-Meeting conversion through confirmed records,
 `AIProposalItem` SourceReference provenance, duplicate conversion prevention,
-cross-tenant conversion denial, tenant-scoped Today proposal review summaries,
-and audit safety without proposed patch JSON or source text.
+cross-tenant conversion denial, tenant-scoped Today Suggested update review
+summaries, and audit safety without proposed patch JSON or source text.
 
 The Step 10A-1 tests cover need/capability validation, route smoke rendering
 for `/opportunities`, `/opportunities/needs`, `/opportunities/needs/new`,
@@ -260,7 +260,8 @@ Playwright web server environment. That provider remains unavailable in
 production. CI reseeds deterministic V1 review demo data immediately before
 the browser suite, then verifies the app shell and headings for review-critical
 routes including Today, Capture, Search, people/companies, meetings, notes,
-voice notes, tasks, commitments, opportunities, proposals, settings/admin,
+voice notes, Tasks as the unified action area, the commitment ledger,
+opportunities, Suggested updates at `/proposals`, settings/admin,
 integrations, billing, governance, privacy, archive, plus a few seeded deep
 links.
 

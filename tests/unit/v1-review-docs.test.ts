@@ -44,6 +44,40 @@ describe("V1 review documentation readiness", () => {
     expect(walkthrough).toMatch(/no.*permanent deletion/i);
   });
 
+  it("documents the current simplified V1 workflow", () => {
+    const walkthrough = readRepoFile("docs/review/v1-review-walkthrough.md");
+    const localDevelopment = readRepoFile(
+      "docs/development/local-development.md",
+    );
+    const testing = readRepoFile("docs/testing.md");
+
+    expect(walkthrough).toContain(
+      "Capture source memory -> review Suggested updates -> act through Tasks, Meetings, and Relationship attention",
+    );
+    expect(walkthrough).toContain("unified action attention");
+    expect(walkthrough).toContain("the commitment ledger remaining reachable");
+    expect(localDevelopment).toContain("## Suggested Update Review");
+    expect(localDevelopment).toContain(
+      "Create suggested update` action on VoiceNote detail",
+    );
+    expect(localDevelopment).toContain("Suggested updates at `/proposals`");
+    expect(testing).toContain("Tasks as the unified action area");
+    expect(testing).toContain("Suggested updates at `/proposals`");
+
+    for (const staleCopy of [
+      "Task attention",
+      "Commitment reminders",
+      "Commitment context",
+      "Create proposal from transcript",
+      "## Proposal Review",
+      "The Today screen shows commitment sections",
+    ]) {
+      expect(walkthrough).not.toContain(staleCopy);
+      expect(localDevelopment).not.toContain(staleCopy);
+      expect(testing).not.toContain(staleCopy);
+    }
+  });
+
   it("keeps README search copy framed as structured keyword search only", () => {
     const readme = readRepoFile("README.md");
 

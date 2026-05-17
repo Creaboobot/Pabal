@@ -154,23 +154,24 @@ can link to existing people, companies, meetings, and notes, and linked tasks
 are displayed read-only through the existing `Task.commitmentId` relation.
 Lifecycle actions fulfil, cancel, and archive commitments with safe audit logs.
 
-The Today screen now includes commitment sections for overdue, due-today,
-upcoming, waiting, and recently fulfilled commitments while preserving the task
-sections from Step 8A. Overdue commitment state is derived at read time from
-`dueAt` or the due-window boundary. Step 8B does not add reminder delivery,
-notifications, background jobs, automatic task creation, commitment extraction,
-AI recommendations, or parsing of notes/meeting notes.
+The `/tasks` screen is now the unified action area for tasks and active
+commitments, while `/commitments` remains the commitment-specific ledger.
+Overdue commitment state is derived at read time from `dueAt` or the due-window
+boundary. This does not add reminder delivery, notifications, background jobs,
+automatic task creation, commitment extraction, AI recommendations, or parsing
+of notes/meeting notes.
 
-Step 9 adds the AI proposal confirmation framework:
+Step 9 adds status-only Suggested update review on internal AI proposal
+records:
 
 - `/proposals`
 - `/proposals/[proposalId]`
 
 Proposal server actions validate ids with Zod, call `getCurrentUserContext()`,
-and delegate to tenant-aware AI proposal services. Users can approve, reject,
-or mark proposal items as needing clarification, approve/reject all pending
-items, and dismiss a proposal. Review status rolls up deterministically from
-item statuses.
+and delegate to tenant-aware AI proposal services. Users see these records as
+Suggested updates and can approve, reject, or mark items as needing
+clarification, approve/reject all pending items, and dismiss a suggested
+update. Review status rolls up deterministically from item statuses.
 
 Approval is status-only in this step. The proposal framework does not apply
 patches, create records, mutate targets, call AI providers, generate proposals,

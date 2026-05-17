@@ -313,7 +313,7 @@ vi.mock("@/modules/commitments/components/commitment-action-button", () => ({
 }));
 
 vi.mock("@/modules/proposals/components/proposal-action-button", () => ({
-  ProposalActionButton: () => <div>Proposal review control</div>,
+  ProposalActionButton: () => <div>Suggested update review control</div>,
 }));
 
 vi.mock("@/modules/opportunities/components/need-form", () => ({
@@ -1332,6 +1332,42 @@ describe("protected app routes", () => {
     ).toHaveAttribute("href", "/commitments");
   });
 
+  it("renders Commitments as the ledger behind Tasks", async () => {
+    const Page = (await import("@/app/(app)/commitments/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Commitments" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/promise ledger behind the Tasks action area/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Manual commitment workflow",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders Suggested updates on the /proposals route", async () => {
+    const Page = (await import("@/app/(app)/proposals/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Suggested updates" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Review boundary")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Approval means the item is conceptually accepted/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Proposals" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders Opportunities around needs and capabilities only", async () => {
     const Page = (await import("@/app/(app)/opportunities/page")).default;
 
@@ -1408,8 +1444,25 @@ describe("protected app routes", () => {
     render(await Page());
 
     expect(
+      screen.getByRole("heading", { level: 1, name: "Capture" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Create meeting" })).toHaveAttribute(
+      "href",
+      "/meetings/new",
+    );
+    expect(screen.getByRole("link", { name: "Paste notes" })).toHaveAttribute(
+      "href",
+      "/capture/meeting",
+    );
+    expect(screen.getByRole("link", { name: "Create note" })).toHaveAttribute(
+      "href",
+      "/notes/new",
+    );
+    expect(
       screen.getByRole("link", { name: "Record voice note" }),
     ).toHaveAttribute("href", "/capture/voice");
+    expect(screen.getByText("Current capture memory")).toBeInTheDocument();
+    expect(screen.getByText("1 suggested updates pending")).toBeInTheDocument();
   });
 
   it("links Settings to integrations readiness", async () => {
@@ -1879,7 +1932,14 @@ describe("protected app routes", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Record voice note" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(/transcribe it through the configured provider/i),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Voice recorder")).toBeInTheDocument();
+    expect(screen.getByText("Privacy and retention")).toBeInTheDocument();
+    expect(
+      screen.getByText(/No automatic record updates/i),
+    ).toBeInTheDocument();
   });
 
   it("renders the meeting detail route", async () => {
@@ -2010,6 +2070,17 @@ describe("protected app routes", () => {
       screen.getByRole("heading", { level: 1, name: "Voice follow-up" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Original voice transcript.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        level: 2,
+        name: "Suggested update from transcript",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Provider:/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/approving suggested update items still/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Review boundaries")).toBeInTheDocument();
   });
 
   it("renders the voice note edit route", async () => {

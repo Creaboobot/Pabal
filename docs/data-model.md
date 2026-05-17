@@ -9,13 +9,16 @@ metadata to meetings and notes. Step 7B uses that metadata for manual notes and
 pasted meeting-note capture without changing the schema. Step 8A uses the
 existing `Task` model for manual follow-up workflows without changing the
 schema. Step 8B uses the existing `Commitment` model for the manual commitment
-ledger without changing the schema. Step 9 uses the existing `AIProposal` and
-`AIProposalItem` models for status-only human review without changing the
-schema. Step 10A-1 uses the existing `Need` and `Capability` models for manual
-relationship-intelligence workflows without changing the schema. Step 10A-2
-keeps the existing `IntroductionSuggestion` model as legacy/internal schema
-only; it is no longer an active V1 user-facing workflow. Step 10C uses existing meeting and
-relationship records for read-only prep briefs without changing the schema.
+ledger without changing the schema. The current `/tasks` view is a read-only
+unified action area over existing Task and Commitment records; it does not
+merge the models or change the schema. Step 9 uses the existing `AIProposal`
+and `AIProposalItem` models for status-only Suggested update review without
+changing the schema. Step 10A-1 uses the existing `Need` and `Capability`
+models for manual relationship-intelligence workflows without changing the
+schema. Step 10A-2 keeps the existing `IntroductionSuggestion` model as
+legacy/internal schema only; it is no longer an active V1 user-facing workflow.
+Step 10C uses existing meeting and relationship records for read-only prep
+briefs without changing the schema.
 Step 11A uses the existing `VoiceNote` model for backend transcription and
 transcript review without changing the schema. Step 11B uses existing
 `AIProposal` and `AIProposalItem` source VoiceNote links for review-only voice
@@ -233,10 +236,11 @@ derived at read time from status plus `dueAt` or the due-window boundary. Step
 background jobs, automatic task creation, automatic commitment extraction,
 AI proposals, or parsing of notes/meeting notes.
 
-## Step 9 AI proposal confirmation
+## Step 9 Suggested update review
 
 Step 9 promotes existing `AIProposal` and `AIProposalItem` readiness records
-into a status-only human review workflow. It does not add a migration.
+into a status-only human review workflow. User-facing screens call these
+records Suggested updates. This step does not add a migration.
 
 Proposal item lifecycle uses existing values:
 
@@ -333,7 +337,7 @@ Computed signals are:
 
 The service also returns explainable why-now reasons linked to source records
 where possible, including overdue/upcoming tasks, open commitments, due Need
-review dates, active needs/capabilities, pending proposal review, recent
+review dates, active needs/capabilities, pending Suggested update review, recent
 meetings/notes, and stale or dormant relationship context. Future
 `Need.reviewAfter` dates are not urgent. Legacy introduction suggestion records
 may remain in the database but are not surfaced as user-facing relationship
