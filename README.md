@@ -78,8 +78,9 @@ adds manual follow-up task workflows and Today task sections. Step 8B adds the
 manual commitment ledger and Today commitment sections. Step 9 adds the
 status-only AI proposal confirmation framework. Step 10A-1 adds manual needs
 and capabilities under Opportunities. Step 10A-2 adds manual introduction
-suggestion schema readiness, retained as legacy/internal data only. Step 10B-1 adds deterministic read-only relationship
-health and why-now signals for Today and person/company detail pages. Step 10C
+suggestion schema readiness, retained as legacy/internal data only. Step 10B-1
+adds deterministic read-only relationship health and why-now signals for Today
+and person/company detail pages, including due Need review dates. Step 10C
 adds deterministic read-only meeting prep briefs from existing records. Step
 11A-1 adds the backend speech-to-text provider boundary and
 `POST /api/voice-notes/transcribe` for tenant-validated VoiceNote transcript
@@ -356,9 +357,10 @@ Manual relationship intelligence is available under `/opportunities`:
   archive actions.
 - `/opportunities/capabilities/[capabilityId]/edit` for capability edits.
 
-Needs can link to people, companies, meetings, and notes. Capabilities can link
-to people, companies, and notes; the current schema has no direct meeting link
-for capabilities. Meeting and note provenance is recorded through
+Needs can link to people, companies, meetings, and notes, and may carry an
+optional nullable `Review after` date for human relationship review.
+Capabilities can link to people, companies, and notes; the current schema has
+no direct meeting link for capabilities. Meeting and note provenance is recorded through
 tenant-validated `SourceReference` rows where provided. Contextual create links
 are convenience hints only, and server actions validate all linked records
 inside the active workspace. `IntroductionSuggestion` schema/data and
@@ -372,7 +374,8 @@ and company detail pages. Signals are computed at read time from existing
 tenant-scoped records such as tasks, commitments, meetings, notes, needs,
 capabilities, and suggested update review records. They are
 explainable, source-linked where possible, and are not persisted as scores.
-They do not call AI providers, create recommendations automatically, send
+Due or past Need review dates can surface as attention reasons. They do not
+call AI providers, create recommendations automatically, create reminders, send
 notifications, or run background jobs.
 
 Meeting prep briefs are available at `/meetings/[meetingId]/prep` from meeting

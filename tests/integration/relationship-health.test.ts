@@ -232,6 +232,67 @@ describeWithDatabase("relationship health why-now signals", () => {
     );
   });
 
+  it("surfaces due Need review dates without future urgency or duplicate company cards", async () => {
+    const context = await createTenantContext("need-review-health@example.com");
+    const company = await createTenantCompany(context, {
+      name: "Need Review Company",
+    });
+    const person = await createTenantPerson(context, {
+      displayName: "Need Review Person",
+    });
+    const futurePerson = await createTenantPerson(context, {
+      displayName: "Future Review Person",
+    });
+
+    const dueNeed = await createTenantNeed(context, {
+      companyId: company.id,
+      personId: person.id,
+      priority: "HIGH",
+      reviewAfter: now,
+      title: "Review due relationship need",
+    });
+    await createTenantNeed(context, {
+      personId: futurePerson.id,
+      reviewAfter: tomorrow,
+      title: "Review future relationship need",
+    });
+
+    const personHealth = await getTenantPersonRelationshipHealth(
+      context,
+      person.id,
+      { now },
+    );
+    const futurePersonHealth = await getTenantPersonRelationshipHealth(
+      context,
+      futurePerson.id,
+      { now },
+    );
+    const companyHealth = await getTenantCompanyRelationshipHealth(
+      context,
+      company.id,
+      { now },
+    );
+    const board = await getTenantRelationshipAttentionBoard(context, { now });
+
+    expect(personHealth?.signal).toBe("NEEDS_ATTENTION");
+    expect(personHealth?.reasons[0]).toMatchObject({
+      relatedEntityId: dueNeed.id,
+      type: "DUE_NEED_REVIEW",
+    });
+    expect(futurePersonHealth?.signal).not.toBe("NEEDS_ATTENTION");
+    expect(
+      futurePersonHealth?.reasons.map((reason) => reason.type),
+    ).not.toContain("DUE_NEED_REVIEW");
+    expect(companyHealth?.reasons.map((reason) => reason.type)).not.toContain(
+      "DUE_NEED_REVIEW",
+    );
+    expect(board.items.map((item) => item.entityId)).toContain(person.id);
+    expect(board.items.map((item) => item.entityId)).not.toContain(company.id);
+    expect(board.items.map((item) => item.entityId)).not.toContain(
+      futurePerson.id,
+    );
+  });
+
   it("returns null for cross-tenant person and company signals", async () => {
     const first = await createRelationshipHealthContext(
       "first-cross-health@example.com",

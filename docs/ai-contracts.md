@@ -58,6 +58,9 @@ step exists.
 Relationship health and why-now reasons in Step 10B-1 are deterministic and
 read-only. They are computed from existing tenant-scoped records such as tasks,
 commitments, meetings, notes, needs, capabilities, and proposal review records.
+Need `reviewAfter` is a nullable human review date only; due dates may appear
+as deterministic relationship attention but do not create reminders,
+notifications, tasks, commitments, or jobs.
 Legacy/internal introduction suggestion records are not surfaced as
 introduction-specific user-facing why-now output. The signals do not invoke AI
 providers, generate recommendations, apply proposal patches, mutate target

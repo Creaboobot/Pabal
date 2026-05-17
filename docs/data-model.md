@@ -267,7 +267,7 @@ audit metadata. It does not require a schema migration and does not change the
 ## Step 10A opportunities workflows
 
 Step 10A-1 promotes the existing `Need` and `Capability` models from
-readiness into manual workflows. It does not add a migration.
+readiness into manual workflows.
 
 Needs remain tenant-scoped and can link directly to:
 
@@ -275,6 +275,12 @@ Needs remain tenant-scoped and can link directly to:
 - `Company`
 - `Meeting`
 - `Note`
+
+PR 4 adds one nullable `Need.reviewAfter` field mapped to `review_after`.
+This is a lightweight human review date only. Empty form values persist as
+`null`; due or past dates may surface the Need in relationship attention, but
+they do not create tasks, commitments, reminders, notifications, or background
+jobs.
 
 Capabilities remain tenant-scoped and can link directly to:
 
@@ -326,10 +332,11 @@ Computed signals are:
 - `UNKNOWN`
 
 The service also returns explainable why-now reasons linked to source records
-where possible, including overdue/upcoming tasks, open commitments, active
-needs/capabilities, pending proposal review, recent meetings/notes, and stale
-or dormant relationship context. Legacy introduction suggestion records may
-remain in the database but are not surfaced as user-facing relationship
+where possible, including overdue/upcoming tasks, open commitments, due Need
+review dates, active needs/capabilities, pending proposal review, recent
+meetings/notes, and stale or dormant relationship context. Future
+`Need.reviewAfter` dates are not urgent. Legacy introduction suggestion records
+may remain in the database but are not surfaced as user-facing relationship
 attention reasons.
 
 Existing stored `Person.relationshipStatus` and

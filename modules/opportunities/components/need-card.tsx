@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { Building2, CalendarDays, FileText, UserRound } from "lucide-react";
+import {
+  Building2,
+  CalendarDays,
+  FileText,
+  RotateCcw,
+  UserRound,
+} from "lucide-react";
 import type {
   NeedStatus,
   NeedType,
@@ -9,6 +15,7 @@ import type {
 
 import { Badge } from "@/components/ui/badge";
 import { NeedBadges } from "@/modules/opportunities/components/opportunity-badges";
+import { formatNeedReviewDate } from "@/modules/opportunities/labels";
 
 export type NeedCardNeed = {
   company: { id: string; name: string } | null;
@@ -26,6 +33,7 @@ export type NeedCardNeed = {
   } | null;
   person: { displayName: string; id: string } | null;
   priority: TaskPriority;
+  reviewAfter: Date | null;
   sensitivity: Sensitivity;
   status: NeedStatus;
   title: string;
@@ -114,6 +122,14 @@ export function NeedCard({ need }: NeedCardProps) {
                 <FileText aria-hidden="true" className="size-3.5" />
                 {need.note.summary ?? `${need.note.noteType} note`}
               </Link>
+            </Badge>
+          ) : null}
+          {need.reviewAfter ? (
+            <Badge variant="secondary">
+              <span className="flex items-center gap-1">
+                <RotateCcw aria-hidden="true" className="size-3.5" />
+                Review after {formatNeedReviewDate(need.reviewAfter)}
+              </span>
             </Badge>
           ) : null}
         </div>

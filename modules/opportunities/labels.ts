@@ -168,6 +168,23 @@ export function confidenceLabel(confidence: number | null | undefined) {
   return `${Math.round(confidence * 100)}% confidence`;
 }
 
+export function formatDateInput(date: Date | null | undefined) {
+  return date ? date.toISOString().slice(0, 10) : "";
+}
+
+export function formatNeedReviewDate(date: Date | null | undefined) {
+  if (!date) {
+    return "No review date";
+  }
+
+  return new Intl.DateTimeFormat("en", {
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+    year: "numeric",
+  }).format(date);
+}
+
 export function truncatedText(text: string, max = 80) {
   return text.length > max ? `${text.slice(0, max - 3)}...` : text;
 }

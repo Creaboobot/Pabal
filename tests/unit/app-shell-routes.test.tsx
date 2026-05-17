@@ -721,6 +721,7 @@ const needProfile = {
   person: personProfile,
   personId: personProfile.id,
   priority: "HIGH",
+  reviewAfter: new Date("2026-05-18T00:00:00.000Z"),
   sensitivity: "NORMAL",
   status: "OPEN",
   title: "Practical MBSE training examples",
@@ -2101,6 +2102,7 @@ describe("protected app routes", () => {
         name: "Practical MBSE training examples",
       }),
     ).toBeInTheDocument();
+    expect(screen.getByText(/Review after May 18, 2026/)).toBeInTheDocument();
 
     render(
       await EditPage({

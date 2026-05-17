@@ -129,12 +129,14 @@ with not-found instead of rendering active pages.
 The Step 10B-1 tests cover deterministic relationship health computation,
 threshold boundaries for active/stale/dormant signals, needs-attention
 precedence, why-now reasons for tasks, commitments, needs, capabilities,
-proposals, meetings, and notes, tenant-scoped Today relationship attention
-summaries, proof that legacy introduction records are not surfaced as
+proposals, meetings, and notes, due Need `reviewAfter` dates, future review
+dates that are not urgent, tenant-scoped and bounded Today relationship
+attention summaries, proof that legacy introduction records are not surfaced as
 user-facing relationship attention reasons, cross-tenant person/company signal
 denial, proof that signal computation does not mutate records or write audit
 logs, and route smoke coverage for Today plus person/company detail pages
-through the app-shell tests.
+through the app-shell tests. The opportunities tests also cover nullable
+`reviewAfter`, clearing it to `null`, and safe audit metadata.
 
 The Step 10C tests cover route smoke rendering for
 `/meetings/[meetingId]/prep`, the meeting-detail prep link, tenant-owned prep

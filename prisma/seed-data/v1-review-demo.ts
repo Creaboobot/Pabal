@@ -584,6 +584,7 @@ export async function seedV1ReviewDemoData(db: SeedClient) {
       meetingId: "demo-meeting-plm-governance",
       noteId: "demo-note-plm-teams-copilot",
       confidence: 0.88,
+      reviewAfter: new Date("2026-05-10T00:00:00.000Z"),
     },
     {
       id: "demo-need-grid-enablement-examples",
@@ -599,6 +600,7 @@ export async function seedV1ReviewDemoData(db: SeedClient) {
       meetingId: "demo-meeting-grid-modernization",
       noteId: "demo-note-grid-modernization",
       confidence: 0.84,
+      reviewAfter: null,
     },
     {
       id: "demo-need-logistics-ai-pilot",
@@ -614,6 +616,7 @@ export async function seedV1ReviewDemoData(db: SeedClient) {
       meetingId: "demo-meeting-logistics-ai-readiness",
       noteId: "demo-note-logistics-ai-readiness",
       confidence: 0.79,
+      reviewAfter: null,
     },
     {
       id: "demo-need-public-sector-governance-workshop",
@@ -629,6 +632,7 @@ export async function seedV1ReviewDemoData(db: SeedClient) {
       meetingId: "demo-meeting-public-sector-privacy-review",
       noteId: "demo-note-privacy-review",
       confidence: 0.83,
+      reviewAfter: null,
     },
   ] as const;
 
@@ -653,6 +657,7 @@ export async function seedV1ReviewDemoData(db: SeedClient) {
           meetingId: need.meetingId,
           noteId: need.noteId,
           confidence: need.confidence,
+          reviewAfter: need.reviewAfter,
           updatedByUserId: userId,
         },
       }),

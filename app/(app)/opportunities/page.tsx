@@ -48,7 +48,7 @@ export default async function OpportunitiesPage() {
 
       <section
         aria-label="Opportunity summary"
-        className="grid gap-3 sm:grid-cols-2"
+        className="grid gap-3 lg:grid-cols-[1.4fr_0.8fr]"
       >
         <CockpitCard title="Needs under review" value={hub.counts.openNeeds}>
           <div className="grid gap-3">
@@ -77,7 +77,7 @@ export default async function OpportunitiesPage() {
         </CockpitCard>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-2">
+      <section className="grid gap-4 xl:grid-cols-[1.4fr_0.8fr]">
         <CockpitCard title="Latest needs" value={hub.latestNeeds.length}>
           {hub.latestNeeds.length > 0 ? (
             <div className="grid gap-3">
