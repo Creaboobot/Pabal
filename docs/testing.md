@@ -101,8 +101,11 @@ masking/truncation, route smoke rendering for `/proposals` and
 `/proposals/[proposalId]`, proposal list/detail tenant isolation, approve,
 reject, needs-clarification, approve-all, reject-all, dismiss actions,
 deterministic proposal status rollup, proof that approval does not mutate
-target records, tenant-scoped Today proposal review summaries, and audit safety
-without proposed patch JSON or source text.
+target records or create Tasks, explicit suggested-update-to-Task and
+suggested-update-to-Meeting conversion through confirmed records,
+`AIProposalItem` SourceReference provenance, duplicate conversion prevention,
+cross-tenant conversion denial, tenant-scoped Today proposal review summaries,
+and audit safety without proposed patch JSON or source text.
 
 The Step 10A-1 tests cover need/capability validation, route smoke rendering
 for `/opportunities`, `/opportunities/needs`, `/opportunities/needs/new`,

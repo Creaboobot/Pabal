@@ -30,6 +30,14 @@ Future AI work must follow the build brief and ADR-003:
 - Proposed patch JSON can be displayed after masking/truncation, but is not
   editable in this step and is never written to audit metadata.
 - Audit logs record status transitions and safe ids only.
+- Suggested update items may offer explicit `Create task` and `Create meeting`
+  actions. These actions open editable forms, use only conservative whitelisted
+  prefill fields, validate tenant ownership when loading and submitting, and
+  transactionally create the confirmed Task/Meeting plus a `SourceReference`
+  from the `AIProposalItem` and a safe audit log.
+- Conversion is not approval. Creating a Task or Meeting from a suggested update
+  must not approve the `AIProposalItem`, apply arbitrary `proposedPatch` JSON, or
+  mutate an existing target record.
 
 The proposal application engine, extraction jobs beyond explicit
 VoiceNote-to-proposal structuring, and generated direct record mutations belong

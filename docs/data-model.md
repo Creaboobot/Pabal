@@ -258,6 +258,12 @@ does not mean the patch was applied. Step 9 does not mutate target records,
 create records, apply proposed patches, call AI providers, generate proposals,
 or run background jobs.
 
+Explicit Task/Meeting conversion is separate from approval. A user-confirmed
+conversion creates the new Task or Meeting from an editable form, then stores a
+`SourceReference` from `AIProposalItem` to the created record and writes safe
+audit metadata. It does not require a schema migration and does not change the
+`AIProposalItem` status.
+
 ## Step 10A opportunities workflows
 
 Step 10A-1 promotes the existing `Need` and `Capability` models from

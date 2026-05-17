@@ -2,6 +2,7 @@ import { type Prisma, type SourceEntityType } from "@prisma/client";
 
 import {
   createSourceReference,
+  listSourceReferencesForSource,
   listSourceReferencesForTarget,
 } from "@/server/repositories/source-references";
 import { assertRelationshipEntityBelongsToTenant } from "@/server/services/relationship-entities";
@@ -56,5 +57,26 @@ export async function listTenantSourceReferencesForTarget(
     tenantId: context.tenantId,
     targetEntityType: data.targetEntityType,
     targetEntityId: data.targetEntityId,
+  });
+}
+
+export async function listTenantSourceReferencesForSource(
+  context: TenantContext,
+  data: {
+    sourceEntityId: string;
+    sourceEntityType: SourceEntityType;
+  },
+) {
+  await requireTenantAccess(context);
+  await assertRelationshipEntityBelongsToTenant({
+    tenantId: context.tenantId,
+    entityType: data.sourceEntityType,
+    entityId: data.sourceEntityId,
+  });
+
+  return listSourceReferencesForSource({
+    tenantId: context.tenantId,
+    sourceEntityType: data.sourceEntityType,
+    sourceEntityId: data.sourceEntityId,
   });
 }
