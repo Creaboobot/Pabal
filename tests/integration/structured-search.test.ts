@@ -2,6 +2,7 @@
 import { beforeEach, expect, it } from "vitest";
 
 import { prisma } from "@/server/db/prisma";
+import { createTenantAIProposal } from "@/server/services/ai-proposals";
 import { createTenantCapability } from "@/server/services/capabilities";
 import { createTenantCompany } from "@/server/services/companies";
 import { createTenantIntroductionSuggestion } from "@/server/services/introduction-suggestions";
@@ -102,5 +103,23 @@ describeWithDatabase("structured keyword search", () => {
     );
     expect(serialized).not.toContain("/opportunities/introductions");
     expect(serialized).not.toContain("Legacy hidden search introduction rationale");
+  });
+
+  it("labels proposal search results as Suggested updates", async () => {
+    const context = await createTenantContext("search-proposals@example.com");
+    const proposal = await createTenantAIProposal(context, {
+      explanation: "Searchable suggested update explanation.",
+      proposalType: "NOTE_EXTRACTION",
+      title: "Searchable suggested update",
+    });
+
+    const result = await getTenantStructuredSearch(context, "Searchable");
+    const proposalGroup = result.groups.find(
+      (group) => group.kind === "proposals",
+    );
+
+    expect(proposalGroup?.label).toBe("Suggested updates");
+    expect(proposalGroup?.results[0]?.href).toBe(`/proposals/${proposal.id}`);
+    expect(JSON.stringify(result)).not.toContain('"label":"Proposals"');
   });
 });
