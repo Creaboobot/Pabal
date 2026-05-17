@@ -105,21 +105,21 @@ export function ProposalItemCard({
               description="This marks the item conceptually accepted. It will not change the target record."
               label="Approve"
               pendingLabel="Approving"
-              title="Approve this proposal item?"
+              title="Approve this suggested update item?"
             />
             <ProposalActionButton
               action={rejectAction}
               confirmLabel="Reject item"
-              description="This marks the proposal item rejected. It will not change the target record."
+              description="This marks the suggested update item rejected. It will not change the target record."
               label="Reject"
               pendingLabel="Rejecting"
-              title="Reject this proposal item?"
+              title="Reject this suggested update item?"
               variant="outline"
             />
             <ProposalActionButton
               action={clarifyAction}
               confirmLabel="Mark unclear"
-              description="This keeps the proposal in review and flags that user clarification is needed."
+              description="This keeps the suggested update in review and flags that user clarification is needed."
               label="Needs clarification"
               pendingLabel="Saving"
               title="Mark this item as needing clarification?"

@@ -24,9 +24,9 @@ Open `/today`.
 
 Review:
 
-- overdue/upcoming manual tasks;
-- commitments by due state;
-- proposal review attention;
+- primary cards for Tasks, Meetings, and Relationship attention;
+- a secondary Suggested updates review queue;
+- commitment context that remains accessible without competing with Tasks;
 - deterministic relationship attention with source-linked reasons.
 
 Boundary: no notifications, reminder delivery, background jobs, AI
@@ -106,18 +106,18 @@ Review:
 Boundary: opportunities are manual records. There is no automated matching,
 scoring, outreach drafting, message sending, semantic search, or embeddings.
 
-## 8. AI Proposal Review
+## 8. Suggested Update Review
 
-Open `/proposals` and a proposal detail page.
+Open `/proposals` and a suggested update detail page.
 
 Review:
 
 - source context;
-- proposal item status controls;
+- suggested update item status controls;
 - proposed patch preview;
 - needs-clarification items.
 
-Boundary: proposal approval is status-only. There is no proposal application
+Boundary: suggested update approval is status-only. There is no proposal application
 engine, automatic record mutation, automatic outreach, or background job.
 
 ## 9. Voice Notes
@@ -129,7 +129,7 @@ Review:
 - transcript and reviewed transcript display;
 - source context chips;
 - retention metadata showing raw audio is not retained by default;
-- "Create proposal from transcript" confirmation flow if provider config is
+- "Create suggested update" confirmation flow if provider config is
   available or mocked.
 
 Boundary: raw audio is not stored. Voice capture/transcription and transcript
@@ -146,7 +146,7 @@ Review:
 - participant and company context;
 - recent interactions;
 - linked notes, tasks, commitments, needs, capabilities, introductions, and
-  pending proposals;
+  pending suggested updates;
 - relationship health signals and source links.
 
 Boundary: deterministic, read-only, source-linked, and not AI-generated.

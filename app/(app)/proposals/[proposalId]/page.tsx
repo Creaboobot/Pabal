@@ -70,18 +70,18 @@ export default async function ProposalDetailPage({
             <Button asChild variant="ghost">
               <Link href="/proposals">
                 <ArrowLeft aria-hidden="true" className="mr-2 size-4" />
-                Proposals
+                Suggested updates
               </Link>
             </Button>
           </div>
         }
-        description={proposal.summary ?? "Review stored proposal items."}
-        eyebrow="Proposal review"
+        description={proposal.summary ?? "Review stored suggested update items."}
+        eyebrow="Suggested update review"
         title={proposal.title}
       />
 
       <section className="grid gap-3 lg:grid-cols-[1fr_0.8fr]">
-        <CockpitCard title="Review state">
+        <CockpitCard title="Suggested update state">
           <div className="grid gap-3">
             <div className="flex flex-wrap gap-2">
               <ProposalStatusBadge status={proposal.status} />
@@ -206,27 +206,27 @@ export default async function ProposalDetailPage({
           />
           <ProposalActionButton
             action={dismissProposalAction.bind(null, proposal.id)}
-            confirmLabel="Dismiss proposal"
-            description="The proposal will be hidden from active review lists. Items and target records stay unchanged."
+            confirmLabel="Dismiss suggested update"
+            description="The suggested update will be hidden from active review lists. Items and target records stay unchanged."
             label="Dismiss"
             pendingLabel="Dismissing"
-            title="Dismiss this proposal?"
+            title="Dismiss this suggested update?"
             variant="ghost"
           />
         </section>
       ) : (
         <ProposalActionButton
           action={dismissProposalAction.bind(null, proposal.id)}
-          confirmLabel="Dismiss proposal"
-          description="The proposal will be hidden from active review lists. Items and target records stay unchanged."
-          label="Dismiss proposal"
+          confirmLabel="Dismiss suggested update"
+          description="The suggested update will be hidden from active review lists. Items and target records stay unchanged."
+          label="Dismiss suggested update"
           pendingLabel="Dismissing"
-          title="Dismiss this proposal?"
+          title="Dismiss this suggested update?"
           variant="outline"
         />
       )}
 
-      <section aria-label="Proposal items" className="grid gap-3">
+      <section aria-label="Suggested update items" className="grid gap-3">
         {proposal.items.map((item) => (
           <ProposalItemCard
             approveAction={approveProposalItemAction.bind(
@@ -260,7 +260,7 @@ export default async function ProposalDetailPage({
             />
             <p className="text-sm leading-6 text-muted-foreground">
               Approved items are recorded as conceptually valid, ready for a
-              later explicit application engine.
+              later explicit application step.
             </p>
           </div>
         </CockpitCard>

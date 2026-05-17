@@ -6,9 +6,11 @@ review-only AIProposal records. All provider calls stay behind server-side
 adapters, are optional at runtime, and are not required for build or demo seed
 data.
 
-The proposal application boundary remains unchanged: AI may create
-review-only proposal records, but V1 does not apply proposed patches or mutate
-target business records automatically.
+The proposal application boundary remains unchanged. User-facing screens call
+these records "Suggested updates", while the internal data model remains
+`AIProposal` / `AIProposalItem`. AI may create review-only proposal records, but
+V1 does not apply proposed patches or mutate target business records
+automatically.
 
 Future AI work must follow the build brief and ADR-003:
 
@@ -17,12 +19,12 @@ Future AI work must follow the build brief and ADR-003:
 - Provider-specific logic must live behind server-side provider adapters.
 - Strict schemas and tests are required before AI output can affect state.
 
-## Step 9 Review Contract
+## Step 9 Suggested Update Review Contract
 
 - Review operates only on existing `AIProposal` and `AIProposalItem` records.
 - Approving an item means the user accepted it as conceptually valid.
 - Approval does not apply the proposed patch.
-- Proposal review actions must never mutate Person, Company, Meeting, Note,
+- Suggested update review actions must never mutate Person, Company, Meeting, Note,
   Task, Commitment, Need, Capability, IntroductionSuggestion, VoiceNote, or
   VoiceMention records.
 - Proposed patch JSON can be displayed after masking/truncation, but is not

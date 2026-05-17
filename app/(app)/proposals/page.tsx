@@ -65,9 +65,9 @@ export default async function ProposalsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        description="Review stored AI proposal records without generating, applying, or mutating target records."
+        description="Review suggested updates without generating, applying, or mutating target records."
         eyebrow="Human review"
-        title="Proposals"
+        title="Suggested updates"
       />
 
       {proposals.length > 0 ? (
@@ -80,19 +80,19 @@ export default async function ProposalsPage() {
             </p>
           </CockpitCard>
           <ProposalSection
-            description="Proposal containers and items waiting for review."
+            description="Suggested updates and items waiting for review."
             proposals={pending}
-            title="Pending review"
+            title="Pending suggested updates"
           />
           <ProposalSection
-            description="Proposals with at least one reviewed or unclear item."
+            description="Suggested updates with at least one reviewed or unclear item."
             proposals={inReview}
-            title="In review"
+            title="Suggested updates in review"
           />
           <ProposalSection
-            description="Reviewed proposal records retained for auditability."
+            description="Reviewed suggested updates retained for auditability."
             proposals={reviewed}
-            title="Reviewed"
+            title="Reviewed suggested updates"
           />
         </div>
       ) : (
@@ -102,9 +102,9 @@ export default async function ProposalsPage() {
               <Link href="/today">Back to Today</Link>
             </Button>
           }
-          description="Seed demo data to preview the proposal confirmation framework. This step does not generate proposals."
+          description="Seed demo data to preview the suggested update review framework. This step does not generate updates."
           icon={Sparkles}
-          title="No proposals to review"
+          title="No suggested updates to review"
         />
       )}
     </div>

@@ -45,7 +45,7 @@ export function ProposalActionButton({
         return;
       }
 
-      setError(result.message ?? "The proposal could not be updated.");
+      setError(result.message ?? "The suggested update could not be updated.");
     });
   }
 

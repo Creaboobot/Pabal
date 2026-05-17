@@ -17,7 +17,7 @@ const reviewCriticalRoutes: SmokeRoute[] = [
   { path: "/tasks", heading: "Tasks" },
   { path: "/commitments", heading: "Commitments" },
   { path: "/opportunities", heading: "Opportunities" },
-  { path: "/proposals", heading: "Proposals" },
+  { path: "/proposals", heading: "Suggested updates" },
   { path: "/settings", heading: "Settings" },
   { path: "/settings/workspace", heading: "Workspace" },
   { path: "/settings/members", heading: "Members" },
@@ -41,7 +41,7 @@ const deterministicDeepRoutes: SmokeRoute[] = [
   },
   {
     path: "/proposals/demo-ai-proposal-plm-teams-copilot",
-    heading: /Proposal|PLM|Copilot/i,
+    heading: /PLM|Copilot/i,
   },
 ];
 

@@ -59,8 +59,8 @@ export function proposalActionTypeLabel(actionType: AIProposalActionType) {
 
 export function sourceEntityTypeLabel(entityType: SourceEntityType) {
   const labels: Record<SourceEntityType, string> = {
-    AI_PROPOSAL: "AI proposal",
-    AI_PROPOSAL_ITEM: "AI proposal item",
+    AI_PROPOSAL: "Suggested update",
+    AI_PROPOSAL_ITEM: "Suggested update item",
     CAPABILITY: "Capability",
     COMMITMENT: "Commitment",
     COMPANY: "Company",

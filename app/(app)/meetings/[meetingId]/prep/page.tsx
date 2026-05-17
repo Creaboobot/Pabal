@@ -181,7 +181,8 @@ function proposalRecords(
         proposalTypeLabel(proposal.proposalType),
         "Review only",
       ],
-      description: "Status-only proposal context. Nothing is applied here.",
+      description:
+        "Status-only suggested update context. Nothing is applied here.",
       href: proposal.href,
       id: proposal.id,
       title: proposal.title,
@@ -440,11 +441,11 @@ export default async function MeetingPrepPage({
         </CockpitCard>
 
         <CockpitCard
-          title="Pending proposal review"
+          title="Pending suggested updates"
           value={brief.records.proposals.length}
         >
           <PrepRecordList
-            emptyDescription="No pending or in-review AI proposals are linked to this meeting context."
+            emptyDescription="No pending or in-review suggested updates are linked to this meeting context."
             records={proposalRecords(brief)}
           />
         </CockpitCard>
