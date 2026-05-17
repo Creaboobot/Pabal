@@ -24,6 +24,7 @@ import {
   editableNeedTypes,
   editablePriorities,
   editableSensitivities,
+  formatDateInput,
   needStatusLabel,
   needTypeLabel,
   priorityLabel,
@@ -79,6 +80,7 @@ export type NeedFormInitialValues = {
   noteId?: string | null;
   personId?: string | null;
   priority?: TaskPriority;
+  reviewAfter?: Date | null;
   sensitivity?: Sensitivity;
   status?: NeedStatus;
   title?: string;
@@ -226,6 +228,21 @@ export function NeedForm({
           />
         </label>
       </div>
+
+      <label className="grid gap-2">
+        <span className="text-sm font-medium text-foreground">Review after</span>
+        <Input
+          aria-describedby="reviewAfter-error"
+          aria-invalid={Boolean(firstError(state, "reviewAfter"))}
+          defaultValue={formatDateInput(initialValues?.reviewAfter)}
+          name="reviewAfter"
+          type="date"
+        />
+        <FieldError
+          id="reviewAfter-error"
+          message={firstError(state, "reviewAfter")}
+        />
+      </label>
 
       <label className="grid gap-2">
         <span className="text-sm font-medium text-foreground">Description</span>

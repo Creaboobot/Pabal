@@ -18,6 +18,7 @@ describe("opportunity validation", () => {
         noteId: "",
         personId: "person_1",
         priority: "HIGH",
+        reviewAfter: "2026-05-18",
         sensitivity: "NORMAL",
         status: "OPEN",
         title: "Need practical training examples",
@@ -33,6 +34,28 @@ describe("opportunity validation", () => {
         title: "",
       }).success,
     ).toBe(false);
+    expect(
+      needFormSchema.safeParse({
+        confidence: "0.5",
+        needType: "REQUEST",
+        priority: "HIGH",
+        reviewAfter: "2026-02-30",
+        sensitivity: "NORMAL",
+        status: "OPEN",
+        title: "Invalid review date",
+      }).success,
+    ).toBe(false);
+    expect(
+      needFormSchema.safeParse({
+        confidence: "",
+        needType: "REQUEST",
+        priority: "HIGH",
+        reviewAfter: "",
+        sensitivity: "NORMAL",
+        status: "OPEN",
+        title: "Empty review date",
+      }).data?.reviewAfter,
+    ).toBeNull();
   });
 
   it("validates capability form values", () => {

@@ -219,6 +219,7 @@ const needSelect = {
   noteId: true,
   personId: true,
   priority: true,
+  reviewAfter: true,
   sensitivity: true,
   status: true,
   tenantId: true,

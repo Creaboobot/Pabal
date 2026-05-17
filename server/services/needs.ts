@@ -34,6 +34,7 @@ export type NeedMutationInput = {
   noteId?: string | null;
   personId?: string | null;
   priority?: TaskPriority;
+  reviewAfter?: Date | null;
   sensitivity?: Sensitivity;
   status?: NeedStatus;
   title: string;

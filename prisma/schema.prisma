@@ -713,6 +713,7 @@ model Need {
   meetingId               String?                  @map("meeting_id")
   noteId                  String?                  @map("note_id")
   confidence              Float?
+  reviewAfter             DateTime?                @map("review_after")
   createdByUserId         String?                  @map("created_by_user_id")
   updatedByUserId         String?                  @map("updated_by_user_id")
   archivedAt              DateTime?                @map("archived_at")

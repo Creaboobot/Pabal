@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Edit,
   FileText,
+  RotateCcw,
   UserRound,
 } from "lucide-react";
 
@@ -16,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { archiveNeedAction } from "@/modules/opportunities/actions";
 import { NeedBadges } from "@/modules/opportunities/components/opportunity-badges";
 import { OpportunityActionButton } from "@/modules/opportunities/components/opportunity-action-button";
+import { formatNeedReviewDate } from "@/modules/opportunities/labels";
 import { getTenantNeedProfile } from "@/server/services/needs";
 import { listTenantSourceReferencesForTarget } from "@/server/services/source-references";
 import { getCurrentUserContext } from "@/server/services/session";
@@ -87,13 +89,23 @@ export default async function NeedDetailPage({ params }: NeedDetailPageProps) {
 
       <section className="grid gap-3 lg:grid-cols-[1fr_0.8fr]">
         <CockpitCard title="Need state">
-          <NeedBadges
-            confidence={need.confidence}
-            needType={need.needType}
-            priority={need.priority}
-            sensitivity={need.sensitivity}
-            status={need.status}
-          />
+          <div className="grid gap-3">
+            <NeedBadges
+              confidence={need.confidence}
+              needType={need.needType}
+              priority={need.priority}
+              sensitivity={need.sensitivity}
+              status={need.status}
+            />
+            <div className="flex flex-wrap gap-2">
+              <Badge variant={need.reviewAfter ? "secondary" : "outline"}>
+                <span className="flex items-center gap-1">
+                  <RotateCcw aria-hidden="true" className="size-3.5" />
+                  Review after {formatNeedReviewDate(need.reviewAfter)}
+                </span>
+              </Badge>
+            </div>
+          </div>
         </CockpitCard>
 
         <CockpitCard title="Context">

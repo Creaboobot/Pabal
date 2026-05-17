@@ -68,8 +68,11 @@ const relatedNoteSelect = {
 } satisfies Prisma.NoteSelect;
 
 const relatedNeedSelect = {
+  companyId: true,
   id: true,
+  personId: true,
   priority: true,
+  reviewAfter: true,
   status: true,
   title: true,
 } satisfies Prisma.NeedSelect;

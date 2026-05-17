@@ -27,7 +27,8 @@ Review:
 - primary cards for Tasks, Meetings, and Relationship attention;
 - a secondary Suggested updates review queue;
 - commitment context that remains accessible without competing with Tasks;
-- deterministic relationship attention with source-linked reasons.
+- deterministic relationship attention with source-linked reasons, including
+  due Need review dates where present.
 
 Boundary: no notifications, reminder delivery, background jobs, AI
 recommendations, or persisted relationship scores.
@@ -100,12 +101,13 @@ Open `/opportunities`, then needs and capabilities.
 Review:
 
 - active needs such as PLM governance RACI and grid enablement examples;
+- optional `Review after` dates on Need create/edit, detail, and cards;
 - capabilities such as governance mapping and responsible AI advice;
 - source-linked manual context behind those records.
 
 Boundary: opportunities are manual records. There is no automated matching,
-scoring, outreach drafting, message sending, semantic search, embeddings, or
-active Introduction Suggestions workflow.
+scoring, outreach drafting, message sending, semantic search, embeddings,
+reminder creation, or active Introduction Suggestions workflow.
 
 ## 8. Suggested Update Review
 

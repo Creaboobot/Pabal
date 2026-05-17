@@ -67,6 +67,7 @@ describeWithDatabase("opportunities needs and capabilities workflow", () => {
 
   it("creates, edits, and archives tenant-scoped needs safely", async () => {
     const data = await createOpportunityContext("need-workflow@example.com");
+    const reviewAfter = new Date("2026-05-18T00:00:00.000Z");
     const need = await createTenantNeed(data.context, {
       companyId: data.company.id,
       confidence: 0.72,
@@ -76,6 +77,7 @@ describeWithDatabase("opportunities needs and capabilities workflow", () => {
       noteId: data.note.id,
       personId: data.person.id,
       priority: "HIGH",
+      reviewAfter,
       sensitivity: "SENSITIVE_BUSINESS",
       title: "Need practical MBSE examples",
     });
@@ -85,6 +87,7 @@ describeWithDatabase("opportunities needs and capabilities workflow", () => {
       meetingId: data.meeting.id,
       noteId: data.note.id,
       personId: data.person.id,
+      reviewAfter,
       tenantId: data.context.tenantId,
     });
 
@@ -97,6 +100,7 @@ describeWithDatabase("opportunities needs and capabilities workflow", () => {
       noteId: data.note.id,
       personId: data.person.id,
       priority: "CRITICAL",
+      reviewAfter: null,
       sensitivity: "CONFIDENTIAL",
       status: "IN_PROGRESS",
       title: "Updated need",
@@ -104,8 +108,12 @@ describeWithDatabase("opportunities needs and capabilities workflow", () => {
 
     expect(updated).toMatchObject({
       priority: "CRITICAL",
+      reviewAfter: null,
       status: "IN_PROGRESS",
       title: "Updated need",
+    });
+    await expect(getTenantNeedProfile(data.context, need.id)).resolves.toMatchObject({
+      reviewAfter: null,
     });
 
     const archived = await archiveTenantNeed(data.context, need.id);
@@ -127,6 +135,7 @@ describeWithDatabase("opportunities needs and capabilities workflow", () => {
     expect(auditLogs).toHaveLength(3);
     expect(metadata).toContain(data.person.id);
     expect(metadata).toContain("SENSITIVE_BUSINESS");
+    expect(metadata).toContain("reviewAfter");
     expect(metadata).not.toContain("Do not leak this need description");
     expect(metadata).not.toContain("Updated description");
     expect(metadata).not.toContain("note body must not leak");

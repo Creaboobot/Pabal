@@ -195,6 +195,10 @@ parameters from people, company, meeting, and note pages are treated as
 convenience hints only. Services validate linked records inside the active
 tenant before writing and use safe audit metadata.
 
+Needs include an optional nullable `reviewAfter` date for lightweight human
+review. It is stored as `Need.reviewAfter`/`review_after`, can be cleared on
+edit, and is not a task, reminder, notification, commitment, or background job.
+
 The existing `IntroductionSuggestion` schema, repositories, services, source
 references, archive handling, and export handling remain for legacy/internal
 data. The user-facing introduction routes are retired and should fail safely
@@ -212,6 +216,8 @@ only tenant-scoped records, and returns computed signals such as active, warm,
 stale, dormant, or needs attention. It does not write scores, mutate existing
 `relationshipStatus` or `relationshipTemperature` fields, create
 recommendations, call AI providers, send notifications, or run background jobs.
+Due or past Need `reviewAfter` dates are treated as bounded deterministic
+relationship attention reasons; future review dates are not urgent.
 
 The thresholds are internal V1 constants:
 

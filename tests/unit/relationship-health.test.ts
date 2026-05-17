@@ -160,8 +160,11 @@ describe("relationship health computation", () => {
         needCount: 1,
         needs: [
           {
+            companyId: null,
             id: "need_1",
+            personId: "person_1",
             priority: "HIGH",
+            reviewAfter: null,
             title: "Find implementation examples",
           },
         ],
@@ -212,6 +215,52 @@ describe("relationship health computation", () => {
 
     expect(capabilityOnly.reasons.map((reason) => reason.type)).toContain(
       "ACTIVE_CAPABILITY",
+    );
+  });
+
+  it("treats due need review dates as bounded human review attention", () => {
+    const due = buildRelationshipHealth(
+      baseFacts({
+        needCount: 1,
+        needs: [
+          {
+            companyId: null,
+            id: "need_due",
+            personId: "person_1",
+            priority: "HIGH",
+            reviewAfter: new Date("2026-04-26T00:00:00.000Z"),
+            title: "Review implementation examples",
+          },
+        ],
+      }),
+      { now },
+    );
+    const future = buildRelationshipHealth(
+      baseFacts({
+        needCount: 1,
+        needs: [
+          {
+            companyId: null,
+            id: "need_future",
+            personId: "person_1",
+            priority: "HIGH",
+            reviewAfter: new Date("2026-04-27T00:00:00.000Z"),
+            title: "Review later",
+          },
+        ],
+      }),
+      { now },
+    );
+
+    expect(due.signal).toBe("NEEDS_ATTENTION");
+    expect(due.reasons[0]).toMatchObject({
+      relatedEntityId: "need_due",
+      relatedEntityType: "NEED",
+      type: "DUE_NEED_REVIEW",
+    });
+    expect(future.signal).not.toBe("NEEDS_ATTENTION");
+    expect(future.reasons.map((reason) => reason.type)).not.toContain(
+      "DUE_NEED_REVIEW",
     );
   });
 });

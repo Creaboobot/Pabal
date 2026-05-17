@@ -45,6 +45,7 @@ function needFormData(formData: FormData) {
     noteId: formDataValue(formData, "noteId"),
     personId: formDataValue(formData, "personId"),
     priority: formDataValue(formData, "priority"),
+    reviewAfter: formDataValue(formData, "reviewAfter"),
     sensitivity: formDataValue(formData, "sensitivity"),
     status: formDataValue(formData, "status"),
     title: formDataValue(formData, "title"),
@@ -75,10 +76,15 @@ function needMutationPayload(data: NeedFormValues) {
     noteId: data.noteId,
     personId: data.personId,
     priority: data.priority,
+    reviewAfter: inputDateOnly(data.reviewAfter),
     sensitivity: data.sensitivity,
     status: data.status,
     title: data.title,
   };
+}
+
+function inputDateOnly(value: string | null) {
+  return value ? new Date(`${value}T00:00:00.000Z`) : null;
 }
 
 function capabilityMutationPayload(data: CapabilityFormValues) {

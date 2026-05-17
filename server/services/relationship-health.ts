@@ -36,6 +36,7 @@ export type WhyNowReasonType =
   | "OVERDUE_COMMITMENT"
   | "UPCOMING_COMMITMENT"
   | "OPEN_COMMITMENT"
+  | "DUE_NEED_REVIEW"
   | "ACTIVE_NEED"
   | "ACTIVE_CAPABILITY"
   | "PENDING_AI_PROPOSAL"
@@ -106,8 +107,11 @@ type InteractionFact = {
 };
 
 type NeedFact = {
+  companyId: string | null;
   id: string;
+  personId: string | null;
   priority: TaskPriority;
+  reviewAfter: Date | null;
   title: string;
 };
 
@@ -196,6 +200,17 @@ function isCommitmentUpcoming(commitment: CommitmentFact, now: Date) {
   );
 }
 
+function startOfUtcDayTime(date: Date) {
+  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+}
+
+function isNeedReviewDue(need: NeedFact, now: Date) {
+  return (
+    need.reviewAfter !== null &&
+    startOfUtcDayTime(need.reviewAfter) <= startOfUtcDayTime(now)
+  );
+}
+
 function taskSeverity(priority: TaskPriority): WhyNowSeverity {
   if (priority === "CRITICAL") {
     return "CRITICAL";
@@ -219,6 +234,18 @@ function priorityLabel(priority: TaskPriority) {
     case "MEDIUM":
       return "medium";
   }
+}
+
+function needReviewSeverity(priority: TaskPriority): WhyNowSeverity {
+  if (priority === "CRITICAL") {
+    return "CRITICAL";
+  }
+
+  if (priority === "HIGH") {
+    return "HIGH";
+  }
+
+  return "MEDIUM";
 }
 
 function severityRank(severity: WhyNowSeverity) {
@@ -325,6 +352,13 @@ function latestInteraction(facts: RelationshipHealthFacts) {
   return null;
 }
 
+function shouldShowNeedReviewReason(
+  entity: RelationshipHealthFacts["entity"],
+  need: NeedFact,
+) {
+  return entity.type !== "COMPANY" || need.personId === null;
+}
+
 function buildReasons(facts: RelationshipHealthFacts, now: Date) {
   const reasons: WhyNowReason[] = [];
   const entityHref = selfHref(facts.entity);
@@ -425,16 +459,32 @@ function buildReasons(facts: RelationshipHealthFacts, now: Date) {
   }
 
   for (const need of facts.needs) {
+    if (
+      isNeedReviewDue(need, now) &&
+      shouldShowNeedReviewReason(facts.entity, need)
+    ) {
+      reasons.push({
+        date: need.reviewAfter,
+        explanation: `The linked need "${truncate(
+          need.title,
+        )}" is due for human review.`,
+        href: `/opportunities/needs/${need.id}`,
+        label: "Need review due",
+        relatedEntityId: need.id,
+        relatedEntityType: "NEED",
+        severity: needReviewSeverity(need.priority),
+        type: "DUE_NEED_REVIEW",
+      });
+      continue;
+    }
+
     reasons.push({
       explanation: `Active need: "${truncate(need.title)}".`,
       href: `/opportunities/needs/${need.id}`,
       label: "Active need",
       relatedEntityId: need.id,
       relatedEntityType: "NEED",
-      severity:
-        need.priority === "CRITICAL" || need.priority === "HIGH"
-          ? "HIGH"
-          : "MEDIUM",
+      severity: "LOW",
       type: "ACTIVE_NEED",
     });
   }
@@ -531,6 +581,7 @@ function determineSignal(
     (reason) =>
       reason.type === "OVERDUE_TASK" ||
       reason.type === "OVERDUE_COMMITMENT" ||
+      reason.type === "DUE_NEED_REVIEW" ||
       (reason.type === "OPEN_TASK" &&
         (reason.severity === "HIGH" || reason.severity === "CRITICAL")),
   );
@@ -693,7 +744,7 @@ function hasAttentionValue(health: RelationshipHealth) {
     health.signal !== "UNKNOWN" ||
     health.counts.openTasks > 0 ||
     health.counts.openCommitments > 0 ||
-    health.counts.activeNeeds > 0 ||
+    health.reasons.some((reason) => reason.type === "DUE_NEED_REVIEW") ||
     health.counts.pendingProposals > 0
   );
 }
