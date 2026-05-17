@@ -16,6 +16,7 @@ import { getTenantMeeting } from "@/server/services/meetings";
 import { getTenantNote } from "@/server/services/notes";
 import { getTenantPerson } from "@/server/services/people";
 import { getCurrentUserContext } from "@/server/services/session";
+import { getSpeechToTextProviderReadiness } from "@/server/services/voice-provider-readiness";
 
 export const dynamic = "force-dynamic";
 
@@ -103,6 +104,7 @@ export default async function VoiceCapturePage({
         }
       : null,
   ].filter((chip): chip is VoiceSourceContextChip => Boolean(chip));
+  const speechToTextReadiness = getSpeechToTextProviderReadiness();
 
   return (
     <div className="space-y-6">
@@ -115,7 +117,7 @@ export default async function VoiceCapturePage({
             </Link>
           </Button>
         }
-        description="Record audio in your browser, submit it for transcription, then review the stored transcript."
+        description="Record audio in your browser, transcribe it through the configured provider, then review the stored transcript."
         eyebrow="Voice capture"
         title="Record voice note"
       />
@@ -128,6 +130,7 @@ export default async function VoiceCapturePage({
           personId: person?.id ?? null,
         }}
         sourceChips={sourceChips}
+        transcriptionReadiness={speechToTextReadiness}
       />
 
       <CockpitCard title="Source context">

@@ -135,8 +135,11 @@ Review:
 - transcript and reviewed transcript display;
 - source context chips;
 - retention metadata showing raw audio is not retained by default;
-- "Create suggested update" confirmation flow if provider config is
-  available or mocked.
+- speech-to-text provider state on voice capture;
+- transcript-structuring provider state on the voice note detail page;
+- "Create suggested update" confirmation flow when transcript structuring is
+  available;
+- disabled/unavailable explanation when provider configuration is missing.
 
 Boundary: raw audio is not stored. Voice capture/transcription and transcript
 structuring do not update business records automatically.

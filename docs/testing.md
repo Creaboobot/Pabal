@@ -157,17 +157,19 @@ transcription does not create `VoiceMention`, `AIProposal`, or
 `AIProposalItem` records.
 
 The Step 11A-2 tests cover the Capture voice link, voice capture/detail/edit
-route rendering, deterministic MediaRecorder component states, upload success
-and safe failure handling with a mocked API, transcript review/update,
-archiving, cross-tenant VoiceNote/source-context denial, safe audit metadata,
-and proof that review actions do not create `VoiceMention`, `AIProposal`, or
-`AIProposalItem` records.
+route rendering, deterministic MediaRecorder component states, local-only
+provider readiness display, upload success and safe failure handling with a
+mocked API, disabled upload when transcription is not configured, transcript
+review/update, archiving, cross-tenant VoiceNote/source-context denial, safe
+audit metadata, and proof that review actions do not create `VoiceMention`,
+`AIProposal`, or `AIProposalItem` records.
 
 The Step 11B tests cover transcript-structuring provider factory selection,
-mock provider output, OpenAI adapter missing-key failure, strict structured
-output validation, VoiceNote-to-proposal creation with mock output, preference
-for edited transcript text, duplicate active proposal prevention, ambiguous
-entity resolution into `NEEDS_CLARIFICATION`, cross-tenant VoiceNote and target
+local-only transcript-structuring readiness display, mock provider output,
+OpenAI adapter missing-key failure, strict structured output validation,
+VoiceNote-to-proposal creation with mock output, preference for edited
+transcript text, duplicate active proposal prevention, ambiguous entity
+resolution into `NEEDS_CLARIFICATION`, cross-tenant VoiceNote and target
 resolution safety, safe audit metadata without transcript/raw AI/proposedPatch,
 and proof that structuring does not mutate people, companies, tasks,
 commitments, needs, capabilities, legacy introduction suggestion records, or

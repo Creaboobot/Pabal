@@ -50,7 +50,8 @@ const captureSurfaces: CaptureSurface[] = [
   },
   {
     title: "Voice note",
-    description: "Record a short voice note and review the stored transcript.",
+    description:
+      "Record a short voice note, transcribe it through the configured provider, and review the stored transcript.",
     href: "/capture/voice",
     actionLabel: "Record voice note",
     icon: Mic,
@@ -74,7 +75,7 @@ export default async function CapturePage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        description="A capture hub for the moments between meetings, kept read-only in this shell."
+        description="A capture hub for the moments between meetings: notes, meetings, voice transcripts, and relationship context."
         eyebrow="Quick memory"
         title="Capture"
       />

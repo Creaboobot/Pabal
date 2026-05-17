@@ -30,16 +30,43 @@ describe("feature readiness registry", () => {
     );
   });
 
-  it("marks AI structuring as configuration-dependent without an OpenAI key", () => {
+  it("distinguishes voice provider readiness without an OpenAI key", () => {
     const features = buildFeatureReadinessCards({
       NODE_ENV: "test",
     });
 
-    expect(features).toContainEqual(
-      expect.objectContaining({
-        key: "ai-structuring",
-        status: "requires_configuration",
-      }),
+    expect(features).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          key: "speech-to-text-provider",
+          status: "requires_configuration",
+        }),
+        expect.objectContaining({
+          key: "transcript-structuring-provider",
+          status: "requires_configuration",
+        }),
+      ]),
+    );
+  });
+
+  it("labels mock voice providers as demo mode", () => {
+    const features = buildFeatureReadinessCards({
+      NODE_ENV: "test",
+      SPEECH_TO_TEXT_PROVIDER: "mock",
+      TRANSCRIPT_STRUCTURING_PROVIDER: "mock",
+    });
+
+    expect(features).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          key: "speech-to-text-provider",
+          status: "demo_mode",
+        }),
+        expect.objectContaining({
+          key: "transcript-structuring-provider",
+          status: "demo_mode",
+        }),
+      ]),
     );
   });
 });

@@ -89,7 +89,7 @@ export default async function VoiceNotesPage() {
                       {voiceNote.title?.trim() || "Voice note"}
                     </h2>
                     <p className="text-sm text-muted-foreground">
-                      {formatVoiceDateTime(voiceNote.updatedAt)} ·{" "}
+                      {formatVoiceDateTime(voiceNote.updatedAt)} -{" "}
                       {formatVoiceDuration(voiceNote.audioDurationSeconds)}
                     </p>
                   </div>

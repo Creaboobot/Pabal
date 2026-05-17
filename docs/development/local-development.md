@@ -453,10 +453,13 @@ the service blocks demoting or deactivating the last active owner. Memberships
 are never hard-deleted.
 
 The feature readiness page is read-only. It shows internal configuration
-states for voice capture, AI structuring, Microsoft readiness, LinkedIn manual
-enrichment, billing readiness, meeting prep, and relationship health. Step 13A
-does not implement billing, Stripe providers, checkout, webhooks, invite
-emails, invite tokens, complex RBAC, quotas, entitlements, or plan enforcement.
+states for voice capture, speech-to-text provider readiness, transcript
+structuring provider readiness, Microsoft readiness, LinkedIn manual
+enrichment, billing readiness, meeting prep, and relationship health. Provider
+readiness is local-configuration-only and does not call external providers.
+Step 13A does not implement billing, Stripe providers, checkout, webhooks,
+invite emails, invite tokens, complex RBAC, quotas, entitlements, or plan
+enforcement.
 
 ## Billing Readiness
 

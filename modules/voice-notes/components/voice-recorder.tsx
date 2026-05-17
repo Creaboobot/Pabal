@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Mic, Square, Trash2, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { SourceContextChips, type VoiceSourceContextChip } from "@/modules/voice-notes/components/source-context-chips";
 import { formatVoiceDuration } from "@/modules/voice-notes/labels";
 
@@ -37,6 +38,16 @@ type VoiceRecorderContext = {
 type VoiceRecorderProps = {
   context: VoiceRecorderContext;
   sourceChips: VoiceSourceContextChip[];
+  transcriptionReadiness: {
+    available: boolean;
+    badgeLabel: string;
+    detail: string;
+    isDemo: boolean;
+    providerLabel: string;
+    status: "available" | "demo" | "misconfigured" | "requires_configuration";
+    summary: string;
+    unavailableMessage: string;
+  };
 };
 
 type TranscribeResponse = {
@@ -69,7 +80,26 @@ function stopStream(stream: MediaStream | null) {
   stream?.getTracks().forEach((track) => track.stop());
 }
 
-export function VoiceRecorder({ context, sourceChips }: VoiceRecorderProps) {
+function readinessBadgeVariant(
+  status: VoiceRecorderProps["transcriptionReadiness"]["status"],
+) {
+  switch (status) {
+    case "available":
+      return "success" as const;
+    case "demo":
+      return "warning" as const;
+    case "misconfigured":
+      return "sensitive" as const;
+    case "requires_configuration":
+      return "secondary" as const;
+  }
+}
+
+export function VoiceRecorder({
+  context,
+  sourceChips,
+  transcriptionReadiness,
+}: VoiceRecorderProps) {
   const router = useRouter();
   const [state, setState] = useState<RecorderState>(() =>
     hasRecordingSupport() ? "idle" : "unsupported",
@@ -221,6 +251,11 @@ export function VoiceRecorder({ context, sourceChips }: VoiceRecorderProps) {
       return;
     }
 
+    if (!transcriptionReadiness.available) {
+      setError(transcriptionReadiness.unavailableMessage);
+      return;
+    }
+
     if (audioBlob.size > MAX_UPLOAD_BYTES) {
       setError("Recording is larger than the 25 MB upload limit.");
       setState("failed");
@@ -304,6 +339,25 @@ export function VoiceRecorder({ context, sourceChips }: VoiceRecorderProps) {
           </p>
         </div>
 
+        <div className="rounded-md border border-border bg-muted p-3 text-sm leading-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant={readinessBadgeVariant(transcriptionReadiness.status)}>
+              {transcriptionReadiness.badgeLabel}
+            </Badge>
+            <span className="font-medium text-foreground">
+              Provider: {transcriptionReadiness.providerLabel}
+            </span>
+          </div>
+          <p className="mt-2 text-muted-foreground">
+            {transcriptionReadiness.detail}
+          </p>
+          {transcriptionReadiness.isDemo ? (
+            <p className="mt-1 font-medium text-foreground">
+              Mock provider active - local/test only.
+            </p>
+          ) : null}
+        </div>
+
         <SourceContextChips chips={sourceChips} />
 
         <div className="flex flex-col items-center gap-4 rounded-md border border-border bg-muted p-5 text-center">
@@ -354,10 +408,16 @@ export function VoiceRecorder({ context, sourceChips }: VoiceRecorderProps) {
           {state === "ready" ? (
             <div className="grid gap-3">
               <p className="text-sm text-muted-foreground">
-                Recording ready. Submit it for transcription or discard it.
+                {transcriptionReadiness.available
+                  ? "Recording ready. Submit it for transcription or discard it."
+                  : transcriptionReadiness.unavailableMessage}
               </p>
               <div className="flex flex-wrap justify-center gap-2">
-                <Button onClick={uploadRecording} type="button">
+                <Button
+                  disabled={!transcriptionReadiness.available}
+                  onClick={uploadRecording}
+                  type="button"
+                >
                   <Upload aria-hidden="true" className="mr-2 size-4" />
                   Transcribe
                 </Button>
