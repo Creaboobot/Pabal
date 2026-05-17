@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { VoiceRecorder } from "@/modules/voice-notes/components/voice-recorder";
@@ -73,7 +74,23 @@ function setRecordingSupport(input?: { rejectPermission?: boolean }) {
   };
 }
 
-function renderRecorder() {
+const readyTranscription = {
+  available: true,
+  badgeLabel: "Transcription ready",
+  detail:
+    "Uploaded audio can be transcribed through the configured speech-to-text provider.",
+  isDemo: false,
+  providerLabel: "OpenAI",
+  status: "available" as const,
+  summary: "Speech-to-text provider is configured.",
+  unavailableMessage:
+    "Transcription requires a configured provider before this recording can be uploaded.",
+};
+
+function renderRecorder(
+  transcriptionReadiness: ComponentProps<typeof VoiceRecorder>["transcriptionReadiness"] =
+    readyTranscription,
+) {
   return render(
     <VoiceRecorder
       context={{
@@ -87,6 +104,7 @@ function renderRecorder() {
           type: "person",
         },
       ]}
+      transcriptionReadiness={transcriptionReadiness}
     />,
   );
 }
@@ -164,6 +182,35 @@ describe("VoiceRecorder", () => {
       }),
     );
     expect(stopTrack).toHaveBeenCalled();
+  });
+
+  it("allows recording but disables upload when transcription is not configured", async () => {
+    setRecordingSupport();
+
+    renderRecorder({
+      available: false,
+      badgeLabel: "Configuration required",
+      detail:
+        "Recording can start, but transcription needs provider configuration before upload.",
+      isDemo: false,
+      providerLabel: "OpenAI",
+      status: "requires_configuration",
+      summary: "Speech-to-text provider needs configuration.",
+      unavailableMessage:
+        "Transcription requires a configured provider before this recording can be uploaded.",
+    });
+
+    expect(
+      screen.getByText(/Recording can start, but transcription needs/i),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Record/i }));
+    fireEvent.click(await screen.findByRole("button", { name: /Stop/i }));
+
+    expect(screen.getByRole("button", { name: /Transcribe/i })).toBeDisabled();
+    expect(
+      screen.getByText(/Transcription requires a configured provider/i),
+    ).toBeInTheDocument();
   });
 
   it("shows safe upload errors and allows retry", async () => {

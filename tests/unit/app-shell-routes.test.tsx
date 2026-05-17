@@ -1774,6 +1774,8 @@ describe("protected app routes", () => {
       screen.getByRole("link", { name: "Record voice note" }),
     ).toHaveAttribute("href", "/capture/voice");
     expect(screen.getByText("Voice follow-up")).toBeInTheDocument();
+    expect(document.body.textContent).not.toContain("Â·");
+    expect(document.body.textContent).not.toContain("·");
   });
 
   it("renders the need create route", async () => {

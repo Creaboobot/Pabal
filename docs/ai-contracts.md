@@ -91,6 +91,10 @@ summarise, search, or run background jobs.
 Raw audio is not retained by default, and raw provider responses are not stored
 or written to audit logs.
 
+Provider readiness UI is based on local configuration only. It must not call
+providers, validate credentials over the network, send test audio, or send test
+transcript text.
+
 ## Step 11A-2 Voice Review Boundary
 
 Voice capture and transcript review in Step 11A-2 remain transcription-only.

@@ -35,6 +35,10 @@ import {
 } from "@/modules/voice-notes/labels";
 import { getCurrentUserContext } from "@/server/services/session";
 import { getTenantVoiceNoteProfile } from "@/server/services/voice-notes";
+import {
+  getTranscriptStructuringProviderReadiness,
+  type VoiceProviderReadinessStatus,
+} from "@/server/services/voice-provider-readiness";
 
 export const dynamic = "force-dynamic";
 
@@ -87,6 +91,19 @@ function sourceChipsForVoiceNote(voiceNote: Awaited<ReturnType<typeof getTenantV
   return chips.filter((chip): chip is VoiceSourceContextChip => Boolean(chip));
 }
 
+function readinessBadgeVariant(status: VoiceProviderReadinessStatus) {
+  switch (status) {
+    case "available":
+      return "success" as const;
+    case "demo":
+      return "warning" as const;
+    case "misconfigured":
+      return "sensitive" as const;
+    case "requires_configuration":
+      return "secondary" as const;
+  }
+}
+
 export default async function VoiceNoteDetailPage({
   params,
 }: VoiceNoteDetailPageProps) {
@@ -110,6 +127,8 @@ export default async function VoiceNoteDetailPage({
   const hasUsableTranscript = Boolean(
     voiceNote.editedTranscriptText?.trim() || voiceNote.transcriptText?.trim(),
   );
+  const transcriptStructuringReadiness =
+    getTranscriptStructuringProviderReadiness();
 
   return (
     <div className="space-y-6">
@@ -209,6 +228,23 @@ export default async function VoiceNoteDetailPage({
             updated automatically, and approving suggested update items still
             does not apply them.
           </p>
+          <div className="rounded-md border border-border bg-muted p-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge
+                variant={readinessBadgeVariant(
+                  transcriptStructuringReadiness.status,
+                )}
+              >
+                {transcriptStructuringReadiness.badgeLabel}
+              </Badge>
+              <span className="font-medium text-foreground">
+                Provider: {transcriptStructuringReadiness.providerLabel}
+              </span>
+            </div>
+            <p className="mt-2 text-muted-foreground">
+              {transcriptStructuringReadiness.detail}
+            </p>
+          </div>
           {linkedProposals.length > 0 ? (
             <div className="grid gap-2">
               <p className="font-medium text-foreground">
@@ -230,7 +266,7 @@ export default async function VoiceNoteDetailPage({
               </div>
             </div>
           ) : null}
-          {hasUsableTranscript ? (
+          {hasUsableTranscript && transcriptStructuringReadiness.available ? (
             <VoiceNoteActionButton
               action={createProposalFromVoiceNoteAction.bind(
                 null,
@@ -242,6 +278,13 @@ export default async function VoiceNoteDetailPage({
               pendingLabel="Structuring"
               title="Create a review-only suggested update?"
             />
+          ) : hasUsableTranscript ? (
+            <div className="grid gap-2">
+              <Button disabled size="sm" type="button" variant="outline">
+                Create suggested update unavailable
+              </Button>
+              <p>{transcriptStructuringReadiness.unavailableMessage}</p>
+            </div>
           ) : (
             <p>No transcript is available to structure yet.</p>
           )}

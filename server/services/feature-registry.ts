@@ -3,10 +3,17 @@ import {
   requireTenantAccess,
   type TenantContext,
 } from "@/server/services/tenancy";
+import {
+  getSpeechToTextProviderReadiness,
+  getTranscriptStructuringProviderReadiness,
+  type VoiceProviderReadinessStatus,
+} from "@/server/services/voice-provider-readiness";
 
 export type FeatureReadinessStatus =
+  | "demo_mode"
   | "enabled"
   | "disabled"
+  | "misconfigured"
   | "readiness_only"
   | "manual_only"
   | "requires_configuration";
@@ -22,9 +29,27 @@ function envFlag(value: boolean | undefined, fallback: boolean) {
   return value ?? fallback;
 }
 
+function providerReadinessStatus(
+  status: VoiceProviderReadinessStatus,
+): FeatureReadinessStatus {
+  switch (status) {
+    case "available":
+      return "enabled";
+    case "demo":
+      return "demo_mode";
+    case "misconfigured":
+      return "misconfigured";
+    case "requires_configuration":
+      return "requires_configuration";
+  }
+}
+
 export function buildFeatureReadinessCards(
   env: RuntimeEnv = getRuntimeEnv(),
 ): FeatureReadinessCard[] {
+  const speechToText = getSpeechToTextProviderReadiness(env);
+  const transcriptStructuring = getTranscriptStructuringProviderReadiness(env);
+
   return [
     {
       description:
@@ -36,11 +61,16 @@ export function buildFeatureReadinessCards(
       title: "Voice capture",
     },
     {
-      description:
-        "Reviewed voice transcripts can be structured into status-only AI proposals when OpenAI runtime configuration is present.",
-      key: "ai-structuring",
-      status: env.OPENAI_API_KEY ? "enabled" : "requires_configuration",
-      title: "AI structuring",
+      description: `${speechToText.detail} Provider: ${speechToText.providerLabel}.`,
+      key: "speech-to-text-provider",
+      status: providerReadinessStatus(speechToText.status),
+      title: "Speech-to-text provider",
+    },
+    {
+      description: `${transcriptStructuring.detail} Provider: ${transcriptStructuring.providerLabel}.`,
+      key: "transcript-structuring-provider",
+      status: providerReadinessStatus(transcriptStructuring.status),
+      title: "Transcript structuring provider",
     },
     {
       description:

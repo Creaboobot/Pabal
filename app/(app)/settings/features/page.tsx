@@ -16,10 +16,14 @@ export const dynamic = "force-dynamic";
 
 function statusLabel(status: FeatureReadinessStatus) {
   switch (status) {
+    case "demo_mode":
+      return "Demo mode";
     case "enabled":
       return "Enabled";
     case "disabled":
       return "Disabled";
+    case "misconfigured":
+      return "Misconfigured";
     case "readiness_only":
       return "Readiness only";
     case "manual_only":
@@ -33,10 +37,14 @@ function statusVariant(status: FeatureReadinessStatus) {
   switch (status) {
     case "enabled":
       return "success" as const;
+    case "demo_mode":
+      return "warning" as const;
     case "manual_only":
       return "default" as const;
     case "readiness_only":
       return "warning" as const;
+    case "misconfigured":
+      return "sensitive" as const;
     case "requires_configuration":
       return "secondary" as const;
     case "disabled":

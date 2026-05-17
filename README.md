@@ -136,6 +136,8 @@ Edit `.env.local` before starting the app:
   transcription;
 - use `TRANSCRIPT_STRUCTURING_PROVIDER=mock` only for explicit local/test
   transcript structuring;
+- mock voice providers are displayed as demo mode in the app and are not real
+  transcription or transcript structuring;
 - keep Microsoft Entra variables blank until OAuth is intentionally configured.
 - keep `MICROSOFT_GRAPH_PROVIDER=disabled` unless explicitly running local/test
   readiness checks; Microsoft Graph OAuth, tokens, sync, and ingestion are not
