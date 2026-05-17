@@ -92,7 +92,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <Badge variant="outline">Needs</Badge>
           <Badge variant="outline">Capabilities</Badge>
           <Badge variant="outline">Introductions</Badge>
-          <Badge variant="outline">Proposals</Badge>
+          <Badge variant="outline">Suggested updates</Badge>
           <Badge variant="outline">Voice notes</Badge>
         </div>
       </section>
@@ -193,7 +193,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
           ) : (
             <EmptyState
-              description="Try a different person, company, topic, task, commitment, opportunity, proposal, or voice note keyword."
+              description="Try a different person, company, topic, task, commitment, opportunity, suggested update, or voice note keyword."
               icon={FileSearch}
               title="No matching records"
             />

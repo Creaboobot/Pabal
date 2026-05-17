@@ -1299,6 +1299,37 @@ describe("protected app routes", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders Today around tasks, meetings, and relationship attention", async () => {
+    const Page = (await import("@/app/(app)/today/page")).default;
+
+    render(await Page());
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Tasks" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Review tasks/ }),
+    ).toHaveAttribute("href", "/tasks");
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Meetings" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Review meetings/ }),
+    ).toHaveAttribute("href", "/meetings");
+    expect(
+      screen.getAllByRole("heading", {
+        level: 2,
+        name: "Relationship attention",
+      }).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Suggested updates" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Review suggested updates/ }),
+    ).toHaveAttribute("href", "/proposals");
+  });
+
   it("renders structured search results without semantic or AI copy", async () => {
     mocks.getTenantStructuredSearch.mockResolvedValueOnce({
       boundary: {
@@ -1590,7 +1621,7 @@ describe("protected app routes", () => {
     ["Paste meeting notes", () => import("@/app/(app)/capture/meeting/page")],
     ["Tasks", () => import("@/app/(app)/tasks/page")],
     ["Commitments", () => import("@/app/(app)/commitments/page")],
-    ["Proposals", () => import("@/app/(app)/proposals/page")],
+    ["Suggested updates", () => import("@/app/(app)/proposals/page")],
     ["Needs", () => import("@/app/(app)/opportunities/needs/page")],
     [
       "Capabilities",

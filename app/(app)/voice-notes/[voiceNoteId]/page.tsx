@@ -194,23 +194,26 @@ export default async function VoiceNoteDetailPage({
         </CockpitCard>
       ) : null}
 
-      <CockpitCard title="Proposal from transcript">
+      <CockpitCard title="Suggested update from transcript">
         <div className="grid gap-3 text-sm leading-6 text-muted-foreground">
           <div className="flex flex-wrap items-center gap-2">
             <Sparkles aria-hidden="true" className="size-4 text-foreground" />
             <span>
-              Structure this transcript into review-only proposal items.
+              Structure this transcript into review-only suggested update
+              items.
             </span>
           </div>
           <p>
             The transcript is sent to the configured AI provider for
             structuring. Proposed changes are review-only: no records are
-            updated automatically, and approving proposal items still does not
-            apply them.
+            updated automatically, and approving suggested update items still
+            does not apply them.
           </p>
           {linkedProposals.length > 0 ? (
             <div className="grid gap-2">
-              <p className="font-medium text-foreground">Linked proposals</p>
+              <p className="font-medium text-foreground">
+                Linked suggested updates
+              </p>
               <div className="flex flex-wrap gap-2">
                 {linkedProposals.map((proposal) => (
                   <Button
@@ -234,10 +237,10 @@ export default async function VoiceNoteDetailPage({
                 voiceNote.id,
               )}
               confirmLabel="Send transcript"
-              description="This sends the transcript to the configured AI provider for structuring. It creates AIProposal review records only. It will not update people, companies, tasks, commitments, opportunities, or any other target record."
-              label="Create proposal from transcript"
+              description="This sends the transcript to the configured AI provider for structuring. It creates review records only. It will not update people, companies, tasks, commitments, opportunities, or any other target record."
+              label="Create suggested update"
               pendingLabel="Structuring"
-              title="Create a review-only proposal?"
+              title="Create a review-only suggested update?"
             />
           ) : (
             <p>No transcript is available to structure yet.</p>
@@ -249,7 +252,8 @@ export default async function VoiceNoteDetailPage({
         <div className="grid gap-2 text-sm leading-6 text-muted-foreground">
           <p>No automatic record updates were created.</p>
           <p>
-            Any AI proposal created from this transcript remains review-only.
+            Any suggested update created from this transcript remains
+            review-only.
           </p>
           <p>No voice mention extraction was created.</p>
           <p>Updated {formatVoiceDateTime(voiceNote.updatedAt)}</p>

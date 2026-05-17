@@ -115,7 +115,7 @@ export default async function CapturePage() {
             {summary.capture.voiceNotes} voice notes
           </Badge>
           <Badge variant="outline">
-            {summary.capture.pendingProposals} proposals pending
+            {summary.capture.pendingProposals} suggested updates pending
           </Badge>
         </div>
       </CockpitCard>

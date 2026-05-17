@@ -49,8 +49,8 @@ export default async function OpportunitiesPage() {
             </Button>
           </div>
         }
-        description="Manual needs, capabilities, and introductions for relationship brokerage. No matching algorithm or AI recommendations run here."
-        eyebrow="Brokerage"
+        description="Manual relationship inputs for needs, capabilities, and possible introductions. Nothing here is matched or recommended automatically."
+        eyebrow="Manual inputs"
         title="Opportunities"
       />
 
@@ -58,10 +58,11 @@ export default async function OpportunitiesPage() {
         aria-label="Opportunity summary"
         className="grid gap-3 sm:grid-cols-3"
       >
-        <CockpitCard title="Open needs" value={hub.counts.openNeeds}>
+        <CockpitCard title="Needs under review" value={hub.counts.openNeeds}>
           <div className="grid gap-3">
             <p className="text-sm leading-6 text-muted-foreground">
-              Problems, requests, objectives, and interests documented manually.
+              Problems, requests, objectives, and interests captured from your
+              own relationship context.
             </p>
             <Button asChild size="sm" variant="outline">
               <Link href="/opportunities/needs">View needs</Link>
@@ -74,7 +75,8 @@ export default async function OpportunitiesPage() {
         >
           <div className="grid gap-3">
             <p className="text-sm leading-6 text-muted-foreground">
-              Expertise, access, assets, and solution potential in the network.
+              Expertise, access, assets, and useful experience you may want to
+              remember.
             </p>
             <Button asChild size="sm" variant="outline">
               <Link href="/opportunities/capabilities">View capabilities</Link>
@@ -87,8 +89,8 @@ export default async function OpportunitiesPage() {
         >
           <div className="grid gap-3">
             <p className="text-sm leading-6 text-muted-foreground">
-              Manual introduction suggestions linked to needs, capabilities,
-              people, and companies.
+              Manually noted possible introductions linked to needs,
+              capabilities, people, and companies.
             </p>
             <Button asChild size="sm" variant="outline">
               <Link href="/opportunities/introductions">
@@ -186,22 +188,24 @@ export default async function OpportunitiesPage() {
       </section>
 
       <section
-        aria-label="Opportunity patterns"
+        aria-label="Opportunity guardrails"
         className="grid gap-3 lg:grid-cols-3"
       >
-        <CockpitCard title="Need evidence">
+        <CockpitCard title="Need context">
           <div className="flex gap-3">
             <Lightbulb aria-hidden="true" className="size-5 text-primary" />
             <p className="text-sm leading-6 text-muted-foreground">
-              Cards preserve the source note or meeting behind each need.
+              Cards preserve the source note or meeting behind each need where
+              context exists.
             </p>
           </div>
         </CockpitCard>
-        <CockpitCard title="Capability fit">
+        <CockpitCard title="Capability context">
           <div className="flex gap-3">
             <BadgeCheck aria-hidden="true" className="size-5 text-primary" />
             <p className="text-sm leading-6 text-muted-foreground">
-              Capability records are prepared for explainable recommendations.
+              Capability records are manually maintained. Pabal does not score
+              fit or run matching here.
             </p>
           </div>
         </CockpitCard>

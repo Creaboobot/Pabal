@@ -239,18 +239,19 @@ only; server actions validate all linked records inside the active workspace.
 Step 8B does not create tasks automatically, send reminders, run background
 jobs, parse notes, extract commitments, or call AI providers.
 
-AI proposal review is available under `/proposals`:
+Suggested update review is available under `/proposals`:
 
-- `/proposals` for the proposal review inbox.
-- `/proposals/[proposalId]` for proposal detail, source/target context,
-  proposal item review, safe proposed patch previews, and dismiss actions.
+- `/proposals` for the suggested update review inbox.
+- `/proposals/[proposalId]` for suggested update detail, source/target context,
+  item review, safe proposed patch previews, and dismiss actions.
 
-Proposal review is status-only in Step 9. Approving a proposal item means the
+Suggested update review is status-only in Step 9. Approving an item means the
 user accepted it as conceptually valid. It does not apply patches, create
 records, call AI providers, mutate target records, send messages, or start
-background jobs.
+background jobs. Internally these review records remain `AIProposal` and
+`AIProposalItem`.
 
-VoiceNote detail can create a review-only proposal from a stored or reviewed
+VoiceNote detail can create a review-only suggested update from a stored or reviewed
 transcript. The action asks for confirmation before sending transcript text to
 the configured transcript-structuring provider, then redirects to
 `/proposals/[proposalId]`. Provider output is strict-schema validated and entity
@@ -356,14 +357,14 @@ notifications, jobs, or permanent deletion.
 Deterministic relationship health is visible on `/today`, person detail pages,
 and company detail pages. Signals are computed at read time from existing
 tenant-scoped records such as tasks, commitments, meetings, notes, needs,
-capabilities, introductions, and proposal review records. They are explainable,
-source-linked where possible, and are not persisted as scores. They do not call
-AI providers, create recommendations automatically, send notifications, or run
-background jobs.
+capabilities, introductions, and suggested update review records. They are
+explainable, source-linked where possible, and are not persisted as scores.
+They do not call AI providers, create recommendations automatically, send
+notifications, or run background jobs.
 
 Meeting prep briefs are available at `/meetings/[meetingId]/prep` from meeting
 detail. Briefs aggregate existing tenant-scoped meeting, participant, company,
-note, task, commitment, need, capability, introduction, proposal, and
+note, task, commitment, need, capability, introduction, suggested update, and
 relationship-health context. They are deterministic, source-linked, read-only,
 not AI-generated, and not synced from Outlook or Teams.
 
