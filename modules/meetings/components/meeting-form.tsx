@@ -33,6 +33,8 @@ export type MeetingFormInitialValues = {
   location?: string | null;
   occurredAt?: Date | null;
   primaryCompanyId?: string | null;
+  sourceAIProposalId?: string | null;
+  sourceAIProposalItemId?: string | null;
   sourceType?: RecordSourceType;
   summary?: string | null;
   title?: string;
@@ -94,6 +96,17 @@ export function MeetingForm({
           {state.message}
         </div>
       ) : null}
+
+      <input
+        name="sourceAIProposalId"
+        type="hidden"
+        value={initialValues?.sourceAIProposalId ?? ""}
+      />
+      <input
+        name="sourceAIProposalItemId"
+        type="hidden"
+        value={initialValues?.sourceAIProposalItemId ?? ""}
+      />
 
       <label className="grid gap-2">
         <span className="text-sm font-medium text-foreground">Title</span>

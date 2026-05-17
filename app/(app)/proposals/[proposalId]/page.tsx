@@ -239,8 +239,15 @@ export default async function ProposalDetailPage({
               proposal.id,
               item.id,
             )}
+            conversionTargets={
+              proposal.itemConversionTargets[item.id] ?? {
+                meeting: null,
+                task: null,
+              }
+            }
             item={item}
             key={item.id}
+            proposalId={proposal.id}
             rejectAction={rejectProposalItemAction.bind(
               null,
               proposal.id,
@@ -264,15 +271,15 @@ export default async function ProposalDetailPage({
             </p>
           </div>
         </CockpitCard>
-        <CockpitCard title="No mutation path">
+        <CockpitCard title="Separate action forms">
           <div className="flex gap-3 rounded-md border border-border bg-background p-3">
             <XCircle
               aria-hidden="true"
               className="mt-0.5 size-5 text-primary"
             />
             <p className="text-sm leading-6 text-muted-foreground">
-              This screen cannot update people, companies, meetings, notes,
-              tasks, commitments, needs, capabilities, or suggestions.
+              Review controls cannot update existing records. Task and meeting
+              creation happens only through a separate editable form.
             </p>
           </div>
         </CockpitCard>

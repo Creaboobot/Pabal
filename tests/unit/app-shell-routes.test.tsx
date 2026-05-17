@@ -14,6 +14,8 @@ const mocks = vi.hoisted(() => ({
   getTenantCommitmentFormOptions: vi.fn(),
   getTenantCommitmentProfile: vi.fn(),
   getTenantAIProposalProfile: vi.fn(),
+  getTenantAIProposalItemMeetingConversionDraft: vi.fn(),
+  getTenantAIProposalItemTaskConversionDraft: vi.fn(),
   getTenantAIProposalReviewSummary: vi.fn(),
   getTenantMeeting: vi.fn(),
   getTenantMeetingPrepBrief: vi.fn(),
@@ -162,6 +164,13 @@ vi.mock("@/server/services/ai-proposals", () => ({
   getTenantAIProposalProfile: mocks.getTenantAIProposalProfile,
   getTenantAIProposalReviewSummary: mocks.getTenantAIProposalReviewSummary,
   listTenantAIProposals: mocks.listTenantAIProposals,
+}));
+
+vi.mock("@/server/services/ai-proposal-conversions", () => ({
+  getTenantAIProposalItemMeetingConversionDraft:
+    mocks.getTenantAIProposalItemMeetingConversionDraft,
+  getTenantAIProposalItemTaskConversionDraft:
+    mocks.getTenantAIProposalItemTaskConversionDraft,
 }));
 
 vi.mock("@/server/services/task-form-options", () => ({
@@ -825,6 +834,12 @@ const proposalProfile = {
   createdAt: new Date("2026-04-24T12:00:00.000Z"),
   explanation: "Review only proposal explanation.",
   id: "proposal_test_1",
+  itemConversionTargets: {
+    proposal_item_test_1: {
+      meeting: null,
+      task: null,
+    },
+  },
   itemTargetContexts: {
     proposal_item_test_1: {
       available: true,
@@ -1172,6 +1187,8 @@ describe("protected app routes", () => {
     );
     mocks.getTenantCommitmentProfile.mockResolvedValue(commitmentProfile);
     mocks.getTenantAIProposalProfile.mockResolvedValue(proposalProfile);
+    mocks.getTenantAIProposalItemMeetingConversionDraft.mockResolvedValue(null);
+    mocks.getTenantAIProposalItemTaskConversionDraft.mockResolvedValue(null);
     mocks.getTenantAIProposalReviewSummary.mockResolvedValue({
       itemsNeedingClarification: 0,
       pendingProposals: 1,
@@ -1583,7 +1600,6 @@ describe("protected app routes", () => {
 
   it.each([
     ["Meetings", () => import("@/app/(app)/meetings/page")],
-    ["Create meeting", () => import("@/app/(app)/meetings/new/page")],
     ["Paste meeting notes", () => import("@/app/(app)/capture/meeting/page")],
     ["Tasks", () => import("@/app/(app)/tasks/page")],
     ["Commitments", () => import("@/app/(app)/commitments/page")],
@@ -1601,6 +1617,55 @@ describe("protected app routes", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders the meeting create route", async () => {
+    const Page = (await import("@/app/(app)/meetings/new/page")).default;
+
+    render(await Page({ searchParams: Promise.resolve({}) }));
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Create meeting" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Meeting form")).toBeInTheDocument();
+  });
+
+  it("renders the meeting create route from a suggested update source", async () => {
+    mocks.getTenantAIProposalItemMeetingConversionDraft.mockResolvedValueOnce({
+      conversionTargets: {
+        meeting: null,
+        task: null,
+      },
+      initialValues: {
+        occurredAt: new Date("2026-04-24T10:00:00.000Z"),
+        primaryCompanyId: companyProfile.id,
+        sourceAIProposalId: proposalProfile.id,
+        sourceAIProposalItemId: proposalItem.id,
+        summary: "Editable meeting summary",
+        title: "Suggested meeting",
+      },
+    });
+    const Page = (await import("@/app/(app)/meetings/new/page")).default;
+
+    render(
+      await Page({
+        searchParams: Promise.resolve({
+          sourceAIProposalId: proposalProfile.id,
+          sourceAIProposalItemId: proposalItem.id,
+        }),
+      }),
+    );
+
+    expect(
+      mocks.getTenantAIProposalItemMeetingConversionDraft,
+    ).toHaveBeenCalledWith(tenantContext, {
+      aiProposalId: proposalProfile.id,
+      aiProposalItemId: proposalItem.id,
+    });
+    expect(
+      screen.getByText(/suggested update status stays unchanged/i),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Meeting form")).toBeInTheDocument();
+  });
+
   it("renders the task create route", async () => {
     const Page = (await import("@/app/(app)/tasks/new/page")).default;
 
@@ -1608,6 +1673,51 @@ describe("protected app routes", () => {
 
     expect(
       screen.getByRole("heading", { level: 1, name: "Create task" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Task form")).toBeInTheDocument();
+  });
+
+  it("renders the task create route from a suggested update source", async () => {
+    mocks.getTenantAIProposalItemTaskConversionDraft.mockResolvedValueOnce({
+      conversionTargets: {
+        meeting: null,
+        task: null,
+      },
+      initialValues: {
+        commitmentId: null,
+        companyId: companyProfile.id,
+        description: "Editable task description",
+        dueAt: null,
+        meetingId: meetingProfile.id,
+        noteId: noteProfile.id,
+        personId: personProfile.id,
+        priority: "MEDIUM",
+        sourceAIProposalId: proposalProfile.id,
+        sourceAIProposalItemId: proposalItem.id,
+        taskType: "FOLLOW_UP",
+        title: "Suggested task",
+        whyNowRationale: null,
+      },
+    });
+    const Page = (await import("@/app/(app)/tasks/new/page")).default;
+
+    render(
+      await Page({
+        searchParams: Promise.resolve({
+          sourceAIProposalId: proposalProfile.id,
+          sourceAIProposalItemId: proposalItem.id,
+        }),
+      }),
+    );
+
+    expect(
+      mocks.getTenantAIProposalItemTaskConversionDraft,
+    ).toHaveBeenCalledWith(tenantContext, {
+      aiProposalId: proposalProfile.id,
+      aiProposalItemId: proposalItem.id,
+    });
+    expect(
+      screen.getByText(/suggested update status stays unchanged/i),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Task form")).toBeInTheDocument();
   });
@@ -1959,6 +2069,16 @@ describe("protected app routes", () => {
         name: "Proposed follow-up update",
       }),
     ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Create task" })).toHaveAttribute(
+      "href",
+      "/tasks/new?sourceAIProposalId=proposal_test_1&sourceAIProposalItemId=proposal_item_test_1",
+    );
+    expect(
+      screen.getByRole("link", { name: "Create meeting" }),
+    ).toHaveAttribute(
+      "href",
+      "/meetings/new?sourceAIProposalId=proposal_test_1&sourceAIProposalItemId=proposal_item_test_1",
+    );
   });
 
   it("renders the need detail and edit routes", async () => {

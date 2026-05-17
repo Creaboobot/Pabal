@@ -1,8 +1,10 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { PageHeader } from "@/components/app/page-header";
 import { CockpitCard } from "@/components/cards/cockpit-card";
 import { TaskForm } from "@/modules/tasks/components/task-form";
+import { getTenantAIProposalItemTaskConversionDraft } from "@/server/services/ai-proposal-conversions";
+import { TenantScopedEntityNotFoundError } from "@/server/services/relationship-entities";
 import { getCurrentUserContext } from "@/server/services/session";
 import { getTenantTaskFormOptions } from "@/server/services/task-form-options";
 
@@ -21,6 +23,29 @@ function firstSearchParam(
   return Array.isArray(value) ? value[0] : value;
 }
 
+function conversionSource(
+  searchParams: Record<string, string | string[] | undefined>,
+) {
+  const aiProposalId = firstSearchParam(searchParams, "sourceAIProposalId");
+  const aiProposalItemId = firstSearchParam(
+    searchParams,
+    "sourceAIProposalItemId",
+  );
+
+  if (!aiProposalId && !aiProposalItemId) {
+    return null;
+  }
+
+  if (!aiProposalId || !aiProposalItemId) {
+    notFound();
+  }
+
+  return {
+    aiProposalId,
+    aiProposalItemId,
+  };
+}
+
 export default async function NewTaskPage({ searchParams }: NewTaskPageProps) {
   const [params, context] = await Promise.all([
     searchParams,
@@ -31,7 +56,26 @@ export default async function NewTaskPage({ searchParams }: NewTaskPageProps) {
     redirect("/sign-in?callbackUrl=/tasks/new");
   }
 
-  const options = await getTenantTaskFormOptions(context);
+  const source = conversionSource(params);
+  const [options, conversionDraft] = await Promise.all([
+    getTenantTaskFormOptions(context),
+    source
+      ? getTenantAIProposalItemTaskConversionDraft(context, source).catch(
+          (error) => {
+            if (error instanceof TenantScopedEntityNotFoundError) {
+              notFound();
+            }
+
+            throw error;
+          },
+        )
+      : Promise.resolve(null),
+  ]);
+
+  if (conversionDraft?.conversionTargets.task) {
+    redirect(conversionDraft.conversionTargets.task.href);
+  }
+
   const commitmentId = firstSearchParam(params, "commitmentId") ?? null;
   const companyId = firstSearchParam(params, "companyId") ?? null;
   const meetingId = firstSearchParam(params, "meetingId") ?? null;
@@ -41,21 +85,27 @@ export default async function NewTaskPage({ searchParams }: NewTaskPageProps) {
   return (
     <div className="space-y-6">
       <PageHeader
-        description="Create a manual follow-up and link it to the relationship context that gives it meaning."
+        description={
+          conversionDraft
+            ? "Review and edit the task before creating it. The suggested update status stays unchanged."
+            : "Create a manual follow-up and link it to the relationship context that gives it meaning."
+        }
         eyebrow="Follow-up"
         title="Create task"
       />
 
       <CockpitCard title="Task details">
         <TaskForm
-          initialValues={{
-            commitmentId,
-            companyId,
-            meetingId,
-            noteId,
-            personId,
-            taskType: "FOLLOW_UP",
-          }}
+          initialValues={
+            conversionDraft?.initialValues ?? {
+              commitmentId,
+              companyId,
+              meetingId,
+              noteId,
+              personId,
+              taskType: "FOLLOW_UP",
+            }
+          }
           mode="create"
           options={options}
         />

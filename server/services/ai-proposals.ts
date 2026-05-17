@@ -23,6 +23,7 @@ import {
   updateAIProposalReviewState,
 } from "@/server/repositories/ai-proposals";
 import { prisma } from "@/server/db/prisma";
+import { listTenantAIProposalItemConversionTargets } from "@/server/services/ai-proposal-conversions";
 import { writeAuditLog } from "@/server/services/audit-log";
 import {
   assertOptionalPolymorphicRelationshipBelongsToTenant,
@@ -450,7 +451,12 @@ export async function getTenantAIProposalProfile(
     return null;
   }
 
-  const [targetContext, sourceReferences, itemTargetContexts] =
+  const [
+    targetContext,
+    sourceReferences,
+    itemTargetContexts,
+    itemConversionTargets,
+  ] =
     await Promise.all([
       resolveEntityDisplayContext({
         tenantId: context.tenantId,
@@ -471,10 +477,20 @@ export async function getTenantAIProposalProfile(
           }),
         ] as const),
       ),
+      Promise.all(
+        proposal.items.map(async (item) => [
+          item.id,
+          await listTenantAIProposalItemConversionTargets(context, item.id),
+        ] as const),
+      ),
     ]);
 
   return {
     ...proposal,
+    itemConversionTargets: Object.fromEntries(itemConversionTargets) as Record<
+      string,
+      Awaited<ReturnType<typeof listTenantAIProposalItemConversionTargets>>
+    >,
     itemTargetContexts: Object.fromEntries(itemTargetContexts) as Record<
       string,
       EntityDisplayContext | null

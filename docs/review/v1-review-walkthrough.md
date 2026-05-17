@@ -115,11 +115,14 @@ Review:
 
 - source context;
 - suggested update item status controls;
+- explicit `Create task` / `Create meeting` links that open editable forms;
 - proposed patch preview;
 - needs-clarification items.
 
 Boundary: suggested update approval is status-only. There is no proposal application
-engine, automatic record mutation, automatic outreach, or background job.
+engine, automatic record mutation, automatic outreach, or background job. Task
+and Meeting creation are separate user-confirmed form submissions with
+SourceReference provenance.
 
 ## 9. Voice Notes
 

@@ -10,6 +10,7 @@ import {
   meetingParticipantFormSchema,
   toFieldErrors,
 } from "@/modules/meetings/validation";
+import { createTenantMeetingFromAIProposalItem } from "@/server/services/ai-proposal-conversions";
 import {
   archiveTenantMeeting,
   createTenantMeeting,
@@ -41,6 +42,43 @@ function meetingFormData(formData: FormData) {
     sourceType: formDataValue(formData, "sourceType"),
     summary: formDataValue(formData, "summary"),
     title: formDataValue(formData, "title"),
+  };
+}
+
+type ProposalConversionSource =
+  | {
+      aiProposalId: string;
+      aiProposalItemId: string;
+    }
+  | "invalid"
+  | null;
+
+function optionalFormText(formData: FormData, key: string) {
+  const value = formDataValue(formData, key);
+
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : null;
+}
+
+function proposalConversionSource(formData: FormData): ProposalConversionSource {
+  const aiProposalId = optionalFormText(formData, "sourceAIProposalId");
+  const aiProposalItemId = optionalFormText(
+    formData,
+    "sourceAIProposalItemId",
+  );
+
+  if (!aiProposalId && !aiProposalItemId) {
+    return null;
+  }
+
+  if (!aiProposalId || !aiProposalItemId) {
+    return "invalid";
+  }
+
+  return {
+    aiProposalId,
+    aiProposalItemId,
   };
 }
 
@@ -100,9 +138,17 @@ export async function createMeetingAction(
   }
 
   const context = await requireActionContext("/meetings/new");
+  const conversionSource = proposalConversionSource(formData);
+
+  if (conversionSource === "invalid") {
+    return {
+      message: "The suggested update source could not be verified.",
+      status: "error",
+    };
+  }
 
   try {
-    const meeting = await createTenantMeeting(context, {
+    const meetingPayload = {
       endedAt: inputDateTime(parsed.data.endedAt),
       location: parsed.data.location,
       occurredAt: inputDateTime(parsed.data.occurredAt),
@@ -110,10 +156,27 @@ export async function createMeetingAction(
       sourceType: parsed.data.sourceType,
       summary: parsed.data.summary,
       title: parsed.data.title,
-    });
+    };
+    const meeting = conversionSource
+      ? await createTenantMeetingFromAIProposalItem(context, {
+          ...conversionSource,
+          meeting: meetingPayload,
+        })
+      : await createTenantMeeting(context, meetingPayload);
+
+    if (!meeting) {
+      return {
+        message: "The existing converted meeting could not be found.",
+        status: "error",
+      };
+    }
 
     revalidatePath("/capture");
     revalidatePath("/meetings");
+    if (conversionSource) {
+      revalidatePath("/proposals");
+      revalidatePath(`/proposals/${conversionSource.aiProposalId}`);
+    }
 
     return {
       redirectTo: `/meetings/${meeting.id}`,

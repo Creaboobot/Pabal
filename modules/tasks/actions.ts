@@ -10,6 +10,7 @@ import {
   taskFormSchema,
   toFieldErrors,
 } from "@/modules/tasks/validation";
+import { createTenantTaskFromAIProposalItem } from "@/server/services/ai-proposal-conversions";
 import { TenantScopedEntityNotFoundError } from "@/server/services/relationship-entities";
 import { getCurrentUserContext } from "@/server/services/session";
 import {
@@ -50,6 +51,43 @@ function taskFormData(formData: FormData) {
     taskType: formDataValue(formData, "taskType"),
     title: formDataValue(formData, "title"),
     whyNowRationale: formDataValue(formData, "whyNowRationale"),
+  };
+}
+
+type ProposalConversionSource =
+  | {
+      aiProposalId: string;
+      aiProposalItemId: string;
+    }
+  | "invalid"
+  | null;
+
+function optionalFormText(formData: FormData, key: string) {
+  const value = formDataValue(formData, key);
+
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : null;
+}
+
+function proposalConversionSource(formData: FormData): ProposalConversionSource {
+  const aiProposalId = optionalFormText(formData, "sourceAIProposalId");
+  const aiProposalItemId = optionalFormText(
+    formData,
+    "sourceAIProposalItemId",
+  );
+
+  if (!aiProposalId && !aiProposalItemId) {
+    return null;
+  }
+
+  if (!aiProposalId || !aiProposalItemId) {
+    return "invalid";
+  }
+
+  return {
+    aiProposalId,
+    aiProposalItemId,
   };
 }
 
@@ -134,11 +172,35 @@ export async function createTaskAction(
   }
 
   const context = await requireActionContext("/tasks/new");
+  const conversionSource = proposalConversionSource(formData);
+
+  if (conversionSource === "invalid") {
+    return {
+      message: "The suggested update source could not be verified.",
+      status: "error",
+    };
+  }
 
   try {
-    const task = await createTenantTask(context, taskMutationPayload(parsed.data));
+    const task = conversionSource
+      ? await createTenantTaskFromAIProposalItem(context, {
+          ...conversionSource,
+          task: taskMutationPayload(parsed.data),
+        })
+      : await createTenantTask(context, taskMutationPayload(parsed.data));
+
+    if (!task) {
+      return {
+        message: "The existing converted task could not be found.",
+        status: "error",
+      };
+    }
 
     revalidateTaskContext(task);
+    if (conversionSource) {
+      revalidatePath("/proposals");
+      revalidatePath(`/proposals/${conversionSource.aiProposalId}`);
+    }
 
     return {
       redirectTo: `/tasks/${task.id}`,

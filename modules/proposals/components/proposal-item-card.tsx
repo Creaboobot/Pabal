@@ -4,8 +4,10 @@ import type {
   AIProposalItemStatus,
   SourceEntityType,
 } from "@prisma/client";
+import { CalendarPlus, ExternalLink, ListPlus } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { ProposalsActionState } from "@/modules/proposals/action-state";
 import {
   ConfidenceBadge,
@@ -35,10 +37,21 @@ export type ProposalItemCardItem = {
   targetEntityType: SourceEntityType | null;
 };
 
+export type ProposalItemConversionTarget = {
+  href: string;
+  id: string;
+  label: string;
+};
+
 type ProposalItemCardProps = {
   approveAction: () => Promise<ProposalsActionState>;
   clarifyAction: () => Promise<ProposalsActionState>;
+  conversionTargets: {
+    meeting: ProposalItemConversionTarget | null;
+    task: ProposalItemConversionTarget | null;
+  };
   item: ProposalItemCardItem;
+  proposalId: string;
   rejectAction: () => Promise<ProposalsActionState>;
   targetContext: ProposalItemTargetContext;
 };
@@ -50,10 +63,17 @@ function canReview(status: AIProposalItemStatus) {
 export function ProposalItemCard({
   approveAction,
   clarifyAction,
+  conversionTargets,
   item,
+  proposalId,
   rejectAction,
   targetContext,
 }: ProposalItemCardProps) {
+  const conversionSearchParams = new URLSearchParams({
+    sourceAIProposalId: proposalId,
+    sourceAIProposalItemId: item.id,
+  });
+
   return (
     <article className="rounded-md border border-border bg-card p-4 shadow-sm">
       <div className="grid gap-4">
@@ -96,6 +116,39 @@ export function ProposalItemCard({
         ) : null}
 
         <ProposedPatchPreview proposedPatch={item.proposedPatch} />
+
+        <div className="grid gap-2 sm:grid-cols-2">
+          {conversionTargets.task ? (
+            <Button asChild variant="outline">
+              <Link href={conversionTargets.task.href}>
+                <ExternalLink aria-hidden="true" className="mr-2 size-4" />
+                Open task
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild variant="outline">
+              <Link href={`/tasks/new?${conversionSearchParams.toString()}`}>
+                <ListPlus aria-hidden="true" className="mr-2 size-4" />
+                Create task
+              </Link>
+            </Button>
+          )}
+          {conversionTargets.meeting ? (
+            <Button asChild variant="outline">
+              <Link href={conversionTargets.meeting.href}>
+                <ExternalLink aria-hidden="true" className="mr-2 size-4" />
+                Open meeting
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild variant="outline">
+              <Link href={`/meetings/new?${conversionSearchParams.toString()}`}>
+                <CalendarPlus aria-hidden="true" className="mr-2 size-4" />
+                Create meeting
+              </Link>
+            </Button>
+          )}
+        </div>
 
         {canReview(item.status) ? (
           <div className="grid gap-2 sm:grid-cols-3">

@@ -68,6 +68,8 @@ export type TaskFormInitialValues = {
   priority?: TaskPriority;
   reminderAt?: Date | null;
   snoozedUntil?: Date | null;
+  sourceAIProposalId?: string | null;
+  sourceAIProposalItemId?: string | null;
   status?: TaskStatus;
   taskType?: TaskType;
   title?: string;
@@ -142,6 +144,16 @@ export function TaskForm({
         name="introductionSuggestionId"
         type="hidden"
         value={initialValues?.introductionSuggestionId ?? ""}
+      />
+      <input
+        name="sourceAIProposalId"
+        type="hidden"
+        value={initialValues?.sourceAIProposalId ?? ""}
+      />
+      <input
+        name="sourceAIProposalItemId"
+        type="hidden"
+        value={initialValues?.sourceAIProposalItemId ?? ""}
       />
 
       <label className="grid gap-2">

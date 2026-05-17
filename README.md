@@ -257,13 +257,17 @@ Suggested update review is available under `/proposals`:
 
 - `/proposals` for the suggested update review inbox.
 - `/proposals/[proposalId]` for suggested update detail, source/target context,
-  item review, safe proposed patch previews, and dismiss actions.
+  item review, explicit Task/Meeting creation links, safe proposed patch previews,
+  and dismiss actions.
 
-Suggested update review is status-only in Step 9. Approving an item means the
-user accepted it as conceptually valid. It does not apply patches, create
+Suggested update approval is status-only in Step 9. Approving an item means the
+user accepted it as conceptually valid. Approval does not apply patches, create
 records, call AI providers, mutate target records, send messages, or start
-background jobs. Internally these review records remain `AIProposal` and
-`AIProposalItem`.
+background jobs. A separate `Create task` or `Create meeting` action can open an
+editable form with conservative prefill; submitting that form creates the
+confirmed record, source-links it to the `AIProposalItem`, and writes safe audit
+metadata without approving the item. Internally these review records remain
+`AIProposal` and `AIProposalItem`.
 
 VoiceNote detail can create a review-only suggested update from a stored or reviewed
 transcript. The action asks for confirmation before sending transcript text to
